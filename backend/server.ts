@@ -7,22 +7,29 @@ const UserRoute = require('./routes/UserControl');
 const MenusControl = require('./routes/MenusControl');
 const CartControl = require('./routes/CartControl');
 const OrderControl = require('./routes/OrderControl');
+import cookieParser from 'cookie-parser';
+import cors from 'cors';
+const corsOptions: cors.CorsOptions = {
+  origin: 'http://localhost:3000', // Your frontend origin
+  credentials: true, // Allow cookies, authorization headers
+};
 const app = express();
-const port = 3000;
+const port = 5000;
 import dotenv from 'dotenv';
 dotenv.config();
+app.use(cookieParser());
+app.use(cors(corsOptions));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/users', UserRoute);
-app.use('/restaurants',ControlRestaurants);
+app.use('/restaurants', ControlRestaurants);
 
 app.use('/restaurants/:id/menus', MenusControl);
 
+app.use('/cart', CartControl);
 
-app.use('/cart',CartControl);
-
-app.use('/orders',OrderControl);
+app.use('/orders', OrderControl);
 
 app.use(errorHandler);
 app.listen(port, () => {

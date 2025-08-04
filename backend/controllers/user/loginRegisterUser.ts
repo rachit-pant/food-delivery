@@ -14,8 +14,8 @@ const regUser = asyncHandler(async (req: Request, res: Response) => {
   const hash = await bcrypt.hash(password, 10);
   const user = await prisma.users.create({
     data: {
-      user_roles:{
-        connect:{role_name: req.body.role}
+      user_roles: {
+        connect: { role_name: req.body.role },
       },
       full_name,
       email,
@@ -35,39 +35,45 @@ const regUser = asyncHandler(async (req: Request, res: Response) => {
   });
 });
 const login = asyncHandler(async (req: Request, res: Response) => {
-  const mail = req.body.email;
-  const passWord = req.body.password;
-  if (!mail || !passWord) {
-    const err = new Error('no email entered');
-    (err as any).statusCode = 400;
-    throw err;
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    res.status(400);
+    throw new Error('Email and password are required');
   }
+
   const user = await prisma.users.findUnique({
-    where: {
-      email: mail,
-    },
+    where: { email },
   });
-  if (user && (await bcrypt.compare(passWord, user.password))) {
-    res.json({
-      id: user.role_id,
-      name: user.full_name,
-      email: user.email,
-      token: jwt.sign(
-        {
-          id: user.id,
-          role: user.role_id,
-        },
-        process.env.SECRET_KEY as string,
-        {
-          expiresIn: '1h',
-        }
-      ),
-    });
-  } else {
-    const err = new Error('invalid password');
-    (err as any).statusCode = 400;
-    throw err;
+
+  if (!user || !(await bcrypt.compare(password, user.password))) {
+    res.status(401); // Unauthorized
+    throw new Error('Invalid email or password');
   }
+
+  const token = jwt.sign(
+    {
+      id: user.id,
+      role: user.role_id,
+    },
+    process.env.SECRET_KEY as string,
+    { expiresIn: '1h' }
+  );
+
+  res.cookie('token', token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+    maxAge: 3600000, // 1 hour
+  });
+
+  res.status(200).json({
+    id: user.id,
+    name: user.full_name,
+    email: user.email,
+    role: user.role_id,
+    message: 'Login successful',
+  });
 });
 
 module.exports = { regUser, login };

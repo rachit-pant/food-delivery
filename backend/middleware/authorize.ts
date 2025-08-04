@@ -14,8 +14,7 @@ declare global {
 }
 const authorize = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const headerAuth = req.headers['authorization'];
-    const token = headerAuth?.split(' ')[1];
+    const token = req.cookies?.token;
     if (!token) {
       const error = new Error('no token provided');
       (error as any).statusCode = 401;
