@@ -27,8 +27,10 @@ const CardWrapper = ({
   return (
     <Card className="w-full max-w-md dark">
       <CardHeader className="flex flex-col justify-center items-center gap-1.5">
-        <CardTitle className="p-2">{title}</CardTitle>
-        <CardDescription>{title} now to get started</CardDescription>
+        <CardTitle className="p-2 font-GoogleSansCode">{title}</CardTitle>
+        <CardDescription className="font-GoogleSansCode">
+          {title} now to get started
+        </CardDescription>
       </CardHeader>
       <CardContent>{children}</CardContent>
       <CardFooter className="flex flex-col gap-2 -my-3">

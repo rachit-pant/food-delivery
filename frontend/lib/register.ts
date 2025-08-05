@@ -19,5 +19,5 @@ export async function registerUsers(data: {
     const error = await res.json();
     throw new Error(error.message || 'Failed to register');
   }
-  return res.json();
+  return await res.json();
 }
