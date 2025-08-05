@@ -8,6 +8,7 @@ import {
 } from '@/components/ui/card';
 import { Button } from '../ui/button';
 import AuthHeader from './AuthHeader';
+import { ModeToggle } from '../theme-toggle';
 interface CardWrapperTypes {
   label: string;
   title: string;
