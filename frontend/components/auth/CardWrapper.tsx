@@ -2,12 +2,13 @@
 import Link from 'next/link';
 import {
   Card,
+  CardTitle,
+  CardDescription,
   CardContent,
   CardFooter,
   CardHeader,
 } from '@/components/ui/card';
 import { Button } from '../ui/button';
-import AuthHeader from './AuthHeader';
 interface CardWrapperTypes {
   label: string;
   title: string;
@@ -25,8 +26,9 @@ const CardWrapper = ({
 }: CardWrapperTypes) => {
   return (
     <Card className="w-full max-w-md dark">
-      <CardHeader>
-        <AuthHeader title={title} />
+      <CardHeader className="flex flex-col justify-center items-center gap-1.5">
+        <CardTitle className="p-2">{title}</CardTitle>
+        <CardDescription>{title} now to get started</CardDescription>
       </CardHeader>
       <CardContent>{children}</CardContent>
       <CardFooter className="flex flex-col gap-2 -my-3">
