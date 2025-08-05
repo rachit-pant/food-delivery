@@ -24,7 +24,7 @@ const CardWrapper = ({
   children,
 }: CardWrapperTypes) => {
   return (
-    <Card className="w-full max-w-md">
+    <Card className="w-full max-w-md dark">
       <CardHeader>
         <AuthHeader title={title} />
       </CardHeader>
