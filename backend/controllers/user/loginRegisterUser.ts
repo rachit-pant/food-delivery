@@ -14,9 +14,10 @@ const regUser = asyncHandler(async (req: Request, res: Response) => {
   const hash = await bcrypt.hash(password, 10);
   const user = await prisma.users.create({
     data: {
-      user_roles: {
-        connect: { role_name: req.body.role },
-      },
+      role_id: 1,
+      // user_roles: {
+      //   connect: { role_name: req.body.role },
+      // },
       full_name,
       email,
       phone_number,

@@ -15,13 +15,25 @@ import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { z } from 'zod';
 import { RegisterSchema } from '@/schema/registerSchema';
+import { registerUsers } from '@/lib/register';
 type FormData = z.infer<typeof RegisterSchema>;
 const RegisterForm = () => {
   const form = useForm<FormData>({
     resolver: zodResolver(RegisterSchema),
+    defaultValues: {
+      fullName: '',
+      email: '',
+      password: '',
+      phoneNumber: '',
+    },
   });
-  const onSubmit: SubmitHandler<FormData> = (data) => {
-    console.log(data);
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
+    try {
+      const result = await registerUsers(data);
+      console.log('success', result);
+    } catch (error) {
+      console.error('error', error);
+    }
   };
   return (
     <div>
@@ -30,7 +42,6 @@ const RegisterForm = () => {
         title="Register"
         backButton="/auth/login"
         extraBtn1="Register with Google"
-        extraBtn2="Register with Github"
       >
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -86,7 +97,11 @@ const RegisterForm = () => {
                 </FormItem>
               )}
             />
-            <Button type="submit" className="w-full">
+            <Button
+              type="submit"
+              className="w-full hover:cursor-pointer"
+              disabled={form.formState.isSubmitting}
+            >
               Submit
             </Button>
           </form>

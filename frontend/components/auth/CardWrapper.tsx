@@ -8,13 +8,11 @@ import {
 } from '@/components/ui/card';
 import { Button } from '../ui/button';
 import AuthHeader from './AuthHeader';
-import { ModeToggle } from '../theme-toggle';
 interface CardWrapperTypes {
   label: string;
   title: string;
   backButton: string;
   extraBtn1: string;
-  extraBtn2: string;
   children: React.ReactNode;
 }
 
@@ -23,7 +21,6 @@ const CardWrapper = ({
   backButton,
   title,
   extraBtn1,
-  extraBtn2,
   children,
 }: CardWrapperTypes) => {
   return (
