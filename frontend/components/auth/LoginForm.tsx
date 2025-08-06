@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-
+import { TextShimmer } from '@/components/ui/text-shimmer';
 import CardWrapper from './CardWrapper';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -17,7 +17,9 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { loginSchema } from '@/schema/loginSchema';
-import { Login } from '@/lib/login';
+import { Login } from '@/api/login';
+import { isAxiosError } from 'axios';
+import { handleError } from '@/lib/handleError';
 type LoginData = z.infer<typeof loginSchema>;
 const LoginForm = () => {
   const form = useForm<LoginData>({
@@ -33,6 +35,11 @@ const LoginForm = () => {
       console.log('success', res);
     } catch (error) {
       console.error('Error', error);
+      const err = handleError(error);
+      form.setError('root', {
+        type: 'server',
+        message: err,
+      });
     }
   };
   return (
@@ -74,8 +81,23 @@ const LoginForm = () => {
             <Checkbox id="remeber" />
             <FormLabel htmlFor="remeber">Remember me</FormLabel>
           </div>
-          <Button type="submit" className="w-full">
-            Login
+          {form.formState.errors.root && (
+            <FormMessage className="flex justify-center ">
+              {form.formState.errors.root.message}
+            </FormMessage>
+          )}
+          <Button
+            type="submit"
+            className="w-full hover:cursor-pointer"
+            disabled={form.formState.isSubmitting}
+          >
+            {form.formState.isSubmitting ? (
+              <TextShimmer duration={1} spread={1}>
+                Please wait
+              </TextShimmer>
+            ) : (
+              'Log in'
+            )}
           </Button>
         </form>
       </Form>

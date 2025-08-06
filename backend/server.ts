@@ -10,8 +10,8 @@ const OrderControl = require('./routes/OrderControl');
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 const corsOptions: cors.CorsOptions = {
-  origin: 'http://localhost:3000', // Your frontend origin
-  credentials: true, // Allow cookies, authorization headers
+  origin: 'http://localhost:3000',
+  credentials: true,
 };
 const app = express();
 const port = 5000;

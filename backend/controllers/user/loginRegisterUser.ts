@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 import asyncHandler from 'express-async-handler';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+const { AccessToken, RefreshToken } = require('../functions/jwt');
 const prisma = new PrismaClient();
 const regUser = asyncHandler(async (req: Request, res: Response) => {
   const { full_name, email, phone_number, password } = req.body;
@@ -48,30 +49,29 @@ const login = asyncHandler(async (req: Request, res: Response) => {
   });
 
   if (!user || !(await bcrypt.compare(password, user.password))) {
-    res.status(401); // Unauthorized
+    res.status(401);
     throw new Error('Invalid email or password');
   }
 
-  const token = jwt.sign(
-    {
-      id: user.id,
-      role: user.role_id,
-    },
-    process.env.SECRET_KEY as string,
-    { expiresIn: '1h' }
-  );
+  const accessToken = AccessToken(user);
+  const refreshToken = RefreshToken(user);
 
-  res.cookie('token', token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
-    maxAge: 3600000, // 1 hour
+  await prisma.users.update({
+    where: { id: user.id },
+    data: { refreshToken },
   });
 
+  const cookieSettings = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict' as const,
+  };
+
+  res.cookie('accesstoken', accessToken, cookieSettings);
+  res.cookie('refreshtoken', refreshToken, cookieSettings);
+
   res.status(200).json({
-    id: user.id,
     name: user.full_name,
-    email: user.email,
     role: user.role_id,
     message: 'Login successful',
   });

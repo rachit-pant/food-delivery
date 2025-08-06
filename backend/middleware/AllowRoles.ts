@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 interface JwtPayload {
   id: number;
   role: number;
+  email: string;
 }
 declare global {
   namespace Express {

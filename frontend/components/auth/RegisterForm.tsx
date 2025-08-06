@@ -9,13 +9,19 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+type LoginError = {
+  message?: string;
+  fieldErrors?: Partial<Record<keyof FormData, string>>;
+};
 import { zodResolver } from '@hookform/resolvers/zod';
+import { TextShimmer } from '@/components/ui/text-shimmer';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { z } from 'zod';
 import { RegisterSchema } from '@/schema/registerSchema';
-import { registerUsers } from '@/lib/register';
+import { registerUsers } from '@/api/register';
+import { handleError } from '@/lib/handleError';
 type FormData = z.infer<typeof RegisterSchema>;
 const RegisterForm = () => {
   const form = useForm<FormData>({
@@ -29,10 +35,15 @@ const RegisterForm = () => {
   });
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     try {
-      const result = await registerUsers(data);
-      console.log('success', result);
+      const res = await registerUsers(data);
+      console.log('success', res);
     } catch (error) {
-      console.error('error', error);
+      console.error('Error', error);
+      const err = handleError(error);
+      form.setError('root', {
+        type: 'server',
+        message: err,
+      });
     }
   };
   return (
@@ -97,12 +108,23 @@ const RegisterForm = () => {
                 </FormItem>
               )}
             />
+            {form.formState.errors.root && (
+              <FormMessage className="flex justify-center ">
+                {form.formState.errors.root.message}
+              </FormMessage>
+            )}
             <Button
               type="submit"
               className="w-full hover:cursor-pointer"
               disabled={form.formState.isSubmitting}
             >
-              Submit
+              {form.formState.isSubmitting ? (
+                <TextShimmer duration={1} spread={1}>
+                  Please wait
+                </TextShimmer>
+              ) : (
+                'Register'
+              )}
             </Button>
           </form>
         </Form>

@@ -184,6 +184,7 @@ model users {
   email          String?          @unique @db.VarChar
   phone_number   String?          @unique @db.VarChar
   password       String           @default("changeme123")
+  refreshToken  String?
   carts          carts[]
   orders         orders[]
   restaurants    restaurants[]

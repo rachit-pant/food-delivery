@@ -3,6 +3,7 @@ import asyncHandler from 'express-async-handler';
 interface JwtPayload {
   id: number;
   role: number;
+  email: string;
 }
 declare global {
   namespace Express {
