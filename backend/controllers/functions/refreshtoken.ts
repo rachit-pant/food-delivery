@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 interface RefreshTokenPayload {
   id: number;
 }
-export const refreshtoken = expressAsyncHandler(
+const refreshtoken = expressAsyncHandler(
   async (req: Request, res: Response) => {
     const incomingRefreshToken = req.cookies.refreshtoken;
 
@@ -74,3 +74,5 @@ export const refreshtoken = expressAsyncHandler(
     });
   }
 );
+
+module.exports = refreshtoken;

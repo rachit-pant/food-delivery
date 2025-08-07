@@ -7,6 +7,7 @@ const UserRoute = require('./routes/UserControl');
 const MenusControl = require('./routes/MenusControl');
 const CartControl = require('./routes/CartControl');
 const OrderControl = require('./routes/OrderControl');
+const ExtraRoutes = require('./routes/extrarouters');
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 const corsOptions: cors.CorsOptions = {
@@ -30,6 +31,8 @@ app.use('/restaurants/:id/menus', MenusControl);
 app.use('/cart', CartControl);
 
 app.use('/orders', OrderControl);
+
+app.use('/auths', ExtraRoutes);
 
 app.use(errorHandler);
 app.listen(port, () => {
