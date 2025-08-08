@@ -10,6 +10,7 @@ const DeleteUser = require('../controllers/user/deleteUser');
 const UserAddr = require('../controllers/user/createAddresses');
 const ReadAddress = require('../controllers/user/readAddresses');
 const DeleteAddress = require('../controllers/user/deleteAddress');
+const SendAddressHome = require('../controllers/user/SendeAddressesHome');
 
 router.post('/register', regUser);
 
@@ -23,12 +24,12 @@ router.patch('/:id', authorize, UserAccess, updateUser);
 
 router.delete('/:id', authorize, UserAccess, DeleteUser);
 
-router.post('/:id/address',authorize,UserAccess,UserAddr);
+router.post('/:id/address', authorize, UserAccess, UserAddr);
 
-router.get('/:id/address',authorize,UserAccess,ReadAddress);
+router.get('/:id/address', authorize, UserAccess, ReadAddress);
 
-router.delete('/:id/address/:deleteId',authorize,UserAccess,DeleteAddress);
+router.delete('/:id/address/:deleteId', authorize, UserAccess, DeleteAddress);
 
-
+router.get('/address/homepage', authorize, SendAddressHome);
 
 module.exports = router;
