@@ -3,6 +3,7 @@
 import { api } from '@/api/api';
 import React, { useEffect, useState } from 'react';
 import CountryPopup from './CountryPopup';
+import { Input } from '../ui/input';
 
 const Location = () => {
   const [OriginalCountry, setOriginalCountry] = useState('');
@@ -15,7 +16,7 @@ const Location = () => {
   useEffect(() => {
     async function fetchData() {
       const { data } = await api.get('/users/address/homepage');
-      const Usercountry = data.cities.states.countries.county_name;
+      const Usercountry = data.cities.states.countries.country_name;
       setOriginalCountry(Usercountry);
       setCountry(Usercountry);
     }
@@ -23,15 +24,18 @@ const Location = () => {
   }, []);
 
   return (
-    <div>
-      <input
+    <div className="p-1 relative">
+      <Input
         type="text"
         placeholder="country"
         value={Country}
         onChange={(e) => setCountry(e.target.value)}
+        className="w-30 p-2 rounded-lg rounded-r-none border-r-0 shadow-md"
       />
       {Country !== OriginalCountry && (
-        <CountryPopup change={selectedCountry} country={Country} />
+        <div className="absolute top-full mt-1  w-full">
+          <CountryPopup change={selectedCountry} country={Country} />
+        </div>
       )}
     </div>
   );

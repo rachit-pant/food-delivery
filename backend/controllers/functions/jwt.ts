@@ -18,7 +18,7 @@ const AccessToken = (user: User) => {
       email: user.email,
     },
     process.env.ACCESS_SECRET_KEY as string,
-    { expiresIn: '1h' }
+    { expiresIn: '20s' }
   );
 };
 

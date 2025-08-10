@@ -8,7 +8,7 @@ const getUsers = asyncHandler(async (req: Request, res: Response) => {
 });
 
 const getUser = asyncHandler(async (req: Request, res: Response) => {
-  const Id = Number(req.params.id);
+  const Id = Number(req.user?.id);
   const reqUser = await prisma.users.findUnique({
     where: {
       id: Id,

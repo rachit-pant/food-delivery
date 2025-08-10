@@ -41,7 +41,9 @@ const refreshtoken = expressAsyncHandler(
       (error as any).statusCode = 404;
       throw error;
     }
-
+    console.log(user.refreshToken);
+    console.log(incomingRefreshToken);
+    console.log('updated token');
     if (user.refreshToken !== incomingRefreshToken) {
       const error = new Error('Refresh token does not match, login again');
       (error as any).statusCode = 403;

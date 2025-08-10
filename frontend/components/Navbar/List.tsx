@@ -4,14 +4,14 @@ import SearchBox from './SearchBox';
 
 const List = () => {
   return (
-    <div>
-      <div>
+    <>
+      <div className="-mr-2">
         <Location />
       </div>
-      <div>
+      <div className="max-w-md w-2xl">
         <SearchBox />
       </div>
-    </div>
+    </>
   );
 };
 export default List;

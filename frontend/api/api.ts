@@ -4,26 +4,39 @@ export const api = axios.create({
   timeout: 1000,
   withCredentials: true,
 });
-
+let refreshRequest: Promise<unknown> | null = null;
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-
+    console.log('token');
     if (
-      error.response &&
-      error.response.status === 401 &&
-      error.response.data?.error === 'JWTtokenexpired'
+      (error.response &&
+        error.response.status === 401 &&
+        error.response.data?.message === 'Token expired') ||
+      (error.response &&
+        error.response.status == 401 &&
+        error.response.data?.message === 'No access token provided')
     ) {
       if (originalRequest._retry) {
         throw error;
       }
+      if (refreshRequest) {
+        await refreshRequest;
+        return api(originalRequest);
+      }
 
       originalRequest._retry = true;
 
-      await api.get('/auths/refreshToken');
-
-      return api(originalRequest);
+      try {
+        refreshRequest = api.get('/auths/refreshToken');
+        await refreshRequest;
+        return api(originalRequest);
+      } catch (error) {
+        throw error;
+      } finally {
+        refreshRequest = null;
+      }
     }
 
     throw error;

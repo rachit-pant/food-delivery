@@ -11,14 +11,14 @@ const UserAddr = require('../controllers/user/createAddresses');
 const ReadAddress = require('../controllers/user/readAddresses');
 const DeleteAddress = require('../controllers/user/deleteAddress');
 const SendAddressHome = require('../controllers/user/SendeAddressesHome');
-
+const SimilarCountry = require('../controllers/functions/getSimilarCountry');
 router.post('/register', regUser);
 
-router.get('/', authorize, getUsers);
+router.get('/allUsers', authorize, getUsers);
 
 router.post('/login', login);
 
-router.get('/:id', getUser);
+router.get('/', authorize, getUser);
 
 router.patch('/:id', authorize, UserAccess, updateUser);
 
@@ -31,5 +31,7 @@ router.get('/:id/address', authorize, UserAccess, ReadAddress);
 router.delete('/:id/address/:deleteId', authorize, UserAccess, DeleteAddress);
 
 router.get('/address/homepage', authorize, SendAddressHome);
+
+router.get('/similarcountry/homepage', SimilarCountry);
 
 module.exports = router;

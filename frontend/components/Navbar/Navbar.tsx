@@ -6,16 +6,16 @@ import Image from 'next/image';
 
 const Navbar = () => {
   return (
-    <nav>
-      <div>
+    <nav className="flex justify-center gap-20  pb-2">
+      <div className="p-5">
         <Link href="/auth/login">
           <Image src="/logoipsum.svg" alt="logo" width={100} height={100} />
         </Link>
       </div>
-      <div>
+      <div className="flex p-2">
         <List />
       </div>
-      <div>
+      <div className="p-3">
         <UserPanel />
       </div>
     </nav>
