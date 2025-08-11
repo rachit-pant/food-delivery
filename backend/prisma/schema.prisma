@@ -135,6 +135,7 @@ model restaurants {
   address            String?
   city_id            Int?
   rating             Float?
+  imageurl           String?  
   status             restaurant_status?   @default(inactive)
   menus              menus[]
   orders             orders[]
