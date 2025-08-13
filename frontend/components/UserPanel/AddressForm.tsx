@@ -3,7 +3,8 @@ import React, { useEffect, useState } from 'react';
 import AddressEnter from './AddressEnter';
 import { handleError } from '@/lib/handleError';
 import { api } from '@/api/api';
-
+import { Button } from '../ui/button';
+import { DeleteButton } from '@/api/address';
 type data = {
   id: number;
   address: string;
@@ -20,6 +21,21 @@ type data = {
 const AddressForm = () => {
   const [data, setData] = useState<data[]>([]);
   const [loading, setLoading] = useState(true);
+  const [update, setUpdate] = useState(true);
+  function updatedData() {
+    setUpdate((prev) => !prev);
+  }
+  async function DeleteAddress(id: number) {
+    try {
+      const data = await DeleteButton(id);
+      console.log('success', data);
+      updatedData();
+    } catch (error) {
+      const err = handleError(error);
+      console.log(err);
+      throw err;
+    }
+  }
   useEffect(() => {
     async function fetch() {
       try {
@@ -35,7 +51,7 @@ const AddressForm = () => {
       }
     }
     fetch();
-  }, []);
+  }, [update]);
   if (loading) return <p>Loading....</p>;
   return (
     <div className="flex gap-8 h-screen p-6 bg-gray-50">
@@ -63,6 +79,13 @@ const AddressForm = () => {
               <h4 className="text-sm text-gray-400">
                 {info.cities?.states?.countries?.country_name}
               </h4>
+              <Button
+                onClick={() => {
+                  DeleteAddress(info.id);
+                }}
+              >
+                Delete
+              </Button>
             </div>
           ))
         ) : (
@@ -75,7 +98,7 @@ const AddressForm = () => {
       {/* Right side: Address enter form */}
       <div className="flex-1 bg-white p-6 rounded-xl shadow-sm">
         <h2 className="text-lg font-semibold mb-4 text-gray-800"></h2>
-        <AddressEnter />
+        <AddressEnter update={updatedData} />
       </div>
     </div>
   );

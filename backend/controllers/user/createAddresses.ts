@@ -5,7 +5,7 @@ import asyncHandler from 'express-async-handler';
 const prisma = new PrismaClient();
 
 const createAddr = asyncHandler(async (req: Request, res: Response) => {
-  const Id = Number(req.params.id);
+  const Id = req.user?.id;
   const { address, city_id } = req.body;
 
   if (!address || !city_id) {

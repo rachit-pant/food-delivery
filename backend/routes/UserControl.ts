@@ -20,15 +20,15 @@ router.post('/login', login);
 
 router.get('/', authorize, getUser);
 
-router.patch('/:id', authorize, UserAccess, updateUser);
+router.patch('/', authorize, updateUser);
 
 router.delete('/:id', authorize, UserAccess, DeleteUser);
 
-router.post('/:id/address', authorize, UserAccess, UserAddr);
+router.post('/address', authorize, UserAddr);
 
 router.get('/address', authorize, ReadAddress);
 
-router.delete('/:id/address/:deleteId', authorize, UserAccess, DeleteAddress);
+router.delete('/address/:addressId', authorize, DeleteAddress);
 
 router.get('/address/homepage', authorize, SendAddressHome);
 

@@ -2,7 +2,8 @@
 import { api } from '@/api/api';
 import { handleError } from '@/lib/handleError';
 import React, { useEffect, useState } from 'react';
-
+import { Button } from '../ui/button';
+import { useRouter } from 'next/navigation';
 type Data = {
   full_name: string;
   email: string;
@@ -14,7 +15,7 @@ type Data = {
 const Profile = () => {
   const [profile, setProfile] = useState<Data | null>(null);
   const [loading, setLoading] = useState(true);
-
+  const router = useRouter();
   useEffect(() => {
     async function fetchProfile() {
       try {
@@ -29,6 +30,16 @@ const Profile = () => {
     }
     fetchProfile();
   }, []);
+  async function handleLogout() {
+    try {
+      await api.post('/auths/logout', {});
+      router.push('/auth/login');
+    } catch (error) {
+      const err = handleError(error);
+      console.log(err);
+      throw err;
+    }
+  }
 
   if (loading) {
     return (
@@ -74,18 +85,12 @@ const Profile = () => {
 
         {/* Actions */}
         <div className="flex gap-3">
-          <a
-            href="/users/profile"
-            className="px-5 py-2 bg-white text-blue-600 font-medium rounded-lg hover:bg-gray-100 transition"
-          >
-            View Profile
-          </a>
-          <a
-            href="/auth/logout"
-            className="px-5 py-2 bg-red-500 text-white font-medium rounded-lg hover:bg-red-600 transition"
+          <Button
+            onClick={handleLogout}
+            className="px-5 py-2 bg-red-500 text-white font-medium rounded-lg hover:bg-red-600 transition hover:cursor-pointer"
           >
             Logout
-          </a>
+          </Button>
         </div>
       </div>
     </section>

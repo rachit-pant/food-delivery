@@ -24,6 +24,7 @@ import {
 } from '@/components/ui/select';
 import { api } from '@/api/api';
 import { handleError } from '@/lib/handleError';
+import { AddreessPost } from '@/api/address';
 type countries = {
   id: number;
   country_name: string;
@@ -38,7 +39,7 @@ type city = {
   city_name: string;
   state_id: number;
 };
-const AddressEnter = () => {
+const AddressEnter = ({ update }: { update: () => void }) => {
   const form = useForm<z.infer<typeof addressSchema>>({
     resolver: zodResolver(addressSchema),
     defaultValues: {
@@ -48,8 +49,29 @@ const AddressEnter = () => {
       city: '',
     },
   });
-  const onSubmit: SubmitHandler<z.infer<typeof addressSchema>> = (data) => {
-    console.log(data);
+  const onSubmit: SubmitHandler<z.infer<typeof addressSchema>> = async (
+    data
+  ) => {
+    try {
+      const res = await AddreessPost(data);
+      console.log('success', res);
+      update();
+      form.reset({
+        address: '',
+        country: '',
+        state: '',
+        city: '',
+      });
+      setState([]);
+      setCity([]);
+    } catch (error) {
+      console.error('Error', error);
+      const err = handleError(error);
+      form.setError('root', {
+        type: 'server',
+        message: err,
+      });
+    }
   };
   const [country, setCountry] = useState<countries[]>([]);
   const [state, setState] = useState<state[]>([]);
