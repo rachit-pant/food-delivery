@@ -9,6 +9,7 @@ const PostOrders = asyncHandler(async (req: Request, res: Response) => {
   const restaurant_id = req.body.restaurant_id;
   const { payment } = req.body;
   const { addressId } = req.body;
+  const paymentDetails = req.body.payment_status;
   const addressUser = await prisma.user_addresses.findUnique({
     where: {
       id: addressId,
@@ -43,7 +44,7 @@ const PostOrders = asyncHandler(async (req: Request, res: Response) => {
       delivery_charges: 100,
       tax_amount: 10,
       net_amount: req.body.amount + 100 - 100 + 10,
-      payment_status: 'not_paid',
+      payment_status: paymentDetails,
       status: 'preparing',
       restaurant_id,
       order_items: {
@@ -67,7 +68,7 @@ const PostOrders = asyncHandler(async (req: Request, res: Response) => {
         create: {
           amount: req.body.amount,
           payment_mode: payment || 'COD',
-          payment_status: 'not_paid',
+          payment_status: paymentDetails,
         },
       },
     },

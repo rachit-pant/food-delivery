@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/select';
 import React, { useEffect, useState } from 'react';
 import { SelectGroup } from '@radix-ui/react-select';
+import Card from '../orders/Card';
 type data = {
   id: number;
   quantity: number;
@@ -44,6 +45,7 @@ const CartInfo = () => {
   const [address, setAddress] = useState<address[]>([]);
   const [storage, setStorage] = useState('');
   const [payment, setPayment] = useState('');
+  const [paymentstatus, setPaymentstatus] = useState('');
   useEffect(() => {
     async function fetchData() {
       try {
@@ -93,6 +95,7 @@ const CartInfo = () => {
           0
         ),
         payment: payment,
+        payment_status: paymentstatus,
         restaurant_id: cartInfo[0].restaurant_id,
       });
       console.log('success', res);
@@ -182,7 +185,16 @@ const CartInfo = () => {
               </SelectGroup>
             </SelectContent>
           </Select>
-          <Select onValueChange={(value) => setPayment(value)}>
+          <Select
+            onValueChange={(value) => {
+              if (value === 'COD') {
+                setPaymentstatus('not_paid');
+              } else {
+                setPaymentstatus('paid');
+              }
+              setPayment(value);
+            }}
+          >
             <SelectTrigger>
               <SelectValue placeholder="Payment Method" />
             </SelectTrigger>
@@ -190,12 +202,13 @@ const CartInfo = () => {
               <SelectGroup>
                 <SelectItem value="COD">Cash On Delivery</SelectItem>
                 <SelectItem value="Debit_Credit_Card">Card</SelectItem>
-                <SelectItem value="UPI">UPI</SelectItem>
-                <SelectItem value="net_banking">Net Banking</SelectItem>
               </SelectGroup>
             </SelectContent>
           </Select>
         </div>
+        {payment === 'Debit_Credit_Card' && (
+          <Card cart={cartInfo} onPaymentSuccess={Orders} />
+        )}
         {/* Total and Place Order */}
         <div className="mt-6 p-4 border-t flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
           <span className="text-lg font-semibold text-gray-700">
@@ -212,7 +225,7 @@ const CartInfo = () => {
           </span>
           <button
             className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold shadow-md transition-colors duration-200"
-            onClick={Orders} // replace with your order API call
+            onClick={Orders}
           >
             Place Order
           </button>
