@@ -12,6 +12,7 @@ const GetMenus = asyncHandler(async (req: Request, res: Response) => {
     },
     include: {
       menu_categories: true,
+      menu_variants: true,
     },
   });
   if (!GetMenus) {

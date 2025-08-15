@@ -7,11 +7,13 @@ type MenuItem = {
   item_name: string;
   description: string;
   image_url: string;
-  price: number;
-  menu_categories: {
+  menu_categories: { id: number; cat_name: string };
+  menu_variants: {
     id: number;
-    cat_name: string;
-  };
+    variety_name: string;
+    price: number;
+    menu_id: number;
+  }[];
 };
 
 type MenuData = Record<string, MenuItem[]>;
@@ -64,11 +66,8 @@ const Menus = async ({
                     </p>
                   </div>
 
-                  <div className="flex items-center justify-between mt-4">
-                    <p className="text-xl font-bold text-green-600">
-                      ₹{item.price}
-                    </p>
-                    <AddButton itemId={item.id} />
+                  <div className="flex items-center justify-center mt-4">
+                    <AddButton key={item.id} variant={item.menu_variants} />
                   </div>
                 </div>
               </div>

@@ -19,8 +19,10 @@ import { Input } from '@/components/ui/input';
 import { loginSchema } from '@/schema/loginSchema';
 import { Login } from '@/api/login';
 import { handleError } from '@/lib/handleError';
+import { useRouter } from 'next/navigation';
 type LoginData = z.infer<typeof loginSchema>;
 const LoginForm = () => {
+  const router = useRouter();
   const form = useForm<LoginData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -32,6 +34,7 @@ const LoginForm = () => {
     try {
       const res = await Login(data);
       console.log('success', res);
+      router.push('/restaurant');
     } catch (error) {
       console.error('Error', error);
       const err = handleError(error);

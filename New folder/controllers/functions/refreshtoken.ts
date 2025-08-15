@@ -51,14 +51,25 @@ const refreshtoken = expressAsyncHandler(
     }
 
     const acessKey = AccessToken(user);
+    const refreshKey = RefreshToken(user);
+
+    await prisma.users.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        refreshToken: refreshKey,
+      },
+    });
 
     const settings = {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict' as const,
     };
-    console.log(incomingRefreshToken);
+
     res.cookie('accesstoken', acessKey, settings);
+    res.cookie('refreshtoken', refreshKey, settings);
 
     res.status(200).json({
       message: 'Refresh successful',

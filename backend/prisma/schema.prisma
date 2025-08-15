@@ -10,14 +10,19 @@ datasource db {
 
 model carts {
   id            Int            @id @default(autoincrement())
-  user_id       Int?
-  menu_id       Int?
+  user_id       Int
+  menu_id       Int
   variant_id    Int?
+  restaurant_id Int
   quantity      Int
   menus         menus?         @relation(fields: [menu_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   users         users?         @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   menu_variants menu_variants? @relation(fields: [variant_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  restaurants   restaurants?   @relation("RestaurantCarts", fields: [restaurant_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([user_id, menu_id, variant_id])
 }
+
 
 model cities {
   id              Int               @id @default(autoincrement())
@@ -70,7 +75,7 @@ model menus {
 model order_addresses {
   id             Int             @id @default(autoincrement())
   address_id     Int?
-  order_id       Int?
+  order_id       Int? @unique
   address        String?
   city_id        Int?
   user_addresses user_addresses? @relation(fields: [address_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -112,7 +117,9 @@ model orders {
   net_amount       Float?
   payment_status   payment_status?
   status           order_status?     @default(placed)
-  order_addresses  order_addresses[]
+  createdAt        DateTime          @default(now())       
+  updatedAt        DateTime          @updatedAt           
+  order_addresses  order_addresses?
   order_items      order_items[]
   order_payments   order_payments[]
   restaurants      restaurants?      @relation(fields: [restaurant_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -142,6 +149,8 @@ model restaurants {
   restaurant_timings restaurant_timings[]
   cities             cities?              @relation(fields: [city_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   users              users?               @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  carts   carts[]   @relation("RestaurantCarts")
+
 }
 
 model states {

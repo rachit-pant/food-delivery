@@ -31,6 +31,7 @@ api.interceptors.response.use(
       try {
         refreshRequest = api.get('/auths/refreshToken');
         await refreshRequest;
+        console.log('token 5 ', refreshRequest);
         return api(originalRequest);
       } catch (error) {
         throw error;

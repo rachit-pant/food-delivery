@@ -36,7 +36,7 @@ const UserPanel = () => {
         <p>Loading....</p>
       ) : Profile?.full_name ? (
         <Button variant="link" asChild>
-          <Link href="/users/profile">{Profile.full_name}</Link>
+          <Link href="/user">{Profile.full_name}</Link>
         </Button>
       ) : (
         <div>
