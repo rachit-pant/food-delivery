@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react';
 
 import Image from 'next/image';
 import PayNow from './PayNow';
+import { Button } from '../ui/button';
 
 export interface Orders {
   orderId: number;
@@ -49,6 +50,7 @@ export interface Restaurant {
 
 const Orders = () => {
   const [orders, setOrders] = useState<Orders[]>([]);
+  const [refresh, setRefresh] = useState(true);
 
   useEffect(() => {
     async function getOrders() {
@@ -61,7 +63,18 @@ const Orders = () => {
       }
     }
     getOrders();
-  }, []);
+  }, [refresh]);
+  async function deleteOrder(orderId: number) {
+    try {
+      const res = await api.delete(`/orders/${orderId}`);
+      console.log('success', res.data);
+      setRefresh((prev) => !prev);
+    } catch (error) {
+      const err = handleError(error);
+      console.log(err);
+      throw err;
+    }
+  }
 
   return (
     <div className="max-w-4xl mx-auto p-4 space-y-6">
@@ -149,6 +162,11 @@ const Orders = () => {
               ) : (
                 <p>Paid</p>
               )}
+            </div>
+            <div>
+              <Button type="submit" onClick={() => deleteOrder(order.orderId)}>
+                Delete Order
+              </Button>
             </div>
           </div>
         ))

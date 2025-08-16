@@ -9,9 +9,6 @@ const User = () => {
   return (
     <div>
       <div>
-        <Navbar />
-      </div>
-      <div>
         <Profile />
       </div>
       <div>

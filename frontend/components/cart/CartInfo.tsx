@@ -1,6 +1,7 @@
 'use client';
 import { api } from '@/api/api';
 import { handleError } from '@/lib/handleError';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import {
   Select,
@@ -39,6 +40,7 @@ type address = {
   };
 };
 const CartInfo = () => {
+  const router = useRouter();
   const [cartInfo, setcartInfo] = useState<data[]>([]);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(true);
@@ -99,6 +101,7 @@ const CartInfo = () => {
         restaurant_id: cartInfo[0].restaurant_id,
       });
       console.log('success', res);
+      router.push('/orders');
     } catch (error) {
       const err = handleError(error);
       console.log(err);
@@ -209,7 +212,15 @@ const CartInfo = () => {
         {payment === 'Debit_Credit_Card' && (
           <Card cart={cartInfo} onPaymentSuccess={Orders} />
         )}
-        {/* Total and Place Order */}
+        {payment === 'COD' && (
+          <button
+            className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold shadow-md transition-colors duration-200"
+            onClick={Orders}
+          >
+            Place Order
+          </button>
+        )}
+
         <div className="mt-6 p-4 border-t flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
           <span className="text-lg font-semibold text-gray-700">
             Total:
@@ -223,12 +234,6 @@ const CartInfo = () => {
                 .toFixed(2)}
             </span>
           </span>
-          <button
-            className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold shadow-md transition-colors duration-200"
-            onClick={Orders}
-          >
-            Place Order
-          </button>
         </div>
       </div>
     </div>

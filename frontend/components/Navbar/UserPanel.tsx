@@ -35,9 +35,14 @@ const UserPanel = () => {
       {Loading ? (
         <p>Loading....</p>
       ) : Profile?.full_name ? (
-        <Button variant="link" asChild>
-          <Link href="/user">{Profile.full_name}</Link>
-        </Button>
+        <div>
+          <Button variant="link" asChild>
+            <Link href="/user">{Profile.full_name}</Link>
+          </Button>
+          <Button asChild>
+            <Link href="/cart">Cart</Link>
+          </Button>
+        </div>
       ) : (
         <div>
           <Button variant="link" asChild>

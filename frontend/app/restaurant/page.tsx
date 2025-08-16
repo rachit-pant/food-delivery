@@ -5,12 +5,7 @@ import React from 'react';
 const Restaurant = () => {
   return (
     <div>
-      <div>
-        <Navbar />
-      </div>
-      <div>
-        <GridRestra />
-      </div>
+      <GridRestra />
     </div>
   );
 };
