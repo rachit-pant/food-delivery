@@ -42,6 +42,9 @@ const UserPanel = () => {
           <Button asChild>
             <Link href="/cart">Cart</Link>
           </Button>
+          <Button asChild>
+            <Link href="/orders">Orders</Link>
+          </Button>
         </div>
       ) : (
         <div>

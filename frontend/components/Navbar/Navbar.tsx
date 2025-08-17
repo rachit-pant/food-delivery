@@ -8,7 +8,7 @@ const Navbar = () => {
   return (
     <nav className="flex justify-center gap-20  pb-2">
       <div className="p-5">
-        <Link href="/auth/login">
+        <Link href="/restaurant">
           <Image src="/logoipsum.svg" alt="logo" width={100} height={100} />
         </Link>
       </div>
