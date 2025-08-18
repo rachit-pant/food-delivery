@@ -5,7 +5,8 @@ import { handleError } from '@/lib/handleError';
 import { api } from '@/api/api';
 import { Button } from '../ui/button';
 import { DeleteButton } from '@/api/address';
-type data = {
+
+type AddressData = {
   id: number;
   address: string;
   cities: {
@@ -18,50 +19,49 @@ type data = {
     };
   };
 };
+
 const AddressForm = () => {
-  const [data, setData] = useState<data[]>([]);
+  const [data, setData] = useState<AddressData[]>([]);
   const [loading, setLoading] = useState(true);
-  const [update, setUpdate] = useState(true);
-  function updatedData() {
-    setUpdate((prev) => !prev);
-  }
-  async function DeleteAddress(id: number) {
+  const [refresh, setRefresh] = useState(false);
+
+  const refreshData = () => setRefresh((prev) => !prev);
+
+  async function handleDelete(id: number) {
     try {
-      const data = await DeleteButton(id);
-      console.log('success', data);
-      updatedData();
+      await DeleteButton(id);
+      refreshData();
     } catch (error) {
-      const err = handleError(error);
-      console.log(err);
-      throw err;
+      console.error(handleError(error));
     }
   }
+
   useEffect(() => {
-    async function fetch() {
+    async function fetchData() {
       try {
         const res = await api.get('/users/address');
         setData(res.data);
       } catch (error) {
-        const err = handleError(error);
-
-        console.log(err);
-        throw err;
+        console.error(handleError(error));
       } finally {
         setLoading(false);
       }
     }
-    fetch();
-  }, [update]);
-  if (loading) return <p>Loading....</p>;
+    fetchData();
+  }, [refresh]);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <p className="text-lg text-gray-500 animate-pulse">Loading...</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex gap-8 h-screen p-6 bg-gray-50">
-      {/* Left side: List of addresses */}
-      <div className="flex-1 overflow-y-auto pr-6 space-y-4">
-        {loading ? (
-          <div className="flex justify-center items-center h-full">
-            <p className="text-lg text-gray-500 animate-pulse">Loading...</p>
-          </div>
-        ) : data && data.length > 0 ? (
+    <div className="flex gap-4 min-h-screen p-6 mt-5">
+      <div className=" flex-1 overflow-y-auto pr-6 space-y-4">
+        {data.length > 0 ? (
           data.map((info) => (
             <div
               key={info.id}
@@ -80,9 +80,9 @@ const AddressForm = () => {
                 {info.cities?.states?.countries?.country_name}
               </h4>
               <Button
-                onClick={() => {
-                  DeleteAddress(info.id);
-                }}
+                onClick={() => handleDelete(info.id)}
+                variant="destructive"
+                className="mt-3"
               >
                 Delete
               </Button>
@@ -95,10 +95,11 @@ const AddressForm = () => {
         )}
       </div>
 
-      {/* Right side: Address enter form */}
-      <div className="flex-1 bg-white p-6 rounded-xl shadow-sm">
-        <h2 className="text-lg font-semibold mb-4 text-gray-800"></h2>
-        <AddressEnter update={updatedData} />
+      <div className=" flex-1 ">
+        <h2 className="text-lg  mb-4 text-gray-800 text-center font-GoogleSansCode">
+          Add New Address
+        </h2>
+        <AddressEnter update={refreshData} />
       </div>
     </div>
   );

@@ -111,120 +111,147 @@ const AddressEnter = ({ update }: { update: () => void }) => {
   }
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
-        <FormField
-          control={form.control}
-          name="address"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Enter Street Address</FormLabel>
-              <FormControl>
-                <Input placeholder="address" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="country"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Country</FormLabel>
-              <Select
-                onValueChange={(value) => {
-                  field.onChange(value);
-                  setState([]);
-                  setCity([]);
-                  fetchState(value);
-                }}
-                defaultValue={field.value as string}
-              >
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="max-w-xl mx-auto bg-white shadow-lg rounded-xl p-6 space-y-6 w-full"
+      >
+        <div>
+          <FormField
+            control={form.control}
+            name="address"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="font-medium">Street Address</FormLabel>
                 <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select Country" />
-                  </SelectTrigger>
+                  <Input
+                    placeholder="123 Main St"
+                    {...field}
+                    className="rounded-lg"
+                  />
                 </FormControl>
-                <SelectContent>
-                  <SelectGroup>
-                    {country.map((countries) => (
-                      <SelectItem
-                        key={countries.id}
-                        value={String(countries.id)}
-                      >
-                        {countries.country_name}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="state"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>State</FormLabel>
-              <Select
-                onValueChange={(value) => {
-                  field.onChange(value);
-                  setCity([]);
-                  fetchCity(value);
-                }}
-                defaultValue={field.value as string}
-              >
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select State" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectGroup>
-                    {state.map((states) => (
-                      <SelectItem key={states.id} value={String(states.id)}>
-                        {states.state_name}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="city"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>City</FormLabel>
-              <Select
-                onValueChange={field.onChange}
-                defaultValue={field.value as string}
-              >
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="City" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectGroup>
-                    {city.map((cities) => (
-                      <SelectItem key={cities.id} value={String(cities.id)}>
-                        {cities.city_name}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button type="submit">Submit</Button>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <FormField
+            control={form.control}
+            name="country"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="font-medium">Country</FormLabel>
+                <Select
+                  onValueChange={(value) => {
+                    field.onChange(value);
+                    setState([]);
+                    setCity([]);
+                    fetchState(value);
+                  }}
+                  defaultValue={field.value as string}
+                >
+                  <FormControl>
+                    <SelectTrigger className="rounded-lg">
+                      <SelectValue placeholder="Select Country" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectGroup>
+                      {country.map((c) => (
+                        <SelectItem key={c.id} value={String(c.id)}>
+                          {c.country_name}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="state"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="font-medium ml-2.5">State</FormLabel>
+                <Select
+                  onValueChange={(value) => {
+                    field.onChange(value);
+                    setCity([]);
+                    fetchCity(value);
+                  }}
+                  defaultValue={field.value as string}
+                >
+                  <FormControl>
+                    <SelectTrigger className="rounded-lg ml-2.5">
+                      <SelectValue placeholder="Select State" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectGroup>
+                      {state.map((s) => (
+                        <SelectItem key={s.id} value={String(s.id)}>
+                          {s.state_name}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="city"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="font-medium">City</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value as string}
+                >
+                  <FormControl>
+                    <SelectTrigger className="rounded-lg">
+                      <SelectValue placeholder="Select City" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectGroup>
+                      {city.map((c) => (
+                        <SelectItem key={c.id} value={String(c.id)}>
+                          {c.city_name}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        {/* Errors */}
+        {form.formState.errors.root && (
+          <p className="text-red-500 text-sm text-center">
+            {form.formState.errors.root.message}
+          </p>
+        )}
+
+        {/* Submit button */}
+        <div className="flex justify-center">
+          <Button
+            type="submit"
+            className="w-full md:w-auto px-6 py-2 rounded-lg"
+          >
+            Submit
+          </Button>
+        </div>
       </form>
     </Form>
   );

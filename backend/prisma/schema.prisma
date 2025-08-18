@@ -124,6 +124,7 @@ model orders {
   order_payments   order_payments[]
   restaurants      restaurants?      @relation(fields: [restaurant_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   users            users?            @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  reviews reviews[]
 }
 
 model restaurant_timings {
@@ -180,6 +181,18 @@ model user_devices {
   os_type     String?
   users       users?       @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
+model reviews {
+  id        Int     @id @default(autoincrement())
+  user_id   Int
+  order_id  Int
+  review    String?
+  rating    Int      // rating 1–5 (or any scale you want)
+
+  // Relations
+  user   users  @relation(fields: [user_id], references: [id])
+  order  orders @relation(fields: [order_id], references: [id])
+}
+
 
 model user_roles {
   id        Int     @id @default(autoincrement())
@@ -201,6 +214,7 @@ model users {
   user_addresses user_addresses[]
   user_devices   user_devices[]
   user_roles     user_roles?      @relation(fields: [role_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  reviews reviews[]
 }
 
 enum device_type {
@@ -215,6 +229,7 @@ enum order_status {
   prepared
   picked
   delivered
+  cancelled
 }
 
 enum payment_mode {

@@ -5,6 +5,7 @@ import bcrypt from 'bcrypt';
 const prisma = new PrismaClient();
 const updateUser = asyncHandler(async (req: Request, res: Response) => {
   const id = req.user?.id;
+
   const user = await prisma.users.findUnique({
     where: {
       id,
@@ -19,6 +20,7 @@ const updateUser = asyncHandler(async (req: Request, res: Response) => {
     full_name: user?.full_name,
     phone_number: user?.phone_number,
     password: user?.password,
+    email: user?.email,
   };
   if (
     typeof req.body.full_name === 'string' &&
@@ -39,6 +41,10 @@ const updateUser = asyncHandler(async (req: Request, res: Response) => {
     req.body.password.trim() !== ''
   ) {
     updatedData.password = await bcrypt.hash(req.body.password, 10);
+  }
+
+  if (typeof req.body.email === 'string' && req.body.email.trim() !== '') {
+    updatedData.email = req.body.email;
   }
 
   const UpdatedUser = await prisma.users.update({

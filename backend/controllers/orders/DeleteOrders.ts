@@ -7,10 +7,14 @@ const prisma = new PrismaClient();
 const DeleteOrder = asyncHandler(async (req: Request, res: Response) => {
   const orderId = Number(req.params.orderId);
   try {
-    await prisma.order_items.deleteMany({ where: { order_id: orderId } });
-    await prisma.order_addresses.deleteMany({ where: { order_id: orderId } });
-    await prisma.order_payments.deleteMany({ where: { order_id: orderId } });
-    await prisma.orders.deleteMany({ where: { id: orderId } });
+    await prisma.orders.update({
+      where: {
+        id: orderId,
+      },
+      data: {
+        status: 'cancelled',
+      },
+    });
     res.status(200).json({
       message: 'deleted',
     });

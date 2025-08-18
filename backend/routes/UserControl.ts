@@ -12,6 +12,7 @@ const ReadAddress = require('../controllers/user/readAddresses');
 const DeleteAddress = require('../controllers/user/deleteAddress');
 const SendAddressHome = require('../controllers/user/SendeAddressesHome');
 const SimilarCountry = require('../controllers/functions/getSimilarCountry');
+const OrdersHistory = require('../controllers/orders/GetOrdersHistory');
 router.post('/register', regUser);
 
 router.get('/allUsers', authorize, getUsers);
@@ -33,5 +34,7 @@ router.delete('/address/:addressId', authorize, DeleteAddress);
 router.get('/address/homepage', authorize, SendAddressHome);
 
 router.get('/similarcountry/homepage', SimilarCountry);
+
+router.get('/orders', authorize, OrdersHistory);
 
 module.exports = router;

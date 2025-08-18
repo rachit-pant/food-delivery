@@ -4,13 +4,10 @@ import asyncHandler from 'express-async-handler';
 
 const prisma = new PrismaClient();
 
-const getOrders = asyncHandler(async (req: Request, res: Response) => {
-  const getOrders = await prisma.orders.findMany({
+const getOrdersHistory = asyncHandler(async (req: Request, res: Response) => {
+  const getOrdersHistory = await prisma.orders.findMany({
     where: {
       user_id: req.user?.id,
-      NOT: {
-        status: 'cancelled',
-      },
     },
     orderBy: {
       createdAt: 'desc',
@@ -65,7 +62,7 @@ const getOrders = asyncHandler(async (req: Request, res: Response) => {
       },
     },
   });
-  const formattedOrders = getOrders.map((order) => ({
+  const formattedOrders = getOrdersHistory.map((order) => ({
     orderId: order.id,
     placedAt: order.createdAt,
     status: order.status,
@@ -99,4 +96,4 @@ const getOrders = asyncHandler(async (req: Request, res: Response) => {
   res.status(200).json(formattedOrders);
 });
 
-module.exports = getOrders;
+module.exports = getOrdersHistory;
