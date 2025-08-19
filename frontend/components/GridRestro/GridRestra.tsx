@@ -24,6 +24,9 @@ const GridRestra = async () => {
 
   return (
     <div className="max-w-[1100px] mx-auto px-4">
+      <h1 className="text-3xl font-bold text-gray-800 mb-10">
+        Food Delivery Restaurants
+      </h1>
       <div
         className="grid grid-cols-3 gap-x-10 gap-y-10 justify-center"
         style={{ userSelect: 'none' }}

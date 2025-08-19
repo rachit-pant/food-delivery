@@ -12,10 +12,23 @@ const GetRestro = asyncHandler(async (req: Request, res: Response) => {
   res.status(200).json(AllRes);
 });
 const GetPer = asyncHandler(async (req: Request, res: Response) => {
-  const id = Number(req.params.id);
+  const id = Number(req.params.restaurantId);
   const GetPer = await prisma.restaurants.findUnique({
     where: {
       id,
+    },
+    include: {
+      restaurant_timings: true,
+      cities: {
+        select: {
+          city_name: true,
+          states: {
+            select: {
+              state_name: true,
+            },
+          },
+        },
+      },
     },
   });
   if (!GetPer) {
