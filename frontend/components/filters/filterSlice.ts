@@ -9,7 +9,7 @@ const initialState: filterSlice = {
 };
 
 const filterSlice = createSlice({
-  name: 'lowtohigh',
+  name: 'filter',
   initialState,
   reducers: {
     setFilter: (state, action: PayloadAction<string>) => {

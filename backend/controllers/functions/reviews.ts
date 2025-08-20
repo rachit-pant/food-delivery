@@ -35,6 +35,7 @@ const postItemReviews = expressAsyncHandler(
     const userId = Number(req.user?.id);
     const { review, rating } = req.body;
     const orderId = Number(req.body.orderId);
+    const restaurantId = Number(req.body.restaurantId);
 
     await prisma.reviews.create({
       data: {
@@ -42,11 +43,45 @@ const postItemReviews = expressAsyncHandler(
         order_id: orderId,
         rating: Number(rating),
         review: review,
+        restaurant_id: restaurantId,
       },
     });
 
     res.status(201).json({ message: 'Review added successfully' });
   }
 );
+const showReviews = expressAsyncHandler(async (req: Request, res: Response) => {
+  const resId = Number(req.params.restaurantId);
+  const showReviews = await prisma.reviews.findMany({
+    where: {
+      restaurant_id: resId,
+    },
+    select: {
+      id: true,
+      review: true,
+      rating: true,
+      user: {
+        select: {
+          full_name: true,
+        },
+      },
+      order: {
+        select: {
+          order_items: {
+            select: {
+              product_name: true,
+              menus: {
+                select: {
+                  image_url: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
 
-module.exports = { getItemsReviews, postItemReviews };
+  res.status(200).json(showReviews);
+});
+module.exports = { getItemsReviews, postItemReviews, showReviews };

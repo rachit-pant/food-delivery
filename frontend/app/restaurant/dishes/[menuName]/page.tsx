@@ -2,7 +2,7 @@ import { api } from '@/api/api';
 import PopularMenu from '@/components/GridRestro/PopularMenu';
 import { handleError } from '@/lib/handleError';
 import React from 'react';
-
+import Filter from '@/components/filters/Filter';
 const page = async ({ params }: { params: Promise<{ menuName: string }> }) => {
   let data;
   let Name;
@@ -17,6 +17,7 @@ const page = async ({ params }: { params: Promise<{ menuName: string }> }) => {
   }
   return (
     <div>
+      <Filter />
       <PopularMenu data={data} Name={Name} />
     </div>
   );

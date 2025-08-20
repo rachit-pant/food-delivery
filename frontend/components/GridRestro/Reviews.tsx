@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -19,7 +19,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
   SelectContent,
@@ -30,6 +30,7 @@ import {
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import { Star, MessageSquarePlus, Sparkles } from 'lucide-react';
 
 export interface Orders {
   order_id: number;
@@ -80,6 +81,7 @@ const Reviews = ({ restaurantId }: { restaurantId: number }) => {
         orderId: values.product,
         review: values.review,
         rating: values.rating,
+        restaurantId: restaurantId,
       });
       console.log('success', res);
     } catch (error) {
@@ -90,106 +92,169 @@ const Reviews = ({ restaurantId }: { restaurantId: number }) => {
   }
 
   if (data.length === 0) {
-    return <h1>No Orders From the restaurant</h1>;
+    return (
+      <div className="text-center p-8 bg-card rounded-lg shadow-lg">
+        <MessageSquarePlus className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
+        <h2 className="text-xl font-semibold text-card-foreground mb-2">
+          No Orders Yet
+        </h2>
+        <p className="text-muted-foreground">
+          Order from this restaurant to leave a review!
+        </p>
+      </div>
+    );
   }
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button className="rounded-full h-12 w-12 flex items-center justify-center shadow-lg text-xl">
-            +
-          </Button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Add Reviews</DialogTitle>
-            <DialogDescription>
-              Add Reviews for your purchased items
-            </DialogDescription>
-          </DialogHeader>
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button className="group relative h-14 w-14 rounded-full bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-110">
+          <div className="absolute inset-0 rounded-full bg-gradient-to-r from-primary to-secondary opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+          <MessageSquarePlus className="w-6 h-6 text-primary-foreground transition-transform duration-300 group-hover:rotate-12" />
+          <Sparkles className="absolute -top-1 -right-1 w-4 h-4 text-yellow-400 animate-pulse" />
+        </Button>
+      </DialogTrigger>
 
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="space-y-4 mt-4"
-            >
-              <FormField
-                control={form.control}
-                name="product"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Product</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a product" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {data.map((order) => (
-                          <SelectItem
-                            key={order.order_id}
-                            value={String(order.order_id)}
-                          >
-                            {order.product_name} (
-                            {order.menu_variants.variety_name})
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+      <DialogContent className="sm:max-w-[500px] bg-card border-0 shadow-2xl">
+        <DialogHeader className="space-y-4 pb-6 border-b border-border">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-primary/10 rounded-lg">
+              <Star className="w-6 h-6 text-primary" />
+            </div>
+            <div>
+              <DialogTitle className="text-2xl font-bold text-card-foreground">
+                Share Your Experience
+              </DialogTitle>
+              <DialogDescription className="text-muted-foreground mt-1">
+                Help others discover great food by sharing your review
+              </DialogDescription>
+            </div>
+          </div>
+        </DialogHeader>
 
-              <FormField
-                control={form.control}
-                name="review"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Review</FormLabel>
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-6 pt-6"
+          >
+            <FormField
+              control={form.control}
+              name="product"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-base font-semibold text-card-foreground">
+                    Which item would you like to review?
+                  </FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
-                      <Input placeholder="Write your review..." {...field} />
+                      <SelectTrigger className="h-12 bg-input border-border focus:ring-2 focus:ring-primary">
+                        <SelectValue placeholder="Select a product you ordered" />
+                      </SelectTrigger>
                     </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                    <SelectContent className="bg-popover border-border">
+                      {data.map((order) => (
+                        <SelectItem
+                          key={order.order_id}
+                          value={String(order.order_id)}
+                          className="hover:bg-accent hover:text-accent-foreground"
+                        >
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium">
+                              {order.product_name}
+                            </span>
+                            <span className="text-muted-foreground text-sm">
+                              ({order.menu_variants.variety_name})
+                            </span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-              <FormField
-                control={form.control}
-                name="rating"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Rating</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select rating" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {[1, 2, 3, 4, 5].map((num) => (
-                          <SelectItem key={num} value={String(num)}>
-                            {num}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            <FormField
+              control={form.control}
+              name="rating"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-base font-semibold text-card-foreground">
+                    How would you rate this item?
+                  </FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger className="h-12 bg-input border-border focus:ring-2 focus:ring-primary">
+                        <SelectValue placeholder="Select your rating" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent className="bg-popover border-border">
+                      {[5, 4, 3, 2, 1].map((num) => (
+                        <SelectItem
+                          key={num}
+                          value={String(num)}
+                          className="hover:bg-accent hover:text-accent-foreground"
+                        >
+                          <div className="flex items-center gap-2">
+                            <div className="flex">
+                              {Array.from({ length: 5 }).map((_, idx) => (
+                                <Star
+                                  key={idx}
+                                  className={`w-4 h-4 ${
+                                    idx < num
+                                      ? 'text-yellow-400 fill-current'
+                                      : 'text-gray-300'
+                                  }`}
+                                />
+                              ))}
+                            </div>
+                            <span className="font-medium">
+                              {num} Star{num !== 1 ? 's' : ''}
+                            </span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-              <div className="flex justify-end">
-                <Button type="submit">Submit</Button>
-              </div>
-            </form>
-          </Form>
-        </DialogContent>
-      </Dialog>
-    </div>
+            <FormField
+              control={form.control}
+              name="review"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-base font-semibold text-card-foreground">
+                    Tell us about your experience
+                  </FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="What did you love about this dish? How was the taste, presentation, and overall experience?"
+                      className="min-h-[120px] bg-input border-border focus:ring-2 focus:ring-primary resize-none"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="flex justify-end pt-4 border-t border-border">
+              <Button
+                type="submit"
+                className="px-8 py-3 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-primary-foreground font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
+              >
+                <Star className="w-4 h-4 mr-2" />
+                Submit Review
+              </Button>
+            </div>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
   );
 };
 

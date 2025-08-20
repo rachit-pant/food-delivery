@@ -1,6 +1,9 @@
+'use client';
 import CardRestra from './CardRestra';
 import { api } from '@/api/api';
 import { handleError } from '@/lib/handleError';
+import { useAppSelector } from '@/lib/hooks';
+import { useEffect, useState } from 'react';
 
 type restaurants = {
   id: number;
@@ -12,15 +15,23 @@ type restaurants = {
   imageurl: string;
   status: string;
 };
-const GridRestra = async () => {
-  let data;
-  try {
-    data = (await api.get('/restaurants')).data;
-  } catch (error) {
-    const err = handleError(error);
-    console.log(err);
-    throw err;
-  }
+const GridRestra = () => {
+  const [restaurants, setRestaurants] = useState<restaurants[]>([]);
+
+  const filter = useAppSelector((state) => state.filter.filterName);
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const data = (await api.get(`/restaurants?filter=${filter}`)).data;
+        setRestaurants(data);
+      } catch (error) {
+        const err = handleError(error);
+        console.log(err);
+        throw err;
+      }
+    }
+    fetchData();
+  }, [filter]);
 
   return (
     <div className="max-w-[1100px] mx-auto px-4">
@@ -31,7 +42,7 @@ const GridRestra = async () => {
         className="grid grid-cols-3 gap-x-10 gap-y-10 justify-center"
         style={{ userSelect: 'none' }}
       >
-        {data.map((restaurants: restaurants) => (
+        {restaurants.map((restaurants: restaurants) => (
           <CardRestra
             key={restaurants.id}
             image={restaurants.imageurl}

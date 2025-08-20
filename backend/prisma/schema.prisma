@@ -151,6 +151,7 @@ model restaurants {
   cities             cities?              @relation(fields: [city_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   users              users?               @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   carts   carts[]   @relation("RestaurantCarts")
+  reviews reviews[]
 
 }
 
@@ -185,12 +186,14 @@ model reviews {
   id        Int     @id @default(autoincrement())
   user_id   Int
   order_id  Int
+  restaurant_id Int
   review    String?
   rating    Int      // rating 1–5 (or any scale you want)
 
   // Relations
   user   users  @relation(fields: [user_id], references: [id])
   order  orders @relation(fields: [order_id], references: [id])
+  restaurant restaurants  @relation(fields: [restaurant_id], references: [id])
 }
 
 

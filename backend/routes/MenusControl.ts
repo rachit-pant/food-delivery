@@ -9,6 +9,7 @@ const PatchMenus = require('../controllers/menu/PatchMenus');
 const {
   getItemsReviews,
   postItemReviews,
+  showReviews,
 } = require('../controllers/functions/reviews');
 router.post('/', authorize, OwnerAdminAcess, MenusAdd);
 router.get('/', GetMenus);
@@ -20,5 +21,7 @@ router.delete('/:menuId', authorize, OwnerAdminAcess, DeleteMenus);
 router.get('/reviews', authorize, getItemsReviews);
 
 router.post('/reviews', authorize, postItemReviews);
+
+router.get('/reviews/all', showReviews);
 
 module.exports = router;

@@ -3,13 +3,21 @@ import { Request, Response } from 'express';
 import asyncHandler from 'express-async-handler';
 const prisma = new PrismaClient();
 const GetRestro = asyncHandler(async (req: Request, res: Response) => {
-  const AllRes = await prisma.restaurants.findMany();
-  if (!AllRes) {
-    const error = new Error('cant get all res');
-    (error as any).statusCode = 400;
-    throw error;
+  const filter = req.query.filter as string;
+  if (!filter || filter === 'None') {
+    const allRes = await prisma.restaurants.findMany();
+    res.status(200).json(allRes);
+    return;
   }
-  res.status(200).json(AllRes);
+  const rating = Number(filter);
+  const filteredRes = await prisma.restaurants.findMany({
+    where: {
+      rating: {
+        gte: rating,
+      },
+    },
+  });
+  res.status(200).json(filteredRes);
 });
 const GetPer = asyncHandler(async (req: Request, res: Response) => {
   const id = Number(req.params.restaurantId);

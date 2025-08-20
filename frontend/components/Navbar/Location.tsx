@@ -1,13 +1,15 @@
 'use client';
 
 import { api } from '@/api/api';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import CountryPopup from './CountryPopup';
-import { Input } from '../ui/input';
+import { Input } from '@/components/ui/input';
+import { MapPin } from 'lucide-react';
 
 const Location = () => {
   const [OriginalCountry, setOriginalCountry] = useState('');
   const [Country, setCountry] = useState('');
+
   function selectedCountry(data: string) {
     setOriginalCountry(data);
     setCountry(data);
@@ -24,16 +26,19 @@ const Location = () => {
   }, []);
 
   return (
-    <div className="p-1 relative">
-      <Input
-        type="text"
-        placeholder="country"
-        value={Country}
-        onChange={(e) => setCountry(e.target.value)}
-        className="w-30 p-2 rounded-lg rounded-r-none border-r-0 shadow-md"
-      />
+    <div className="relative">
+      <div className="relative">
+        <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input
+          type="text"
+          placeholder="Enter location"
+          value={Country}
+          onChange={(e) => setCountry(e.target.value)}
+          className="pl-10 h-11 w-48 bg-input border-border shadow-sm focus:shadow-md transition-shadow rounded-l-lg border-r-0 rounded-r-none"
+        />
+      </div>
       {Country !== OriginalCountry && (
-        <div className="absolute top-full mt-1  w-full">
+        <div className="absolute top-full mt-2 w-full z-50">
           <CountryPopup change={selectedCountry} country={Country} />
         </div>
       )}
