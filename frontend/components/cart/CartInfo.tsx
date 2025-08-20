@@ -1,5 +1,9 @@
 'use client';
 import { api } from '@/api/api';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+
+import { ShoppingCart } from 'lucide-react';
+import Link from 'next/link';
 import { handleError } from '@/lib/handleError';
 import { useRouter } from 'next/navigation';
 import {
@@ -11,8 +15,11 @@ import {
 } from '@/components/ui/select';
 import { useEffect, useState } from 'react';
 import { SelectGroup } from '@radix-ui/react-select';
-import Card from '../orders/Card';
+
 import Image from 'next/image';
+import { setOrders } from './OrdersSlice';
+import { Button } from '../ui/button';
+import { useAppDispatch } from '@/lib/hooks';
 type data = {
   id: number;
   quantity: number;
@@ -41,6 +48,7 @@ type address = {
 };
 const CartInfo = () => {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const [cartInfo, setcartInfo] = useState<data[]>([]);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(true);
@@ -88,17 +96,68 @@ const CartInfo = () => {
       throw err;
     }
   }
+
+  const TotalAmount = cartInfo.reduce(
+    (sum, item) => sum + item.menu_variants.price * item.quantity,
+    0
+  );
+  if (!cartInfo || cartInfo.length === 0) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <Card className="w-full max-w-md text-center shadow-lg rounded-2xl p-6">
+          <CardHeader>
+            <div className="flex justify-center mb-4">
+              <ShoppingCart className="h-12 w-12 text-gray-400" />
+            </div>
+            <CardTitle className="text-xl font-semibold">
+              Your cart is empty
+            </CardTitle>
+          </CardHeader>
+
+          <CardContent>
+            <p className="text-gray-500 mb-6">
+              Looks like you haven’t added anything yet. Start exploring our
+              menu!
+            </p>
+            <Link href="/restaurant">
+              <Button size="lg" className="rounded-xl">
+                Browse Menu
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  const resId: number = cartInfo[0].restaurant_id;
+  async function handleCheckout() {
+    const payload = {
+      addressId: Number(storage),
+      amount: TotalAmount,
+      payment: payment,
+      payment_status: paymentstatus,
+      restaurant_id: resId,
+    };
+    dispatch(setOrders(payload));
+    localStorage.setItem('orderPayload', JSON.stringify(payload));
+    try {
+      const res = (await api.post('/auths/create-payment-intent')).data;
+      router.push(res.url);
+    } catch (error) {
+      const err = handleError(error);
+      console.log(err);
+      throw err;
+    }
+  }
   async function Orders() {
     try {
       const res = await api.post('/orders', {
         addressId: Number(storage),
-        amount: cartInfo.reduce(
-          (sum, item) => sum + item.menu_variants.price * item.quantity,
-          0
-        ),
+        amount: TotalAmount,
         payment: payment,
         payment_status: paymentstatus,
-        restaurant_id: cartInfo[0].restaurant_id,
+        restaurant_id: resId,
       });
       console.log('success', res);
       router.push('/orders');
@@ -303,8 +362,13 @@ const CartInfo = () => {
           </div>
 
           {payment === 'Debit_Credit_Card' && (
-            <div className="mb-8">
-              <Card cart={cartInfo} onPaymentSuccess={Orders} />
+            <div>
+              <Button
+                className="w-full h-14 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-300 pulse-glow mb-8"
+                onClick={handleCheckout}
+              >
+                Checkout
+              </Button>
             </div>
           )}
 

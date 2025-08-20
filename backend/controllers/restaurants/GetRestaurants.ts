@@ -4,8 +4,20 @@ import asyncHandler from 'express-async-handler';
 const prisma = new PrismaClient();
 const GetRestro = asyncHandler(async (req: Request, res: Response) => {
   const filter = req.query.filter as string;
+  const country = req.query.country as string;
+
   if (!filter || filter === 'None') {
-    const allRes = await prisma.restaurants.findMany();
+    const allRes = await prisma.restaurants.findMany({
+      where: {
+        cities: {
+          states: {
+            countries: {
+              country_name: country,
+            },
+          },
+        },
+      },
+    });
     res.status(200).json(allRes);
     return;
   }
@@ -14,6 +26,13 @@ const GetRestro = asyncHandler(async (req: Request, res: Response) => {
     where: {
       rating: {
         gte: rating,
+      },
+      cities: {
+        states: {
+          countries: {
+            country_name: country,
+          },
+        },
       },
     },
   });

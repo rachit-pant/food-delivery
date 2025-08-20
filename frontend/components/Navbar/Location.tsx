@@ -5,15 +5,20 @@ import { useEffect, useState } from 'react';
 import CountryPopup from './CountryPopup';
 import { Input } from '@/components/ui/input';
 import { MapPin } from 'lucide-react';
-
+import { useAppDispatch } from '@/lib/hooks';
+import { setCountry as DispatchCountry } from './LocationSlice';
 const Location = () => {
   const [OriginalCountry, setOriginalCountry] = useState('');
   const [Country, setCountry] = useState('');
-
+  const dispatch = useAppDispatch();
   function selectedCountry(data: string) {
     setOriginalCountry(data);
     setCountry(data);
   }
+
+  useEffect(() => {
+    dispatch(DispatchCountry(OriginalCountry));
+  }, [OriginalCountry, dispatch]);
 
   useEffect(() => {
     async function fetchData() {

@@ -23,12 +23,15 @@ const GridRestaurant = () => {
   const [loading, setLoading] = useState(true);
 
   const filter = useAppSelector((state) => state.filter.filterName);
+  const country = useAppSelector((state) => state.country.countryName);
 
   useEffect(() => {
     async function fetchData() {
       try {
         setLoading(true);
-        const data = (await api.get(`/restaurants?filter=${filter}`)).data;
+        const data = (
+          await api.get(`/restaurants?filter=${filter}&country=${country}`)
+        ).data;
         setRestaurants(data);
       } catch (error) {
         const err = handleError(error);
@@ -39,7 +42,7 @@ const GridRestaurant = () => {
       }
     }
     fetchData();
-  }, [filter]);
+  }, [filter, country]);
 
   return (
     <div className="max-w-7xl mx-auto px-4">
