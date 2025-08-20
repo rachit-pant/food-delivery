@@ -3,18 +3,26 @@ import GridRestra from '@/components/GridRestro/GridRestra';
 import PopularDishes from '@/components/GridRestro/PopularDishes';
 import TopBrands from '@/components/GridRestro/TopBrands';
 
-import React from 'react';
-
 const Restaurant = () => {
   return (
-    <div className="flex flex-col ">
-      <div className="w-full max-w-[1100px] flex items-center justify-center  gap-4 bg-white p-6 rounded-xl  md:ml-18">
-        <Filter />
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-background">
+      <div className="container mx-auto px-4 py-8 space-y-12">
+        <div className="flex justify-center">
+          <div className="backdrop-blur-sm bg-card/80 border border-border/50 rounded-2xl p-6 shadow-xl">
+            <Filter />
+          </div>
+        </div>
 
-      <PopularDishes />
-      <TopBrands />
-      <GridRestra />
+        <div className="space-y-16">
+          <PopularDishes />
+          <div className="border-t border-border/30 pt-16">
+            <TopBrands />
+          </div>
+          <div className="border-t border-border/30 pt-16">
+            <GridRestra />
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

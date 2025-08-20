@@ -1,75 +1,98 @@
-import React from 'react';
+import { FaCrown, FaStar } from 'react-icons/fa';
 import HorizaontalCarousel from './HorizaontalCarousel';
 
 const TopBrands = () => {
   const arr = [
     {
       id: 1,
-      name: 'kanha',
+      name: "McDonald's",
       image: '/images/kanha',
     },
     {
       id: 2,
-      name: 'Bread',
+      name: 'KFC',
       image: '/images/kanha',
     },
     {
       id: 3,
-      name: 'Paneer',
+      name: "Domino's",
       image: '/images/kanha',
     },
     {
       id: 4,
-      name: 'Butter',
+      name: 'Subway',
       image: '/images/kanha',
     },
     {
       id: 5,
-      name: 'Masala',
+      name: 'Pizza Hut',
       image: '/images/kanha',
     },
     {
       id: 6,
-      name: 'Biryani',
+      name: 'Starbucks',
       image: '/images/kanha',
     },
     {
       id: 7,
-      name: 'Dal',
+      name: 'Taco Bell',
       image: '/images/kanha',
     },
     {
       id: 8,
-      name: 'Chapati',
+      name: 'Burger King',
       image: '/images/kanha',
     },
     {
       id: 10,
-      name: 'Shake',
+      name: "Dunkin'",
       image: '/images/kanha',
     },
     {
       id: 11,
-      name: 'Choclate',
+      name: 'Baskin Robbins',
       image: '/images/kanha',
     },
     {
       id: 12,
-      name: 'Butter',
+      name: "Haldiram's",
       image: '/images/kanha',
     },
   ];
+
   return (
-    <div className=" flex justify-center p-5 mb-10">
-      <div className="flex flex-col gap-10">
-        <h1 className="text-3xl font-bold text-gray-800 mb-4 sel">
-          Top Brands
-        </h1>
-        <div className="w-5xl ">
+    <section className="py-12">
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="text-center mb-12">
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <div className="p-3 bg-gradient-to-br from-yellow-400/20 to-orange-500/20 rounded-full">
+              <FaCrown className="w-6 h-6 text-yellow-600" />
+            </div>
+            <h2 className="text-3xl md:text-4xl font-bold gradient-text">
+              Top Brands
+            </h2>
+          </div>
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+            Order from your favorite restaurants and discover new premium brands
+          </p>
+
+          <div className="flex items-center justify-center gap-6 mt-6 text-sm text-muted-foreground">
+            <div className="flex items-center gap-1">
+              <FaStar className="w-4 h-4 text-yellow-500" />
+              <span>4.5+ Rated</span>
+            </div>
+            <div className="w-1 h-1 bg-muted-foreground rounded-full"></div>
+            <span>Fast Delivery</span>
+            <div className="w-1 h-1 bg-muted-foreground rounded-full"></div>
+            <span>Premium Quality</span>
+          </div>
+        </div>
+
+        <div className="relative bg-gradient-to-r from-background via-card/30 to-background rounded-2xl p-6 border border-border/30 shadow-sm">
           <HorizaontalCarousel items={arr} />
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 

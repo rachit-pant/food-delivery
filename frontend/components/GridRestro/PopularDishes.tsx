@@ -1,4 +1,4 @@
-import React from 'react';
+import { FaFire } from 'react-icons/fa';
 import HorizaontalCarousel from './HorizaontalCarousel';
 
 const PopularDishes = () => {
@@ -10,7 +10,7 @@ const PopularDishes = () => {
     },
     {
       id: 2,
-      name: 'Bread',
+      name: 'Burger',
       image: '/images/pizza',
     },
     {
@@ -20,7 +20,7 @@ const PopularDishes = () => {
     },
     {
       id: 4,
-      name: 'Butter',
+      name: 'Biryani',
       image: '/images/pizza',
     },
     {
@@ -30,7 +30,7 @@ const PopularDishes = () => {
     },
     {
       id: 6,
-      name: 'Biryani',
+      name: 'Pasta',
       image: '/images/pizza',
     },
     {
@@ -40,7 +40,7 @@ const PopularDishes = () => {
     },
     {
       id: 8,
-      name: 'Chapati',
+      name: 'Noodles',
       image: '/images/pizza',
     },
     {
@@ -50,26 +50,44 @@ const PopularDishes = () => {
     },
     {
       id: 11,
-      name: 'Choclate',
+      name: 'Chocolate',
       image: '/images/pizza',
     },
     {
       id: 12,
-      name: 'Butter',
+      name: 'Ice Cream',
       image: '/images/pizza',
     },
   ];
+
   return (
-    <div className=" flex justify-center bg-gray-100 p-5">
-      <div className="flex flex-col gap-10">
-        <h1 className="text-3xl font-bold text-gray-800 mb-4">
-          Inspiration for Your First Order
-        </h1>
-        <div className="w-5xl ">
-          <HorizaontalCarousel items={arr} />
+    <section className="py-12">
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-muted/30 via-background to-muted/20 p-8 md:p-12">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -translate-y-32 translate-x-32"></div>
+        <div className="absolute bottom-0 left-0 w-48 h-48 bg-secondary/5 rounded-full blur-3xl translate-y-24 -translate-x-24"></div>
+
+        <div className="relative z-10 max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <div className="p-3 bg-primary/10 rounded-full">
+                <FaFire className="w-6 h-6 text-primary" />
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold gradient-text">
+                Whats on your mind?
+              </h2>
+            </div>
+            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+              Discover trending dishes and get inspiration for your next
+              delicious order
+            </p>
+          </div>
+
+          <div className="relative">
+            <HorizaontalCarousel items={arr} />
+          </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 

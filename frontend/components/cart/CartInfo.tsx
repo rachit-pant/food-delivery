@@ -2,7 +2,6 @@
 import { api } from '@/api/api';
 import { handleError } from '@/lib/handleError';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
 import {
   Select,
   SelectContent,
@@ -10,9 +9,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { SelectGroup } from '@radix-ui/react-select';
 import Card from '../orders/Card';
+import Image from 'next/image';
 type data = {
   id: number;
   quantity: number;
@@ -109,134 +109,250 @@ const CartInfo = () => {
     }
   }
   if (loading) {
-    return <p className="text-gray-500 text-center mt-10">Loading cart...</p>;
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-card to-muted/30 flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin mx-auto"></div>
+          <p className="text-muted-foreground text-lg">Loading your cart...</p>
+        </div>
+      </div>
+    );
   }
 
   if (cartInfo.length === 0) {
     return (
-      <p className="text-gray-500 text-center mt-10">Your cart is empty.</p>
+      <div className="min-h-screen bg-gradient-to-br from-background via-card to-muted/30 flex items-center justify-center">
+        <div className="text-center space-y-6">
+          <div className="w-32 h-32 mx-auto bg-muted rounded-full flex items-center justify-center">
+            <svg
+              className="w-16 h-16 text-muted-foreground"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m0 0h8"
+              />
+            </svg>
+          </div>
+          <div>
+            <h2 className="text-2xl font-bold gradient-text mb-2">
+              Your cart is empty
+            </h2>
+            <p className="text-muted-foreground">
+              Add some delicious items to get started!
+            </p>
+          </div>
+        </div>
+      </div>
     );
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-gray-50 rounded-lg shadow-lg">
-      <h1 className="text-3xl font-bold mb-6 text-gray-800 text-center">
-        🛒 Your Cart
-      </h1>
-
-      <div className="space-y-4">
-        {cartInfo?.map((items) => (
-          <div
-            key={items.id}
-            className="flex items-center gap-4 border rounded-lg p-4 shadow-sm bg-white hover:shadow-md transition-shadow duration-200"
-          >
-            {/* Image */}
-            <div className="relative w-24 h-24 flex-shrink-0 rounded overflow-hidden">
-              <Image
-                src={`http://localhost:5000${items.menus.image_url}`}
-                alt={items.menus.item_name}
-                fill
-                className="object-cover"
-                sizes="96px"
+    <div className="min-h-screen bg-gradient-to-br from-background via-card to-muted/30 p-4">
+      <div className="max-w-4xl mx-auto space-y-8">
+        <div className="text-center space-y-4 py-8">
+          <div className="w-20 h-20 mx-auto bg-primary/10 rounded-full flex items-center justify-center mb-4">
+            <svg
+              className="w-10 h-10 text-primary"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m0 0h8"
               />
+            </svg>
+          </div>
+          <h1 className="text-4xl font-bold gradient-text">Your Cart</h1>
+          <p className="text-muted-foreground text-lg">
+            Review your delicious selections
+          </p>
+        </div>
+
+        <div className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-6 shadow-lg">
+          <div className="space-y-4 mb-8">
+            {cartInfo?.map((items) => (
+              <div
+                key={items.id}
+                className="flex items-center gap-6 p-4 bg-background/50 rounded-xl border border-border/30 hover:shadow-md transition-all duration-300"
+              >
+                <div className="relative w-20 h-20 flex-shrink-0 rounded-xl overflow-hidden shadow-md">
+                  <Image
+                    src={`http://localhost:5000${items.menus.image_url}`}
+                    alt={items.menus.item_name}
+                    width={400}
+                    height={300}
+                    className="object-cover w-full h-full"
+                  />
+                </div>
+
+                <div className="flex-1 space-y-1">
+                  <h3 className="text-lg font-bold text-card-foreground">
+                    {items.menus.item_name}
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    {items.menu_variants.variety_name}
+                  </p>
+                  <p className="text-lg font-bold text-primary">
+                    ${(items.menu_variants.price * items.quantity).toFixed(2)}
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-3 bg-muted/30 rounded-xl p-2">
+                  <button
+                    className="w-10 h-10 bg-background border border-border rounded-lg hover:bg-muted transition-colors duration-200 flex items-center justify-center font-bold text-lg"
+                    onClick={() => updateQuantity(items.quantity - 1, items.id)}
+                  >
+                    −
+                  </button>
+                  <span className="min-w-[2rem] text-center text-lg font-bold text-card-foreground">
+                    {items.quantity}
+                  </span>
+                  <button
+                    className="w-10 h-10 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors duration-200 flex items-center justify-center font-bold text-lg"
+                    onClick={() => updateQuantity(items.quantity + 1, items.id)}
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="space-y-6 mb-8">
+            <div className="space-y-4">
+              <label className="text-sm font-semibold text-card-foreground flex items-center gap-2">
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                  />
+                </svg>
+                Delivery Address
+              </label>
+              <Select onValueChange={(value) => setStorage(value)}>
+                <SelectTrigger className="h-12 bg-background border-border/50 rounded-xl">
+                  <SelectValue placeholder="Select delivery address" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    {address.map((details) => (
+                      <SelectItem key={details.id} value={String(details.id)}>
+                        {details.address}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
             </div>
 
-            {/* Item details */}
-            <div className="flex-1">
-              <h2 className="text-lg font-semibold text-gray-800">
-                {items.menus.item_name}
-              </h2>
-              <p className="text-sm text-gray-500">
-                {items.menu_variants.variety_name}
-              </p>
-              <p className="mt-1 text-lg font-bold text-green-600">
-                ${(items.menu_variants.price * items.quantity).toFixed(2)}
-              </p>
-            </div>
-            {/* Quantity controls */}
-            <div className="flex items-center gap-2">
-              <button
-                className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 text-lg font-bold"
-                onClick={() => updateQuantity(items.quantity - 1, items.id)}
+            <div className="space-y-4">
+              <label className="text-sm font-semibold text-card-foreground flex items-center gap-2">
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+                  />
+                </svg>
+                Payment Method
+              </label>
+              <Select
+                onValueChange={(value) => {
+                  if (value === 'COD') {
+                    setPaymentstatus('not_paid');
+                  } else {
+                    setPaymentstatus('paid');
+                  }
+                  setPayment(value);
+                }}
               >
-                −
-              </button>
-              <span className="min-w-[2rem] text-center text-lg font-semibold">
-                {items.quantity}
-              </span>
-              <button
-                className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 text-lg font-bold"
-                onClick={() => updateQuantity(items.quantity + 1, items.id)}
-              >
-                +
-              </button>
+                <SelectTrigger className="h-12 bg-background border-border/50 rounded-xl">
+                  <SelectValue placeholder="Choose payment method" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectItem value="COD">💵 Cash On Delivery</SelectItem>
+                    <SelectItem value="Debit_Credit_Card">
+                      💳 Card Payment
+                    </SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
             </div>
           </div>
-        ))}
-        <div>
-          <Select onValueChange={(value) => setStorage(value)}>
-            <SelectTrigger>
-              <SelectValue placeholder="Address" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                {address.map((details) => (
-                  <SelectItem key={details.id} value={String(details.id)}>
-                    {details.address}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-          <Select
-            onValueChange={(value) => {
-              if (value === 'COD') {
-                setPaymentstatus('not_paid');
-              } else {
-                setPaymentstatus('paid');
-              }
-              setPayment(value);
-            }}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Payment Method" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value="COD">Cash On Delivery</SelectItem>
-                <SelectItem value="Debit_Credit_Card">Card</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
-        {payment === 'Debit_Credit_Card' && (
-          <Card cart={cartInfo} onPaymentSuccess={Orders} />
-        )}
-        {payment === 'COD' && (
-          <button
-            className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold shadow-md transition-colors duration-200"
-            onClick={Orders}
-          >
-            Place Order
-          </button>
-        )}
 
-        <div className="mt-6 p-4 border-t flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-          <span className="text-lg font-semibold text-gray-700">
-            Total:
-            <span className="ml-2 text-2xl font-bold text-green-600">
-              $
-              {cartInfo
-                .reduce(
-                  (sum, item) => sum + item.menu_variants.price * item.quantity,
-                  0
-                )
-                .toFixed(2)}
-            </span>
-          </span>
+          {payment === 'Debit_Credit_Card' && (
+            <div className="mb-8">
+              <Card cart={cartInfo} onPaymentSuccess={Orders} />
+            </div>
+          )}
+
+          {payment === 'COD' && (
+            <button
+              className="w-full h-14 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-300 pulse-glow mb-8"
+              onClick={Orders}
+            >
+              Place Order - Cash on Delivery
+            </button>
+          )}
+
+          <div className="bg-gradient-to-r from-primary/5 to-secondary/5 rounded-xl p-6 border border-primary/20">
+            <div className="flex items-center justify-between">
+              <div className="space-y-1">
+                <p className="text-sm text-muted-foreground">Total Amount</p>
+                <p className="text-3xl font-bold gradient-text">
+                  $
+                  {cartInfo
+                    .reduce(
+                      (sum, item) =>
+                        sum + item.menu_variants.price * item.quantity,
+                      0
+                    )
+                    .toFixed(2)}
+                </p>
+              </div>
+              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
+                <svg
+                  className="w-8 h-8 text-primary"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
+                  />
+                </svg>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   );
 };
+
 export default CartInfo;
