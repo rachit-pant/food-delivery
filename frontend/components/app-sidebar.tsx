@@ -26,6 +26,11 @@ const items = [
   {
     title: 'Orders',
     url: '/user/orders',
+    icon: Search,
+  },
+  {
+    title: 'Merchant',
+    url: '/user/restaurant',
     icon: Calendar,
   },
 ];

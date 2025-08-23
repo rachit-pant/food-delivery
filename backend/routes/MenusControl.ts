@@ -6,12 +6,28 @@ const authorize = require('../middleware/authorize');
 const GetMenus = require('../controllers/menu/GetMenus');
 const DeleteMenus = require('../controllers/menu/DeleteMenus');
 const PatchMenus = require('../controllers/menu/PatchMenus');
+const multer = require('multer');
+const diskStorage = require('multer').diskStorage;
+const path = require('path');
 const {
   getItemsReviews,
   postItemReviews,
   showReviews,
 } = require('../controllers/functions/reviews');
-router.post('/', authorize, OwnerAdminAcess, MenusAdd);
+const storage = diskStorage({
+  destination: function (
+    req: Request,
+    file: Express.Multer.File,
+    cb: Function
+  ) {
+    cb(null, path.join(__dirname, '..', 'images'));
+  },
+  filename: function (req: Request, file: Express.Multer.File, cb: Function) {
+    cb(null, file.originalname);
+  },
+});
+const upload = multer({ storage });
+router.post('/', authorize, OwnerAdminAcess, upload.single('image'), MenusAdd);
 router.get('/', GetMenus);
 
 router.patch('/:menuId', authorize, OwnerAdminAcess, PatchMenus);

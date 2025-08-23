@@ -1,4 +1,3 @@
-import FooterMain from '@/components/UserPanel/FooterMain';
 import Profile from '@/components/UserPanel/Profile';
 
 import React from 'react';

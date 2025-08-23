@@ -16,7 +16,7 @@ declare global {
 }
 const DAR = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const ResId = Number(req.params.id);
+    const ResId = Number(req.params.restaurantId);
     const ResData = await prisma.restaurants.findUnique({
       where: {
         id: ResId,

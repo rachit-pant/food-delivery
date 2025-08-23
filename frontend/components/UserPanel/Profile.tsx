@@ -1,7 +1,7 @@
 'use client';
 import { api } from '@/api/api';
 import { handleError } from '@/lib/handleError';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '../ui/button';
 import { useRouter } from 'next/navigation';
 import {
@@ -13,13 +13,13 @@ import {
   FormMessage,
 } from '../ui/form';
 import { Input } from '../ui/input';
-
 import { TextShimmer } from '../ui/text-shimmer';
-import { SubmitHandler, useForm } from 'react-hook-form';
-import z from 'zod';
+import { type SubmitHandler, useForm } from 'react-hook-form';
+import type z from 'zod';
 import { userUpdateSchema } from '@/schema/userUpdateSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { userUpdate } from '@/api/userUpdate';
+import { User, Mail, Phone, Lock, Edit3, LogOut, Shield } from 'lucide-react';
 
 type Data = {
   full_name: string;
@@ -43,6 +43,7 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [edit, setEdit] = useState(false);
   const router = useRouter();
+
   useEffect(() => {
     async function fetchProfile() {
       try {
@@ -57,6 +58,7 @@ const Profile = () => {
     }
     fetchProfile();
   }, []);
+
   async function handleLogout() {
     try {
       await api.post('/auths/logout', {});
@@ -70,27 +72,37 @@ const Profile = () => {
 
   if (loading) {
     return (
-      <section className="bg-gradient-to-r from-blue-50 to-purple-50 py-8">
-        <div className="max-w-6xl mx-auto px-4 text-center text-gray-500 animate-pulse">
-          Loading profile...
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-red-50 to-pink-50 flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="w-16 h-16 border-4 border-orange-200 border-t-orange-500 rounded-full animate-spin mx-auto"></div>
+          <p className="text-gray-600 font-medium">Loading your profile...</p>
         </div>
-      </section>
+      </div>
     );
   }
 
   if (!profile) {
     return (
-      <section className="bg-gradient-to-r from-blue-50 to-purple-50 py-8">
-        <div className="max-w-6xl mx-auto px-4 text-center">
-          <p className="text-gray-500 mb-4">You are not logged in.</p>
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-red-50 to-pink-50 flex items-center justify-center">
+        <div className="bg-white rounded-2xl shadow-xl p-8 text-center max-w-md mx-4">
+          <div className="w-20 h-20 bg-gradient-to-r from-orange-400 to-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
+            <User className="w-10 h-10 text-white" />
+          </div>
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">
+            Access Required
+          </h2>
+          <p className="text-gray-600 mb-6">
+            Please log in to view your profile
+          </p>
           <a
             href="/auth/login"
-            className="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-md"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-xl hover:from-orange-600 hover:to-red-600 transition-all duration-200 shadow-lg hover:shadow-xl"
           >
+            <LogOut className="w-4 h-4" />
             Login
           </a>
         </div>
-      </section>
+      </div>
     );
   }
 
@@ -111,167 +123,230 @@ const Profile = () => {
   };
 
   return (
-    <div className="min-h-screen p-10">
-      {/* Profile Header */}
-      <section className="py-10">
-        <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center md:items-center justify-between gap-6 bg-white p-6 rounded-xl shadow-md">
-          <div className="flex items-center gap-5">
-            <div className="h-20 w-20 rounded-full bg-amber-700 flex items-center justify-center text-3xl font-bold text-blue-600 shadow-md">
-              {profile.full_name.charAt(0)}
-            </div>
-            <div>
-              <h1 className="text-2xl font-semibold">{profile.full_name}</h1>
-              <p className="text-gray-700">{profile.email}</p>
-            </div>
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-red-50 to-pink-50 p-4 md:p-8">
+      <div className="max-w-6xl mx-auto mb-8">
+        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+          <div className="bg-gradient-to-r from-orange-500 to-red-500 h-32 relative">
+            <div className="absolute inset-0 bg-black/10"></div>
           </div>
+          <div className="relative px-8 pb-8">
+            <div className="flex flex-col md:flex-row items-center md:items-end gap-6 -mt-16">
+              <div className="relative">
+                <div className="w-32 h-32 rounded-full bg-gradient-to-r from-orange-400 to-red-500 flex items-center justify-center text-4xl font-bold text-white shadow-2xl border-4 border-white">
+                  {profile.full_name.charAt(0)}
+                </div>
+                <div className="absolute -bottom-2 -right-2 bg-green-500 w-8 h-8 rounded-full border-4 border-white flex items-center justify-center">
+                  <div className="w-2 h-2 bg-white rounded-full"></div>
+                </div>
+              </div>
 
-          {/* Actions */}
-          <div className="flex gap-3 mt-4 md:mt-0">
-            <Button
-              onClick={handleLogout}
-              className="px-5 py-2 bg-red-500 text-white font-medium rounded-lg hover:bg-red-600 transition"
-            >
-              Logout
-            </Button>
+              <div className="flex-1 text-center md:text-left">
+                <h1 className="text-3xl font-bold text-gray-800 mb-2">
+                  {profile.full_name}
+                </h1>
+                <div className="flex items-center justify-center md:justify-start gap-2 text-gray-600 mb-2">
+                  <Mail className="w-4 h-4" />
+                  <span>{profile.email}</span>
+                </div>
+                <div className="flex items-center justify-center md:justify-start gap-2">
+                  <Shield className="w-4 h-4 text-orange-500" />
+                  <span className="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-sm font-medium">
+                    {profile.user_roles?.role_name || 'User'}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                <Button
+                  onClick={handleLogout}
+                  variant="outline"
+                  className="flex items-center gap-2 border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 bg-transparent"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Logout
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
-      </section>
+      </div>
 
-      {/* Form Section */}
-      <section className="max-w-6xl mx-auto px-4">
+      <div className="max-w-6xl mx-auto">
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="bg-white shadow-lg rounded-2xl p-8 w-full max-w-6xl mx-auto space-y-8"
+            className="bg-white shadow-xl rounded-2xl overflow-hidden"
           >
-            <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-semibold text-gray-800">
-                Update Profile
-              </h2>
-              <Button
-                type="button"
-                className="w-20 rounded-xl"
-                onClick={() => setEdit((prev) => !prev)}
-              >
-                {edit ? 'Cancel' : 'Edit'}
-              </Button>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mt-10">
-              {/* Left Side */}
-              <div className="flex flex-col space-y-15">
-                <FormField
-                  control={form.control}
-                  name="fullName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>First Name</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="text"
-                          {...field}
-                          disabled={!edit}
-                          placeholder={profile.full_name}
-                          className="mt-3 w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-amber-500 focus:outline-none h-10"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>E-mail</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="email"
-                          {...field}
-                          disabled={!edit}
-                          placeholder={profile.email}
-                          className="mt-3 w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-amber-500 focus:outline-none h-10 mb-10"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              {/* Right Side */}
-              <div className="flex flex-col space-y-15">
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Password</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="password"
-                          {...field}
-                          disabled={!edit}
-                          placeholder="Password"
-                          className="mt-3 w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-amber-500 focus:outline-none h-10"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="phoneNumber"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Phone Number</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="tel"
-                          {...field}
-                          disabled={!edit}
-                          placeholder="Number"
-                          className="mt-3 w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-amber-500 focus:outline-none h-10"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </div>
-
-            {form.formState.errors.root && (
-              <FormMessage className="flex justify-center text-red-500">
-                {form.formState.errors.root.message}
-              </FormMessage>
-            )}
-
-            {/* Submit Button */}
-            {edit && (
-              <div className="flex justify-center">
+            <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-6 border-b border-gray-200">
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-gradient-to-r from-orange-400 to-red-500 rounded-lg flex items-center justify-center">
+                    <Edit3 className="w-5 h-5 text-white" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-gray-800">
+                    Update Profile
+                  </h2>
+                </div>
                 <Button
-                  type="submit"
-                  className="w-30 py-3 rounded-xl bg-amber-500 text-white font-semibold shadow hover:bg-amber-600 transition -mt-5"
-                  disabled={form.formState.isSubmitting}
+                  type="button"
+                  variant={edit ? 'outline' : 'default'}
+                  className={`flex items-center gap-2 ${
+                    edit
+                      ? 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                      : 'bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600'
+                  }`}
+                  onClick={() => setEdit((prev) => !prev)}
                 >
-                  {form.formState.isSubmitting ? (
-                    <TextShimmer duration={1} spread={1}>
-                      Please wait
-                    </TextShimmer>
-                  ) : (
-                    'Save Changes'
-                  )}
+                  <Edit3 className="w-4 h-4" />
+                  {edit ? 'Cancel' : 'Edit'}
                 </Button>
               </div>
-            )}
+            </div>
+
+            <div className="p-8">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div className="space-y-6">
+                  <FormField
+                    control={form.control}
+                    name="fullName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-2 text-gray-700 font-medium">
+                          <User className="w-4 h-4 text-orange-500" />
+                          Full Name
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            type="text"
+                            {...field}
+                            disabled={!edit}
+                            placeholder={profile.full_name}
+                            className={`h-12 rounded-xl border-2 transition-all duration-200 ${
+                              edit
+                                ? 'border-gray-200 focus:border-orange-400 focus:ring-2 focus:ring-orange-100'
+                                : 'border-gray-100 bg-gray-50'
+                            }`}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-2 text-gray-700 font-medium">
+                          <Mail className="w-4 h-4 text-orange-500" />
+                          Email Address
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            type="email"
+                            {...field}
+                            disabled={!edit}
+                            placeholder={profile.email}
+                            className={`h-12 rounded-xl border-2 transition-all duration-200 ${
+                              edit
+                                ? 'border-gray-200 focus:border-orange-400 focus:ring-2 focus:ring-orange-100'
+                                : 'border-gray-100 bg-gray-50'
+                            }`}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="space-y-6">
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-2 text-gray-700 font-medium">
+                          <Lock className="w-4 h-4 text-orange-500" />
+                          Password
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            type="password"
+                            {...field}
+                            disabled={!edit}
+                            placeholder="Enter new password"
+                            className={`h-12 rounded-xl border-2 transition-all duration-200 ${
+                              edit
+                                ? 'border-gray-200 focus:border-orange-400 focus:ring-2 focus:ring-orange-100'
+                                : 'border-gray-100 bg-gray-50'
+                            }`}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="phoneNumber"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-2 text-gray-700 font-medium">
+                          <Phone className="w-4 h-4 text-orange-500" />
+                          Phone Number
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            type="tel"
+                            {...field}
+                            disabled={!edit}
+                            placeholder="Enter phone number"
+                            className={`h-12 rounded-xl border-2 transition-all duration-200 ${
+                              edit
+                                ? 'border-gray-200 focus:border-orange-400 focus:ring-2 focus:ring-orange-100'
+                                : 'border-gray-100 bg-gray-50'
+                            }`}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+
+              {form.formState.errors.root && (
+                <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-xl">
+                  <FormMessage className="text-red-600 text-center">
+                    {form.formState.errors.root.message}
+                  </FormMessage>
+                </div>
+              )}
+
+              {edit && (
+                <div className="flex justify-center mt-8 pt-6 border-t border-gray-200">
+                  <Button
+                    type="submit"
+                    className="px-8 py-3 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                    disabled={form.formState.isSubmitting}
+                  >
+                    {form.formState.isSubmitting ? (
+                      <TextShimmer duration={1} spread={1}>
+                        Saving Changes...
+                      </TextShimmer>
+                    ) : (
+                      'Save Changes'
+                    )}
+                  </Button>
+                </div>
+              )}
+            </div>
           </form>
         </Form>
-      </section>
+      </div>
     </div>
   );
 };
