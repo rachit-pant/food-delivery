@@ -81,7 +81,6 @@ const MenusList = ({ restaurantId }: { restaurantId: string }) => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6">
       <div className="max-w-6xl mx-auto space-y-8">
-        {/* Header Section */}
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-4xl font-bold text-slate-900 mb-2">
@@ -96,12 +95,9 @@ const MenusList = ({ restaurantId }: { restaurantId: string }) => {
             Add Menu Item
           </Button>
         </div>
-
-        {/* Menu Categories */}
         <div className="space-y-8">
           {Object.entries(menus).map(([categoryName, items]) => (
             <div key={categoryName} className="space-y-4">
-              {/* Category Header */}
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-gradient-to-r from-orange-400 to-red-500 rounded-lg flex items-center justify-center">
                   <Package className="w-4 h-4 text-white" />
@@ -114,14 +110,12 @@ const MenusList = ({ restaurantId }: { restaurantId: string }) => {
                 </Badge>
               </div>
 
-              {/* Menu Items Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {items.map((item: Menu) => (
                   <Card
                     key={item.id}
                     className="overflow-hidden hover:shadow-xl transition-all duration-300 border-0 shadow-lg bg-white group"
                   >
-                    {/* Item Image */}
                     <div className="relative h-48 bg-gradient-to-r from-orange-100 to-red-100">
                       {item.image_url ? (
                         <Image

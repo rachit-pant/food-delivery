@@ -110,7 +110,6 @@ const Menus = async ({
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      {/* Restaurant Info */}
       <div className="sticky top-17 bg-white w-full shadow-md z-1 p-2">
         <div className="flex flex-col sm:flex-row items-center gap-6 max-w-7xl mx-auto p-6">
           <div className="relative w-32 h-32 flex-shrink-0 rounded-full overflow-hidden shadow-lg">
@@ -190,7 +189,6 @@ const Menus = async ({
         <TabsContent value="tab-1">
           <div className="flex justify-center py-4">
             <div className="w-full max-w-4xl px-4 space-y-4">
-              {/* Menu Items */}
               {Object.entries(dataMenu).map(([category, items]) => (
                 <div
                   key={category}
@@ -249,7 +247,6 @@ const Menus = async ({
                 key={review.id}
                 className="bg-white shadow rounded-2xl p-6 w-full max-w-md flex flex-col gap-4 hover:shadow-lg transition-shadow duration-300"
               >
-                {/* User Info */}
                 <div className="flex items-center gap-4">
                   <div className="w-14 h-14 rounded-full bg-gray-200 flex items-center justify-center text-xl font-bold text-gray-600">
                     {review.user.full_name.charAt(0)}
@@ -259,7 +256,6 @@ const Menus = async ({
                   </h2>
                 </div>
 
-                {/* Rating */}
                 <div className="flex items-center gap-2 text-yellow-500">
                   {Array.from({ length: review.rating }).map((_, idx) => (
                     <span key={idx}>★</span>
@@ -271,10 +267,8 @@ const Menus = async ({
                   ))}
                 </div>
 
-                {/* Review Text */}
                 <p className="text-gray-700">{review.review}</p>
 
-                {/* Order Items */}
                 <div className="mt-3">
                   <h3 className="font-semibold mb-2">Order Items:</h3>
                   <div className="flex flex-col gap-3">

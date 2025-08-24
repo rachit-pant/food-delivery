@@ -43,7 +43,7 @@ export interface MenuVariants {
 }
 
 const formSchema = z.object({
-  product: z.string().nonempty('Please select a product'), // will hold order_id
+  product: z.string().nonempty('Please select a product'),
   review: z.string().min(3, 'Review must be at least 3 characters'),
   rating: z.string().nonempty('Please select a rating'),
 });

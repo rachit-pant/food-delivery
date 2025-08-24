@@ -56,7 +56,7 @@ const AddButton = ({
 
   return (
     <div className="space-y-4 min-w-[280px]">
-      <div className="space-y-2">
+      <div className="flex flex-row justify-between items-center ">
         <Select onValueChange={(val) => setselectVariant(val)}>
           <SelectTrigger className="h-12 border-2 border-border hover:border-primary/50 transition-colors duration-200 bg-card">
             <SelectValue placeholder="Choose your variant" />

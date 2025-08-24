@@ -221,7 +221,6 @@ const AddMenus = ({
                 </CardContent>
               </Card>
 
-              {/* Image Upload */}
               <Card className="border-slate-200">
                 <CardHeader className="pb-3">
                   <CardTitle className="flex items-center gap-2 text-lg">
@@ -254,8 +253,6 @@ const AddMenus = ({
                 </CardContent>
               </Card>
 
-              {/* Pricing Variants */}
-
               <Card className="border-slate-200">
                 <CardHeader className="pb-3">
                   <CardTitle className="flex items-center gap-2 text-lg">
@@ -264,7 +261,6 @@ const AddMenus = ({
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  {/* First Variant */}
                   {fields.map((item, index) => (
                     <div key={item.id}>
                       <div className="space-y-4 p-4 bg-slate-50 rounded-lg">

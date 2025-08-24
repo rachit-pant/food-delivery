@@ -26,6 +26,7 @@ const RefreshToken = (user: User) => {
   return jwt.sign(
     {
       id: user.id,
+      role: user.role_id,
     },
     process.env.REFRESH_SECRET_KEY as string,
     { expiresIn: '1d' }

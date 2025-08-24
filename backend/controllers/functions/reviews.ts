@@ -10,8 +10,6 @@ const getItemsReviews = expressAsyncHandler(
       where: {
         orders: {
           user_id: Id,
-        },
-        menus: {
           restaurant_id: resId,
         },
       },

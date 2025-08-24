@@ -395,7 +395,6 @@ export default function NewRestaurantForm() {
               </CardContent>
             </Card>
 
-            {/* Location */}
             <Card className="border-0 shadow-lg">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">

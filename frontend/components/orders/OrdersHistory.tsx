@@ -97,7 +97,6 @@ const OrdersHistory = () => {
               </CardHeader>
 
               <CardContent>
-                {/* Restaurant Info */}
                 <div className="flex items-center gap-3 mb-4">
                   <Image
                     src={`http://localhost:5000${order.restaurant.image}`}
@@ -117,7 +116,6 @@ const OrdersHistory = () => {
 
                 <Separator className="my-3" />
 
-                {/* Items */}
                 <div className="space-y-3">
                   {order.items.map((item, index) => (
                     <div
@@ -148,7 +146,6 @@ const OrdersHistory = () => {
 
                 <Separator className="my-3" />
 
-                {/* Amounts */}
                 <div className="space-y-1 text-sm text-gray-600">
                   <div className="flex justify-between">
                     <span>Subtotal</span>
@@ -172,7 +169,6 @@ const OrdersHistory = () => {
 
                 <Separator className="my-3" />
 
-                {/* Payment Info */}
                 <p className="text-sm text-gray-500">
                   Paid via {order.payment.mode} (
                   <span
