@@ -7,6 +7,11 @@ const GetRestro = asyncHandler(async (req: Request, res: Response) => {
   const country = req.query.country as string;
 
   if (!filter || filter === 'None') {
+    if (country === '') {
+      const allRes = await prisma.restaurants.findMany();
+      res.status(200).json(allRes);
+      return;
+    }
     const allRes = await prisma.restaurants.findMany({
       where: {
         cities: {
@@ -21,7 +26,19 @@ const GetRestro = asyncHandler(async (req: Request, res: Response) => {
     res.status(200).json(allRes);
     return;
   }
+
   const rating = Number(filter);
+  if (country === '') {
+    const allRes = await prisma.restaurants.findMany({
+      where: {
+        rating: {
+          gte: rating,
+        },
+      },
+    });
+    res.status(200).json(allRes);
+    return;
+  }
   const filteredRes = await prisma.restaurants.findMany({
     where: {
       rating: {

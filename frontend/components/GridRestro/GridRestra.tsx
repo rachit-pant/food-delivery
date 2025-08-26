@@ -24,7 +24,6 @@ const GridRestaurant = () => {
 
   const filter = useAppSelector((state) => state.filter.filterName);
   const country = useAppSelector((state) => state.country.countryName);
-
   useEffect(() => {
     async function fetchData() {
       try {

@@ -23,7 +23,6 @@ const SimilarCountry = expressAsyncHandler(
       include: {
         states: true,
       },
-      take: 5,
     });
 
     if (countries.length === 0) {
@@ -48,7 +47,6 @@ const SimilarCountry = expressAsyncHandler(
             },
           },
         },
-        take: 5,
       });
     }
 

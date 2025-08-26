@@ -6,6 +6,16 @@ const getItemsReviews = expressAsyncHandler(
   async (req: Request, res: Response) => {
     const Id = req.user?.id;
     const resId = Number(req.params.restaurantId);
+    const getReview = await prisma.reviews.findMany({
+      where: {
+        restaurant_id: resId,
+        user_id: Id,
+      },
+      select: {
+        order_id: true,
+      },
+    });
+    const review = new Set(getReview.map((review) => review.order_id));
     const getItemsReviews = await prisma.order_items.findMany({
       where: {
         orders: {
@@ -24,7 +34,11 @@ const getItemsReviews = expressAsyncHandler(
         },
       },
     });
-    res.status(200).json(getItemsReviews);
+
+    const realReviews = getItemsReviews.filter(
+      (item) => !review.has(item.order_id as number)
+    );
+    res.status(200).json(realReviews);
   }
 );
 

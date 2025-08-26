@@ -5,7 +5,7 @@ interface country {
 }
 
 const initialState: country = {
-  countryName: 'Empty',
+  countryName: '',
 };
 
 const countrySlice = createSlice({
