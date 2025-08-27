@@ -20,7 +20,7 @@ const AddResta = asyncHandler(async (req: Request, res: Response) => {
       name,
       address,
       city_id: Number(city_id),
-      rating: Number(req.body.rating),
+      rating: 4,
       status: 'active',
       imageurl: `/images/${image}`,
     },

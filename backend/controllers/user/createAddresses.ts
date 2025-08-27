@@ -13,12 +13,33 @@ const createAddr = asyncHandler(async (req: Request, res: Response) => {
     (error as any).statusCode = 400;
     throw error;
   }
+  const findAddress = await prisma.user_addresses.findMany({
+    where: {
+      user_id: Id,
+    },
+  });
+  if (findAddress.length > 0) {
+    const newAddress = await prisma.user_addresses.create({
+      data: {
+        user_id: Id,
+        address,
+        city_id: Number(city_id),
+        is_default: false,
+      },
+    });
 
+    res.status(201).json({
+      message: 'Address created successfully',
+      data: newAddress,
+    });
+    return;
+  }
   const newAddress = await prisma.user_addresses.create({
     data: {
       user_id: Id,
       address,
       city_id: Number(city_id),
+      is_default: true,
     },
   });
 

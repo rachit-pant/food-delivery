@@ -5,10 +5,11 @@ import { handleError } from '@/lib/handleError';
 import { api } from '@/api/api';
 import { Button } from '../ui/button';
 import { DeleteButton } from '@/api/address';
-import { MapPin, Trash2, Plus, Home } from 'lucide-react';
+import { MapPin, Trash2, Plus, Home, ArrowUpFromLine } from 'lucide-react';
 
 type AddressData = {
   id: number;
+  is_default: boolean;
   address: string;
   cities: {
     city_name: string;
@@ -31,6 +32,15 @@ const AddressForm = () => {
   async function handleDelete(id: number) {
     try {
       await DeleteButton(id);
+      refreshData();
+    } catch (error) {
+      console.error(handleError(error));
+    }
+  }
+
+  async function handleDefault(addressId: number) {
+    try {
+      await api.patch(`/users/address/${addressId}`);
       refreshData();
     } catch (error) {
       console.error(handleError(error));
@@ -120,14 +130,30 @@ const AddressForm = () => {
                               </p>
                             </div>
                           </div>
-                          <Button
-                            onClick={() => handleDelete(info.id)}
-                            variant="outline"
-                            size="sm"
-                            className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
+                          <div className="flex-col h-full space-y-13">
+                            <div>
+                              <Button
+                                onClick={() => handleDelete(info.id)}
+                                variant="outline"
+                                size="sm"
+                                className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+                            <div>
+                              {info.is_default ? null : (
+                                <Button
+                                  onClick={() => handleDefault(info.id)}
+                                  variant="outline"
+                                  size="sm"
+                                  className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300"
+                                >
+                                  <ArrowUpFromLine className="w-4 h-4" />
+                                </Button>
+                              )}
+                            </div>
+                          </div>
                         </div>
                       </div>
                     ))}

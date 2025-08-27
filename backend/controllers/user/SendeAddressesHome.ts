@@ -13,6 +13,7 @@ const AddressesHome = asyncHandler(async (req: Request, res: Response) => {
   const AddressesHome = await prisma.user_addresses.findFirst({
     where: {
       user_id: id,
+      is_default: true,
     },
     include: {
       cities: {

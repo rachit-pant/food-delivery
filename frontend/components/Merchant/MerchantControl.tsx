@@ -117,7 +117,7 @@ const MerchantControl = () => {
             <Button
               variant="default"
               className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-              onClick={() => router.push('/user/restaurant/addform')}
+              onClick={() => router.push('/merchant/addform')}
             >
               <Plus className="w-4 h-4 mr-2" />
               Add Restaurant
@@ -188,7 +188,7 @@ const MerchantControl = () => {
               Get started by adding your first restaurant location
             </p>
             <Button
-              onClick={() => router.push('/user/restaurant/addform')}
+              onClick={() => router.push('/merchant/addform')}
               className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600"
             >
               <Plus className="w-4 h-4 mr-2" />
@@ -247,20 +247,21 @@ const MerchantControl = () => {
                   <CardTitle className="text-xl font-bold text-slate-900 mb-2 group-hover:text-orange-600 transition-colors duration-300">
                     {restaurant.name}
                   </CardTitle>
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center gap-2 text-slate-600 mb-3">
+                      <MapPin className="w-4 h-4 text-slate-400 group-hover:text-orange-500 transition-colors duration-300" />
+                      <span className="text-sm">{restaurant.address}</span>
+                    </div>
 
-                  <div className="flex items-center gap-2 text-slate-600 mb-3">
-                    <MapPin className="w-4 h-4 text-slate-400 group-hover:text-orange-500 transition-colors duration-300" />
-                    <span className="text-sm">{restaurant.address}</span>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div className="text-right">
-                      <div className="text-sm font-medium text-slate-700">
-                        {restaurant.cities.city_name}
-                      </div>
-                      <div className="text-xs text-slate-500">
-                        {restaurant.cities.states.state_name},{' '}
-                        {restaurant.cities.states.countries.country_name}
+                    <div className="flex items-center justify-between">
+                      <div className="text-right">
+                        <div className="text-sm font-medium text-slate-700">
+                          {restaurant.cities.city_name}
+                        </div>
+                        <div className="text-xs text-slate-500">
+                          {restaurant.cities.states.state_name},{' '}
+                          {restaurant.cities.states.countries.country_name}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -320,7 +321,7 @@ const MerchantControl = () => {
                     className="flex-1 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 shadow-md hover:shadow-lg transition-all duration-300"
                   >
                     <Link
-                      href={`/user/restaurant/${restaurant.id}`}
+                      href={`/merchant/${restaurant.id}`}
                       className="flex items-center"
                     >
                       <Eye className="w-4 h-4 mr-2" />

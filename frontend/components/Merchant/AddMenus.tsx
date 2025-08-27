@@ -37,6 +37,7 @@ import type { Category } from './Merchanttypes';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChefHat, ImageIcon, Tag, DollarSign } from 'lucide-react';
 import { useFieldArray } from 'react-hook-form';
+import Dropzone from '@/components/Merchant/Dropzone';
 const variantSchema = z.object({
   name: z.string().min(3),
   price: z.number(),
@@ -232,17 +233,13 @@ const AddMenus = ({
                   <FormField
                     control={form.control}
                     name="image"
+                    rules={{ required: true }}
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Menu Item Image</FormLabel>
                         <FormControl>
-                          <Input
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) =>
-                              field.onChange(e.target.files?.[0])
-                            }
-                            className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100"
+                          <Dropzone
+                            onFileUpload={(file: File) => field.onChange(file)}
                           />
                         </FormControl>
                         <FormDescription>PNG/JPG up to ~5MB</FormDescription>

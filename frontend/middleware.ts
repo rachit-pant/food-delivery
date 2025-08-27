@@ -1,42 +1,49 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { jwtVerify } from 'jose';
+
 interface JwtPayload {
-  id: string;
-  role: string;
+  id: number;
+  role: number;
 }
-const protectedRoutes = ['/user', '/cart', '/orders'];
-const roleRoutes = ['/user/restaurant'];
+
+const roleRoutes = ['/merchant'];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const refreshtoken = request.cookies.get('refreshtoken')?.value as string;
+  const refreshtoken = request.cookies.get('refreshtoken')?.value;
+
+  if (!refreshtoken) {
+    return NextResponse.redirect(new URL('/auth/login', request.url));
+  }
+
   let decoded: JwtPayload;
   try {
     const { payload } = await jwtVerify(
       refreshtoken,
-      new TextEncoder().encode(process.env.REFRESH_SECRET_KEY)
+      new TextEncoder().encode(process.env.REFRESH_SECRET_KEY!)
     );
+    console.log('Decoded JWT payload:', payload);
     decoded = payload as unknown as JwtPayload;
+    console.log('Decoded JWT payload:', decoded);
   } catch (err) {
-    console.log(err);
+    console.error('JWT verify error:', err);
     return NextResponse.redirect(new URL('/auth/login', request.url));
   }
-  if (protectedRoutes.some((route) => pathname.startsWith(route))) {
-    if (!refreshtoken) {
-      return NextResponse.redirect(new URL('/auth/login', request.url));
+  if (roleRoutes.some((route) => pathname.startsWith(route))) {
+    if (![2, 3].includes(decoded.role)) {
+      return NextResponse.redirect(new URL('/user', request.url));
     }
-    if (roleRoutes.some((route) => pathname.startsWith(route))) {
-      if (decoded.role === 'customer') {
-        return NextResponse.redirect(new URL('/user', request.url));
-      }
-    }
-    return NextResponse.next();
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/user', '/cart', '/orders', '/user/restaurant'],
+  matcher: [
+    '/user/:path*',
+    '/cart/:path*',
+    '/orders/:path*',
+    '/merchant/:path*',
+  ],
 };

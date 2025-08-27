@@ -32,7 +32,8 @@ import { MapPin, Clock, Save, Building2 } from 'lucide-react';
 
 import { api } from '@/api/api';
 import { handleError } from '@/lib/handleError';
-import router from 'next/router';
+import { useRouter } from 'next/navigation';
+import Dropzone from '@/components/Merchant/Dropzone';
 
 const daySchema = z
   .object({
@@ -81,7 +82,6 @@ const restaurantSchema = z.object({
   countryId: z.string().min(1, 'Select a country'),
   stateId: z.string().min(1, 'Select a state'),
   cityId: z.string().min(1, 'Select a city'),
-  rating: z.number('Rating must be a number').min(0).max(5).optional(),
   image: z
     .instanceof(File)
     .optional()
@@ -108,7 +108,6 @@ const defaultValues: RestaurantFormValues = {
   countryId: '',
   stateId: '',
   cityId: '',
-  rating: undefined,
   image: undefined,
   timings: {
     Monday: { ...defaultDay },
@@ -144,7 +143,7 @@ export default function NewRestaurantForm() {
   const [states, setStates] = useState<Option[]>([]);
   const [cities, setCities] = useState<Option[]>([]);
   const [submitting, setSubmitting] = useState(false);
-
+  const router = useRouter();
   useEffect(() => {
     (async () => {
       try {
@@ -222,8 +221,7 @@ export default function NewRestaurantForm() {
         fd.append('country_id', values.countryId);
         fd.append('state_id', values.stateId);
         fd.append('city_id', values.cityId);
-        if (typeof values.rating === 'number')
-          fd.append('rating', String(values.rating));
+
         fd.append('image', values.image as File);
 
         const timings = days.map((d) => ({
@@ -245,7 +243,7 @@ export default function NewRestaurantForm() {
           country_id: values.countryId,
           state_id: values.stateId,
           city_id: values.cityId,
-          rating: typeof values.rating === 'number' ? values.rating : undefined,
+
           timings: days.map((d) => ({
             week_day: d,
 
@@ -258,7 +256,7 @@ export default function NewRestaurantForm() {
 
       alert('Restaurant created successfully');
       form.reset(defaultValues);
-      router.push('/user/restaurant');
+      router.push('/merchant');
     } catch (e) {
       console.error(handleError(e));
       alert('Failed to create restaurant');
@@ -299,40 +297,11 @@ export default function NewRestaurantForm() {
                   control={form.control}
                   name="name"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="md:col-span-2">
                       <FormLabel>Restaurant Name</FormLabel>
                       <FormControl>
                         <Input placeholder="e.g. Spice Route" {...field} />
                       </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="rating"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Rating (0–5)</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          step="0.1"
-                          min={0}
-                          max={5}
-                          placeholder="4.5"
-                          value={field.value ?? ''}
-                          onChange={(e) =>
-                            field.onChange(
-                              e.target.value === ''
-                                ? undefined
-                                : Number(e.target.value)
-                            )
-                          }
-                        />
-                      </FormControl>
-                      <FormDescription>Optional</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -377,14 +346,13 @@ export default function NewRestaurantForm() {
                 <FormField
                   control={form.control}
                   name="image"
+                  rules={{ required: true }}
                   render={({ field }) => (
                     <FormItem className="md:col-span-2">
                       <FormLabel>Cover Image</FormLabel>
                       <FormControl>
-                        <Input
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) => field.onChange(e.target.files?.[0])}
+                        <Dropzone
+                          onFileUpload={(file: File) => field.onChange(file)}
                         />
                       </FormControl>
                       <FormDescription>PNG/JPG up to ~5MB</FormDescription>
@@ -504,7 +472,7 @@ export default function NewRestaurantForm() {
                 {days.map((d) => (
                   <div
                     key={d}
-                    className="grid grid-cols-1 md:grid-cols-[120px_100px_100px_1fr] items-center gap-3"
+                    className="grid grid-cols-1  md:grid-cols-[100px_100px_1fr_1fr] items-center gap-3 px-10"
                   >
                     <div className="font-medium">{dayAbbrev(d)}</div>
 
@@ -566,7 +534,7 @@ export default function NewRestaurantForm() {
                     />
                   </div>
                 ))}
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-slate-500 text-center">
                   If a day is closed, toggle off Open — start/end are ignored.
                 </p>
               </CardContent>

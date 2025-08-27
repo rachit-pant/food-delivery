@@ -16,6 +16,7 @@ const readAddress = asyncHandler(async (req: Request, res: Response) => {
     select: {
       id: true,
       address: true,
+      is_default: true,
       cities: {
         select: {
           city_name: true,
