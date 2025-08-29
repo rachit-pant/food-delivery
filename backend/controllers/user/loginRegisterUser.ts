@@ -1,10 +1,10 @@
-import { PrismaClient } from '../../generated/prisma';
+import prisma from '../../prisma/client';
 import { Request, Response } from 'express';
 import asyncHandler from 'express-async-handler';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 const { AccessToken, RefreshToken } = require('../functions/jwt');
-const prisma = new PrismaClient();
+
 const regUser = asyncHandler(async (req: Request, res: Response) => {
   const { full_name, email, phone_number, password } = req.body;
   if (email === '' || password === '') {

@@ -60,17 +60,11 @@ const UserPanel = () => {
               </Link>
             </Button>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="">
             <Button variant="outline" size="sm" asChild>
               <Link href="/cart" className="flex items-center gap-1">
                 <ShoppingCart className="h-4 w-4" />
                 Cart
-              </Link>
-            </Button>
-            <Button variant="outline" size="sm" asChild>
-              <Link href="/orders" className="flex items-center gap-1">
-                <Package className="h-4 w-4" />
-                Orders
               </Link>
             </Button>
           </div>
