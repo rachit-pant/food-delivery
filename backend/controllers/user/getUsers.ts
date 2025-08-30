@@ -1,14 +1,19 @@
 import { PrismaClient } from '../../generated/prisma';
 import { Request, Response } from 'express';
 import asyncHandler from 'express-async-handler';
+const { BetterError } = require('../../middleware/errorHandler');
 const prisma = new PrismaClient();
 const getUsers = asyncHandler(async (req: Request, res: Response) => {
   const user = await prisma.users.findMany();
-  res.json(user);
+  res.status(200).json(user);
 });
 
 const getUser = asyncHandler(async (req: Request, res: Response) => {
   const Id = Number(req.user?.id);
+  if (!Id) {
+    throw new BetterError('Wrong id', 404, 'WRONG_ID', 'User Error');
+  }
+
   const reqUser = await prisma.users.findUnique({
     where: {
       id: Id,
@@ -25,10 +30,13 @@ const getUser = asyncHandler(async (req: Request, res: Response) => {
     },
   });
   if (!reqUser) {
-    const err = new Error('User not found');
-    (err as any).statusCode = 404;
-    throw err;
+    throw new BetterError(
+      'User not found',
+      404,
+      'USER_NOT_FOUND',
+      'User Error'
+    );
   }
-  res.json(reqUser);
+  res.status(200).json(reqUser);
 });
 module.exports = { getUsers, getUser };

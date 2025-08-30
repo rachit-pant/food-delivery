@@ -36,6 +36,67 @@ describe('loginController (unit)', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
+  it('User not found 404 status', async () => {
+    const email = 'user@example.com';
+    const password = 'password123';
+    const user = {
+      id: 1,
+      full_name: 'User',
+      email,
+      phone_number: '1234567890',
+      password: 'hashed-password',
+      role_id: 1,
+      refreshToken: 'refreshToken' as string,
+    };
+    (prisma.users.findUnique as jest.Mock).mockRejectedValue(
+      Object.assign(new Error('User not found'), {
+        code: 'USER_NOT_FOUND',
+      })
+    );
+    const { req, res, next } = mockReqBody({ email, password });
+    await login(req, res, next);
+    expect(prisma.users.findUnique).toHaveBeenCalledWith({
+      where: { email },
+    });
+    expect(bcrypt.compare).not.toHaveBeenCalled();
+    expect(next).toHaveBeenCalledWith(
+      expect.objectContaining({
+        statusCode: 404,
+        message: 'User not found',
+        code: 'USER_NOT_FOUND',
+        name: 'User Error',
+      })
+    );
+  });
+  it('Invalid email or password 401 status', async () => {
+    const email = 'user@example.com';
+    const password = 'password123';
+    const user = {
+      id: 1,
+      full_name: 'User',
+      email,
+      phone_number: '1234567890',
+      password: 'hashed-password',
+      role_id: 1,
+      refreshToken: 'refreshToken' as string,
+    };
+    (prisma.users.findUnique as jest.Mock).mockResolvedValue(user);
+    (bcrypt.compare as jest.Mock).mockResolvedValue(false);
+    const { req, res, next } = mockReqBody({ email, password });
+    await login(req, res, next);
+    expect(prisma.users.findUnique).toHaveBeenCalledWith({
+      where: { email },
+    });
+    expect(bcrypt.compare).toHaveBeenCalledWith(password, user.password);
+    expect(next).toHaveBeenCalledWith(
+      expect.objectContaining({
+        statusCode: 401,
+        message: 'Invalid email or password',
+        code: 'BAD_REQUEST',
+        name: 'User Error',
+      })
+    );
+  });
   it('perfect response 200 status', async () => {
     const email = 'user@example.com';
     const password = 'password123';
@@ -83,5 +144,62 @@ describe('loginController (unit)', () => {
       message: 'Login successful',
     });
     expect(next).not.toHaveBeenCalled();
+  });
+  it('User not updated', async () => {
+    const email = 'user@example.com';
+    const password = 'password123';
+    const user = {
+      id: 1,
+      full_name: 'User',
+      email,
+      phone_number: '1234567890',
+      password: 'hashed-password',
+      role_id: 1,
+      refreshToken: 'refreshToken' as string,
+    };
+    (prisma.users.findUnique as jest.Mock).mockResolvedValue(user);
+    (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+    (AccessToken as jest.Mock).mockReturnValue('accessToken' as string);
+    (RefreshToken as jest.Mock).mockReturnValue('refreshToken' as string);
+    (prisma.users.update as jest.Mock).mockRejectedValue(
+      Object.assign(new Error('User not updated'), {
+        code: 'USER_NOT_UPDATED',
+      })
+    );
+    const { req, res, next } = mockReqBody({ email, password });
+    await login(req, res, next);
+
+    expect(prisma.users.findUnique).toHaveBeenCalledWith({
+      where: { email },
+    });
+    expect(bcrypt.compare).toHaveBeenCalledWith(password, user.password);
+    expect(AccessToken).toHaveBeenCalledWith(user);
+    expect(RefreshToken).toHaveBeenCalledWith(user);
+    expect(prisma.users.update).toHaveBeenCalledWith({
+      where: { id: user.id },
+      data: { refreshToken: 'refreshToken' as string },
+    });
+    expect(res.cookie).not.toHaveBeenCalledWith('accesstoken', 'accessToken', {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'strict',
+    });
+    expect(res.cookie).not.toHaveBeenCalledWith(
+      'refreshtoken',
+      'refreshToken',
+      {
+        httpOnly: true,
+        secure: false,
+        sameSite: 'strict',
+      }
+    );
+    expect(next).toHaveBeenCalledWith(
+      expect.objectContaining({
+        statusCode: 404,
+        message: 'User not updated',
+        code: 'USER_NOT_UPDATED',
+        name: 'User Error',
+      })
+    );
   });
 });

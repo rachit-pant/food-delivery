@@ -1,9 +1,8 @@
-import { PrismaClient } from '../../generated/prisma';
 import { Request, Response } from 'express';
 import asyncHandler from 'express-async-handler';
-const prisma = new PrismaClient();
+import prisma from '../../prisma/client';
 const DeleteAddress = asyncHandler(async (req: Request, res: Response) => {
-  const id = req.user?.id;
+  const id = Number(req.user?.id);
   const addressId = Number(req.params.addressId);
   if (!id || !addressId) {
     const error = new Error('no input given');

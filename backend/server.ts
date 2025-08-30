@@ -1,6 +1,6 @@
 import { PrismaClient } from './generated/prisma';
 const express = require('express');
-const errorHandler = require('./middleware/errorHandler');
+const { errorHandler } = require('./middleware/errorHandler');
 const ControlRestaurants = require('./routes/ControlRestaurants');
 const UserRoute = require('./routes/UserControl');
 const MenusControl = require('./routes/MenusControl');

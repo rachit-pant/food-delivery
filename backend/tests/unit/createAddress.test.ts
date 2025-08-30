@@ -1,0 +1,181 @@
+const createAddr = require('../../controllers/user/createAddresses');
+import { NextFunction, Request, Response } from 'express';
+jest.mock('../../prisma/client', () => ({
+  user_addresses: {
+    create: jest.fn(),
+    findMany: jest.fn(),
+  },
+}));
+import prisma from '../../prisma/client';
+function mockReqBody({ body = {}, params = {}, user = {} }: any = {}) {
+  const req = {
+    body,
+    params,
+    user,
+  } as unknown as Request;
+  const res = {
+    status: jest.fn().mockReturnThis(),
+    json: jest.fn(),
+  } as unknown as Response;
+  const next = jest.fn() as unknown as NextFunction;
+  return { req, res, next };
+}
+describe('Create Addresses Unit', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+  it('Not find address', async () => {
+    const address = 'User Random';
+    const city_id = '1234567890';
+    (prisma.user_addresses.findMany as jest.Mock).mockRejectedValue(
+      Object.assign(new Error('User not found'), {
+        code: 'USER_NOT_FOUND',
+      })
+    );
+    const { req, res, next } = mockReqBody({
+      body: {
+        address,
+        city_id,
+      },
+      user: {
+        id: 1,
+      },
+    });
+    await createAddr(req, res, next);
+    expect(prisma.user_addresses.findMany).toHaveBeenCalledWith({
+      where: {
+        user_id: Number(req.user?.id),
+      },
+    });
+    expect(prisma.user_addresses.create).not.toHaveBeenCalled();
+    expect(next).toHaveBeenCalledWith(
+      expect.objectContaining({
+        statusCode: 500,
+        message: 'Address not created',
+        code: 'ADDRESS_NOT_CREATED',
+        name: 'User Error',
+      })
+    );
+  });
+  it('Not new address', async () => {
+    const address = 'User Random';
+    const city_id = '1234567890';
+    const addr = {
+      id: 1,
+      user_id: 1,
+      address,
+      city_id: Number(city_id),
+      is_default: false,
+    };
+    (prisma.user_addresses.findMany as jest.Mock).mockResolvedValue([addr]);
+    (prisma.user_addresses.create as jest.Mock).mockRejectedValue(
+      Object.assign(new Error('Address not created'), {
+        code: 'ADDRESS_NOT_CREATED',
+      })
+    );
+    const { req, res, next } = mockReqBody({
+      body: {
+        address,
+        city_id,
+      },
+      user: {
+        id: 1,
+      },
+    });
+    await createAddr(req, res, next);
+    expect(prisma.user_addresses.findMany).toHaveBeenCalledWith({
+      where: {
+        user_id: Number(req.user?.id),
+      },
+    });
+    expect(prisma.user_addresses.create).toHaveBeenCalledWith({
+      data: {
+        user_id: Number(req.user?.id),
+        address,
+        city_id: Number(city_id),
+        is_default: false,
+      },
+    });
+    expect(next).toHaveBeenCalledWith(
+      expect.objectContaining({
+        statusCode: 500,
+        message: 'Address not created',
+        code: 'ADDRESS_NOT_CREATED',
+        name: 'User Error',
+      })
+    );
+  });
+  it('Created Address', async () => {
+    const address = 'User Random';
+    const city_id = '1234567890';
+    const addr = {
+      id: 1,
+      user_id: 1,
+      address,
+      city_id: Number(city_id),
+      is_default: false,
+    };
+    (prisma.user_addresses.findMany as jest.Mock).mockResolvedValue([addr]);
+    (prisma.user_addresses.create as jest.Mock).mockResolvedValue(addr);
+    const { req, res, next } = mockReqBody({
+      body: {
+        address,
+        city_id,
+      },
+      user: {
+        id: 1,
+      },
+    });
+    await createAddr(req, res, next);
+    expect(prisma.user_addresses.findMany).toHaveBeenCalledWith({
+      where: {
+        user_id: Number(req.user?.id),
+      },
+    });
+    expect(prisma.user_addresses.create).toHaveBeenCalledWith({
+      data: {
+        user_id: Number(req.user?.id),
+        address,
+        city_id: Number(city_id),
+        is_default: false,
+      },
+    });
+    expect(next).not.toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalledWith(201);
+    expect(res.json).toHaveBeenCalledWith({
+      message: 'Address created successfully',
+      data: addr,
+    });
+  });
+  it('First address becomes default', async () => {
+    (prisma.user_addresses.findMany as jest.Mock).mockResolvedValue([]);
+    (prisma.user_addresses.create as jest.Mock).mockResolvedValue({
+      id: 1,
+      user_id: 1,
+      address: 'First Address',
+      city_id: 1,
+      is_default: true,
+    });
+
+    const { req, res, next } = mockReqBody({
+      body: { address: 'First Address', city_id: 1 },
+      user: { id: 1 },
+    });
+
+    await createAddr(req, res, next);
+
+    expect(prisma.user_addresses.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ is_default: true }),
+      })
+    );
+
+    expect(res.status).toHaveBeenCalledWith(201);
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: 'Address created successfully',
+        data: expect.objectContaining({ is_default: true }),
+      })
+    );
+  });
+});
