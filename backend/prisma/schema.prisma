@@ -198,6 +198,7 @@ model user_roles {
   id        Int     @id @default(autoincrement())
   role_name String  @unique
   users     users[]
+  plans     Plan[]
 }
 
 model users {
@@ -214,9 +215,46 @@ model users {
   reviews        reviews[]
   user_addresses user_addresses[]
   user_devices   user_devices[]
+  subs           Sub[]
   user_roles     user_roles?      @relation(fields: [role_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
+model Plan {
+  id        Int      @id @default(autoincrement())
+  name      String
+  price     Decimal  @db.Decimal(10,2)
+  role_id    Int
+  role      user_roles     @relation(fields: [role_id], references: [id])
+  duration  PlanDuration
+  features  Json @db.JsonB
+  subs      Sub[]
+}
+model Sub {
+  id         Int                @id @default(autoincrement())
+  user_id     Int
+  plan_id     Int
+  status     SubscriptionStatus @default(active)
+  startDate  DateTime           
+  endDate    DateTime
+  paymentStatus payment_response    
+  isDefault  Boolean            @default(false)
+  price      Decimal           @db.Decimal(10,2)
+  createdAt  DateTime           @default(now()) @db.Timestamptz(3)
+  updatedAt  DateTime           @updatedAt @db.Timestamptz(3)
 
+  user users @relation(fields: [user_id], references: [id])
+  plan Plan @relation(fields: [plan_id], references: [id])
+}
+
+enum SubscriptionStatus {
+  active
+  expired
+  canceled
+}
+
+enum PlanDuration {
+  month
+  year
+}
 enum device_type {
   phone
   desktop
@@ -237,6 +275,10 @@ enum payment_mode {
   UPI
   COD
   Debit_Credit_Card @map("Debit/Credit Card")
+}
+enum payment_response {
+  success
+  failed
 }
 
 enum payment_status {

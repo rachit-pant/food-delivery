@@ -8,6 +8,7 @@ const CartControl = require('./routes/CartControl');
 const OrderControl = require('./routes/OrderControl');
 const ExtraRoutes = require('./routes/extrarouters');
 const WebAddress = require('./routes/WebAddress');
+const AdditionalRoutes = require('./routes/additionalRoutes');
 const path = require('path');
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
@@ -37,6 +38,8 @@ app.use('/orders', OrderControl);
 app.use('/auths', ExtraRoutes);
 
 app.use('/address', WebAddress);
+
+app.use('/extra', AdditionalRoutes);
 
 app.use(errorHandler);
 app.listen(port, () => {
