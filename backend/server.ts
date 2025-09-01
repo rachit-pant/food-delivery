@@ -10,6 +10,7 @@ const ExtraRoutes = require('./routes/extrarouters');
 const WebAddress = require('./routes/WebAddress');
 const AdditionalRoutes = require('./routes/additionalRoutes');
 const path = require('path');
+const StripeWebhooks = require('./routes/StripeWebhooks');
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 const corsOptions: cors.CorsOptions = {
@@ -23,6 +24,10 @@ app.use('/images', express.static(path.join(__dirname, 'images')));
 dotenv.config();
 app.use(cookieParser());
 app.use(cors(corsOptions));
+
+// Stripe webhook route must be registered BEFORE express.json()
+// to receive the raw request body.
+app.use('/stripe', StripeWebhooks);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

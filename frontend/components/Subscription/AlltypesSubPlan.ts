@@ -11,12 +11,15 @@ export interface Month {
   duration: string;
   features: Features;
 }
-
 export interface Features {
-  commission_rate: string;
-  promotion_slots: number;
-  priority_support: boolean;
+  discount: string;
+  free_delivery: number;
 }
+// export interface Features {
+//   commission_rate: string;
+//   promotion_slots: number;
+//   priority_support: boolean;
+// }
 
 export interface Year {
   id: number;

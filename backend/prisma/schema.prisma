@@ -227,12 +227,14 @@ model Plan {
   duration  PlanDuration
   features  Json @db.JsonB
   subs      Sub[]
+  stripe_price_id  String? @unique
 }
 model Sub {
   id         Int                @id @default(autoincrement())
   user_id     Int
   plan_id     Int
   status     SubscriptionStatus @default(active)
+   stripe_subscription_id String? @unique
   startDate  DateTime           
   endDate    DateTime
   paymentStatus payment_response    
@@ -277,8 +279,11 @@ enum payment_mode {
   Debit_Credit_Card @map("Debit/Credit Card")
 }
 enum payment_response {
-  success
-  failed
+  draft
+  open
+  paid
+  uncollectible
+  void
 }
 
 enum payment_status {
