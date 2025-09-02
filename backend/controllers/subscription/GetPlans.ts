@@ -17,8 +17,7 @@ const GetPlans = asyncHandler(async (req: Request, res: Response) => {
   if (plans.length === 0) {
     throw new BetterError('no plans found', 400, 'NO_PLANS_FOUND', 'Error');
   }
-  const groupedPlans = groupBy(plans, (plan) => plan.duration);
-  res.status(200).json(groupedPlans);
+  res.status(200).json(plans);
 });
 
 module.exports = GetPlans;

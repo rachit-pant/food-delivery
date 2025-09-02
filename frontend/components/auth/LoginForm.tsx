@@ -37,7 +37,7 @@ const LoginForm = () => {
     try {
       const res = await Login(data);
       console.log('success', res);
-      router.push('/restaurant');
+      window.location.href = '/restaurant';
     } catch (error) {
       console.error('Error', error);
       const err = handleError(error);

@@ -7,7 +7,7 @@ interface JwtPayload {
   role: number;
 }
 
-const roleRoutes = ['/merchant'];
+const roleRoutes = ['/merchant', 'subscription'];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -23,9 +23,7 @@ export async function middleware(request: NextRequest) {
       refreshtoken,
       new TextEncoder().encode(process.env.REFRESH_SECRET_KEY!)
     );
-    console.log('Decoded JWT payload:', payload);
     decoded = payload as unknown as JwtPayload;
-    console.log('Decoded JWT payload:', decoded);
   } catch (err) {
     console.error('JWT verify error:', err);
     return NextResponse.redirect(new URL('/auth/login', request.url));
@@ -45,5 +43,6 @@ export const config = {
     '/cart/:path*',
     '/orders/:path*',
     '/merchant/:path*',
+    '/subscription/:path*',
   ],
 };

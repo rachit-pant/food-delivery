@@ -208,6 +208,7 @@ const StripeWebhooks = asyncHandler(async (req: Request, res: Response) => {
         },
         data: {
           isDefault: false,
+          status: 'canceled',
         },
       });
       res.status(200).json({

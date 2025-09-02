@@ -3,7 +3,7 @@ import { api } from '@/api/api';
 import { handleError } from '@/lib/handleError';
 import { useEffect, useState } from 'react';
 import { Button } from '../ui/button';
-import { useRouter } from 'next/navigation';
+
 import {
   Form,
   FormControl,
@@ -42,7 +42,6 @@ const Profile = () => {
   const [profile, setProfile] = useState<Data | null>(null);
   const [loading, setLoading] = useState(true);
   const [edit, setEdit] = useState(false);
-  const router = useRouter();
 
   useEffect(() => {
     async function fetchProfile() {
@@ -62,7 +61,7 @@ const Profile = () => {
   async function handleLogout() {
     try {
       await api.post('/auths/logout', {});
-      router.push('/auth/login');
+      window.location.href = '/auth/login';
     } catch (error) {
       const err = handleError(error);
       console.log(err);

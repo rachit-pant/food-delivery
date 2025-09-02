@@ -1,31 +1,43 @@
-export interface Plan {
-  month: Month[];
-  year: Year[];
-}
+// export interface Plans {
+//   id: number;
+//   name: string;
+//   price: string;
+//   role_id: number;
+//   duration: string;
+//   features: Features;
+//   stripe_price_id: string;
+// }
 
-export interface Month {
-  id: number;
-  name: string;
-  price: string;
-  role_id: number;
-  duration: string;
-  features: Features;
-}
-export interface Features {
-  discount: string;
-  free_delivery: number;
-}
 // export interface Features {
+//   discount: string;
+//   free_delivery: number;
+// }
+
+// export interface SuperPlan extends Omit<Plans, 'features'> {
+//   features: Features2;
+// }
+// export interface Features2 {
 //   commission_rate: string;
 //   promotion_slots: number;
 //   priority_support: boolean;
 // }
-
-export interface Year {
+export interface Plans {
   id: number;
   name: string;
   price: string;
   role_id: number;
   duration: string;
-  features: Features;
+  features: UserFeatures | MerchantFeatures;
+  stripe_price_id: string;
+}
+
+export interface UserFeatures {
+  discount: string;
+  free_delivery: number;
+}
+
+export interface MerchantFeatures {
+  commission_rate: string;
+  promotion_slots: number;
+  priority_support: boolean;
 }
