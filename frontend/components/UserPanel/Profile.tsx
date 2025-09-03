@@ -20,7 +20,7 @@ import { userUpdateSchema } from '@/schema/userUpdateSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { userUpdate } from '@/api/userUpdate';
 import { User, Mail, Phone, Lock, Edit3, LogOut, Shield } from 'lucide-react';
-
+import { disconnectSocket } from '@/lib/sockets';
 type Data = {
   full_name: string;
   email: string;
@@ -61,6 +61,7 @@ const Profile = () => {
   async function handleLogout() {
     try {
       await api.post('/auths/logout', {});
+      disconnectSocket();
       window.location.href = '/auth/login';
     } catch (error) {
       const err = handleError(error);

@@ -32,12 +32,10 @@ const StripeWebhooks = asyncHandler(async (req: Request, res: Response) => {
       const session = event.data.object as Stripe.Checkout.Session;
 
       if (!session.subscription) {
-        throw new BetterError(
-          'No subscription ID found on checkout session.',
-          404,
-          'NO_SUBSCRIPTION_FOUND',
-          'Subscription Error'
-        );
+        res
+          .status(200)
+          .json({ message: 'One-time checkout, no action needed' });
+        return;
       }
       const subscription: Stripe.Subscription =
         await stripe.subscriptions.retrieve(session.subscription as string, {

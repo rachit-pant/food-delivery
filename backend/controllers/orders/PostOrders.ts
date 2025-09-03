@@ -7,6 +7,25 @@ const prisma = new PrismaClient();
 const PostOrders = asyncHandler(async (req: Request, res: Response) => {
   const userId = req.user?.id;
   const restaurant_id = req.body.restaurant_id;
+  const ownerId = await prisma.restaurants.findUnique({
+    where: {
+      id: restaurant_id,
+    },
+  });
+  let planId: { plan_id: number } | null = null;
+  if (ownerId?.user_id) {
+    planId = await prisma.sub.findFirst({
+      where: {
+        user_id: ownerId.user_id,
+        isDefault: true,
+      },
+      select: {
+        plan_id: true,
+      },
+    });
+    console.log(planId);
+  }
+
   const { payment } = req.body;
   const { addressId } = req.body;
   const paymentDetails = req.body.payment_status;
@@ -76,6 +95,21 @@ const PostOrders = asyncHandler(async (req: Request, res: Response) => {
       order_items: true,
     },
   });
+  const premiumPlans = [9, 12];
+  const io = req.app.get('io');
+  const onlineUsers = req.app.get('onlineUsers');
+  const socketId: string[] | [] = onlineUsers.get(ownerId?.user_id) || [];
+  if (planId && premiumPlans.includes(planId.plan_id)) {
+    if (socketId.length > 0) {
+      socketId.forEach((id) => {
+        io.to(id).emit('newOrder', {
+          orderId: newOrder.id,
+          total: newOrder.total_amount,
+        });
+      });
+    }
+  }
+
   await prisma.carts.deleteMany({ where: { user_id: userId } });
   res.status(201).json({
     message: 'Order placed successfully',

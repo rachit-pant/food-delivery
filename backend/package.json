@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "stripe": "stripe listen --forward-to localhost:5000/stripe/webhooks"
   },
   "author": "Rachit",
   "license": "ISC",
@@ -28,6 +29,7 @@
   "dependencies": {
     "@prisma/client": "^6.12.0",
     "bcrypt": "^6.0.0",
+    "cookie": "^1.0.2",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",
@@ -36,6 +38,7 @@
     "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
     "multer": "^2.0.2",
+    "socket.io": "^4.8.1",
     "stripe": "^18.4.0"
   }
 }
