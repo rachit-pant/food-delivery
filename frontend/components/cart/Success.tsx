@@ -1,27 +1,12 @@
 'use client';
-import { api } from '@/api/api';
-import { handleError } from '@/lib/handleError';
-import { useAppSelector } from '@/lib/hooks';
+
 import React, { useEffect } from 'react';
 import { CheckCircle } from 'lucide-react';
 const Success = () => {
-  const res = useAppSelector((state) => state.orders);
   useEffect(() => {
-    async function postOrders() {
-      try {
-        const stored = localStorage.getItem('orderPayload');
-        if (!stored) return;
-        const payload = JSON.parse(stored);
-        const data = (await api.post('/orders', payload)).data;
-        console.log('success', data);
-      } catch (error) {
-        const err = handleError(error);
-        console.log(err);
-        throw err;
-      }
-    }
+    async function postOrders() {}
     postOrders();
-  }, [res]);
+  }, []);
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="text-center space-y-6">

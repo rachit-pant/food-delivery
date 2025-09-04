@@ -11,6 +11,9 @@ const roleRoutes = ['/merchant', 'subscription'];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  if (pathname === '/cart/success' || pathname === '/cart/failure') {
+    return NextResponse.next();
+  }
   const refreshtoken = request.cookies.get('refreshtoken')?.value;
 
   if (!refreshtoken) {

@@ -7,10 +7,16 @@ const prisma = new PrismaClient();
 
 const createPaymentIntent = expressAsyncHandler(
   async (req: Request, res: Response) => {
+    const userId = req.user?.id;
+    if (!userId) {
+      throw new Error('No user ID found');
+    }
+    const restaurant_id = req.body.restaurant_id;
+    const address_id = req.body.address_id;
     try {
       const cart = await prisma.carts.findMany({
         where: {
-          user_id: req.user?.id,
+          user_id: userId,
         },
         select: {
           id: true,
@@ -51,7 +57,13 @@ const createPaymentIntent = expressAsyncHandler(
         payment_method_types: ['card'],
         mode: 'payment',
         line_items: lineItems,
-        success_url: 'http://localhost:3000/cart/success',
+        client_reference_id: userId.toString(),
+        metadata: {
+          restaurant_id: restaurant_id,
+          address_id: address_id,
+        },
+        success_url:
+          'http://localhost:3000/cart/success?session_id={CHECKOUT_SESSION_ID}',
         cancel_url: 'http://localhost:3000/cart/failure',
       });
 

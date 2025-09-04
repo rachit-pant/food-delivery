@@ -104,7 +104,11 @@ const PostOrders = asyncHandler(async (req: Request, res: Response) => {
       socketId.forEach((id) => {
         io.to(id).emit('newOrder', {
           orderId: newOrder.id,
-          total: newOrder.total_amount,
+          total: newOrder.net_amount,
+          payments: newOrder.payment_status,
+          items: newOrder.order_items,
+          restaurant_name: ownerId?.name,
+          restaurant_image: ownerId?.imageurl,
         });
       });
     }

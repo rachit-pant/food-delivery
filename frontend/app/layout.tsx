@@ -5,8 +5,9 @@ import Navbar from '@/components/Navbar/Navbar';
 import StoreProvider from './StoreProvider';
 
 import StateJwt from '@/components/StateJwt';
-import Notification from '@/components/notification/Notification';
 import { jwt } from '@/lib/jwt';
+import { Toaster } from 'sonner';
+import Notification from '@/components/notification/Notification';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -41,6 +42,7 @@ export default async function RootLayout({
             <Navbar />
           </div>
           {children}
+          <Toaster />
           <Notification />
         </StoreProvider>
       </body>

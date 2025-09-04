@@ -55,8 +55,7 @@ const Pricing03 = () => {
         id: plan.id,
         name: plan.name,
         price: plan.price,
-        description:
-          'Get 20 AI-generated portraits with 2 unique styles and filters.',
+        description: `Our most ${plan.name} plan that provides all the necessary features.`,
         features: [
           { title: 'Discount upto', value: features.discount },
           { title: 'Free Delivery', value: features.free_delivery },
@@ -74,8 +73,7 @@ const Pricing03 = () => {
         id: plan.id,
         name: plan.name,
         price: plan.price,
-        description:
-          'Get 20 AI-generated portraits with 2 unique styles and filters.',
+        description: `${plan.name} plan that provides all the necessary features.`,
         features: [
           { title: 'Discount upto', value: features.discount },
           { title: 'Free Delivery', value: features.free_delivery },
@@ -90,38 +88,78 @@ const Pricing03 = () => {
   } else {
     monthlyPlan = monthlyPlans.map((plan) => {
       const features = plan.features as MerchantFeatures;
+      let featureList;
+
+      if (plan.id === 7 || plan.id === 10) {
+        featureList = [
+          {
+            title: 'Restaurant will be priority listed',
+          },
+        ];
+      } else if (plan.id === 8 || plan.id === 11) {
+        featureList = [
+          {
+            title: 'Get Acess to Merchant Dashboard',
+          },
+          {
+            title: 'Get Realtime Order Notifications',
+          },
+        ];
+      } else {
+        featureList = [
+          {
+            title: 'Get Acess to Merchant Dashboard',
+          },
+          {
+            title: 'Get Realtime Order Notifications',
+          },
+        ];
+      }
       return {
         id: plan.id,
         name: plan.name,
         price: plan.price,
-        description:
-          'Get 20 AI-generated portraits with 2 unique styles and filters.',
-        features: [
-          { title: 'Commission rate', value: features.commission_rate },
-          { title: 'Promotion slots', value: features.promotion_slots },
-          { title: 'Choice of 2 styles', tooltip: tooltipContent.styles },
-          { title: 'Choice of 2 filters', tooltip: tooltipContent.filters },
-          { title: '2 retouch credits', tooltip: tooltipContent.credits },
-        ],
+        description: `${plan.name} plan that provides all the necessary features.`,
+        features: featureList,
         buttonText: 'Subscribe Now',
         stripe_price_id: plan.stripe_price_id,
       };
     });
     yearlyPlan = yearlyPlans.map((plan) => {
       const features = plan.features as MerchantFeatures;
+      let featureList;
+
+      if (plan.id === 7 || plan.id === 10) {
+        featureList = [
+          {
+            title: 'Restaurant will be priority listed',
+          },
+        ];
+      } else if (plan.id === 8 || plan.id === 11) {
+        featureList = [
+          {
+            title: 'Get Acess to Merchant Dashboard',
+          },
+          {
+            title: 'Get Realtime Order Notifications',
+          },
+        ];
+      } else {
+        featureList = [
+          {
+            title: 'Get Acess to Merchant Dashboard',
+          },
+          {
+            title: 'Get Realtime Order Notifications',
+          },
+        ];
+      }
       return {
         id: plan.id,
         name: plan.name,
         price: plan.price,
-        description:
-          'Get 20 AI-generated portraits with 2 unique styles and filters.',
-        features: [
-          { title: 'Commission rate', value: features.commission_rate },
-          { title: 'Promotion slots', value: features.promotion_slots },
-          { title: 'Choice of 2 styles', tooltip: tooltipContent.styles },
-          { title: 'Choice of 2 filters', tooltip: tooltipContent.filters },
-          { title: '2 retouch credits', tooltip: tooltipContent.credits },
-        ],
+        description: ` ${plan.name} plan that provides all the necessary features.`,
+        features: featureList,
         buttonText: 'Subscribe Now',
         stripe_price_id: plan.stripe_price_id,
       };
@@ -174,7 +212,7 @@ const Pricing03 = () => {
               <p className="mt-2 text-4xl font-bold">
                 ${plan.price}
                 <span className="ml-1.5 text-sm text-muted-foreground font-normal">
-                  /month
+                  {selectedBillingPeriod === 'monthly' ? '/month' : '/year'}
                 </span>
               </p>
               <p className="mt-4 font-medium text-muted-foreground">
@@ -193,14 +231,6 @@ const Pricing03 = () => {
                   <li key={feature.title} className="flex items-start gap-1.5">
                     <CircleCheck className="h-4 w-4 mt-1 text-green-600" />
                     {feature.title}
-                    {feature.tooltip && (
-                      <Tooltip>
-                        <TooltipTrigger className="cursor-help">
-                          <CircleHelp className="h-4 w-4 mt-1 text-gray-500" />
-                        </TooltipTrigger>
-                        <TooltipContent>{feature.tooltip}</TooltipContent>
-                      </Tooltip>
-                    )}
                   </li>
                 ))}
               </ul>

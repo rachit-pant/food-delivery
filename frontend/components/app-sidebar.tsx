@@ -1,5 +1,12 @@
 'use client';
-import { Calendar, Home, Inbox, Search } from 'lucide-react';
+import {
+  Calendar,
+  Home,
+  Inbox,
+  Search,
+  ChartBarDecreasing,
+  LayoutDashboard,
+} from 'lucide-react';
 
 import {
   Sidebar,
@@ -55,8 +62,19 @@ export function AppSidebar() {
                     <SidebarMenuButton asChild>
                       {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
                       <a href="/merchant">
-                        <Calendar />
+                        <ChartBarDecreasing />
                         <span>Merchant</span>
+                      </a>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                )}
+                {isMerchant && (
+                  <SidebarMenuItem key="merchantDashboard">
+                    <SidebarMenuButton asChild>
+                      {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+                      <a href="/merchant/dashboard">
+                        <LayoutDashboard />
+                        <span>Dashboard</span>
                       </a>
                     </SidebarMenuButton>
                   </SidebarMenuItem>

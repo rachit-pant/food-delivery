@@ -8,6 +8,7 @@ const createPaymentIntent = require('../controllers/functions/stripe');
 const search = require('../controllers/functions/search');
 const PostSubscription = require('../controllers/subscription/PostSubscription');
 const CheckoutItems = require('../controllers/subscription/CheckoutItems');
+const Dashboard = require('../controllers/functions/dashboard');
 router.get('/refreshToken', refreshToken);
 
 router.post('/logout', authorize, logout);
@@ -17,4 +18,5 @@ router.post('/create-payment-intent', authorize, createPaymentIntent);
 router.get('/search', search);
 router.post('/subscribe', authorize, PostSubscription);
 router.get('/checkoutItemsView', authorize, CheckoutItems);
+router.get('/dashboard', authorize, Dashboard);
 module.exports = router;

@@ -17,9 +17,9 @@ import { useEffect, useState } from 'react';
 import { SelectGroup } from '@radix-ui/react-select';
 
 import Image from 'next/image';
-import { setOrders } from './OrdersSlice';
+
 import { Button } from '../ui/button';
-import { useAppDispatch } from '@/lib/hooks';
+
 type data = {
   id: number;
   quantity: number;
@@ -48,7 +48,7 @@ type address = {
 };
 const CartInfo = () => {
   const router = useRouter();
-  const dispatch = useAppDispatch();
+
   const [cartInfo, setcartInfo] = useState<data[]>([]);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(true);
@@ -132,17 +132,13 @@ const CartInfo = () => {
 
   const resId: number = cartInfo[0].restaurant_id;
   async function handleCheckout() {
-    const payload = {
-      addressId: Number(storage),
-      amount: TotalAmount,
-      payment: payment,
-      payment_status: paymentstatus,
-      restaurant_id: resId,
-    };
-    dispatch(setOrders(payload));
-    localStorage.setItem('orderPayload', JSON.stringify(payload));
     try {
-      const res = (await api.post('/auths/create-payment-intent')).data;
+      const res = (
+        await api.post('/auths/create-payment-intent', {
+          address_id: Number(storage),
+          restaurant_id: resId,
+        })
+      ).data;
       router.push(res.url);
     } catch (error) {
       const err = handleError(error);
