@@ -55,14 +55,29 @@ const PostOrders = asyncHandler(async (req: Request, res: Response) => {
     res.status(400).json({ message: 'Cart is empty' });
     return;
   }
+  let delivery_charges = 0;
+  const subs = await prisma.sub.findMany({
+    where: {
+      user_id: userId,
+      isDefault: true,
+    },
+    select: {
+      plan_id: true,
+    },
+  });
+  if (subs.length) {
+    delivery_charges = 0;
+  } else {
+    delivery_charges = 50;
+  }
   const newOrder = await prisma.orders.create({
     data: {
       user_id: userId,
       total_amount: req.body.amount,
-      discount_amount: 100,
-      delivery_charges: 100,
-      tax_amount: 10,
-      net_amount: req.body.amount + 100 - 100 + 10,
+      discount_amount: 0,
+      delivery_charges: delivery_charges,
+      tax_amount: 0,
+      net_amount: req.body.amount + delivery_charges,
       payment_status: paymentDetails,
       status: 'preparing',
       restaurant_id,

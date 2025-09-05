@@ -13,6 +13,18 @@ const createPaymentIntent = expressAsyncHandler(
     }
     const restaurant_id = req.body.restaurant_id;
     const address_id = req.body.address_id;
+    const subsId = await prisma.sub.findMany({
+      //for all plans
+
+      where: {
+        user_id: userId,
+        isDefault: true,
+      },
+      select: {
+        id: true,
+      },
+    });
+
     try {
       const cart = await prisma.carts.findMany({
         where: {
@@ -52,7 +64,18 @@ const createPaymentIntent = expressAsyncHandler(
         },
         quantity: item.quantity,
       }));
-
+      if (!subsId.length) {
+        lineItems.push({
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: 'Delivery Charge',
+            },
+            unit_amount: 50 * 100, // $50 in cents
+          },
+          quantity: 1,
+        });
+      }
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
         mode: 'payment',

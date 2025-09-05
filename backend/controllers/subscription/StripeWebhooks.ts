@@ -88,14 +88,35 @@ const StripeWebhooks = asyncHandler(async (req: Request, res: Response) => {
           res.status(400).json({ message: 'Cart is empty' });
           return;
         }
+        const subsId = await prisma.sub.findMany({
+          where: {
+            user_id: userId,
+            isDefault: true,
+          },
+          select: {
+            id: true,
+          },
+        });
+        let total_amount = 0;
+        let net_amount = 0;
+        let delivery_charges = 0;
+        if (subsId.length) {
+          (delivery_charges = 0),
+            (total_amount = (session.amount_total ?? 0) / 100),
+            (net_amount = (session.amount_total ?? 0) / 100);
+        } else {
+          (delivery_charges = 50),
+            (total_amount = (session.amount_total ?? 0) / 100 - 50),
+            (net_amount = (session.amount_total ?? 0) / 100);
+        }
         const newOrder = await prisma.orders.create({
           data: {
             user_id: userId,
-            total_amount: (session.amount_total ?? 0) / 100,
-            discount_amount: 100,
-            delivery_charges: 100,
-            tax_amount: 10,
-            net_amount: ((session.amount_total ?? 0) + 100 - 100 + 10) / 100,
+            total_amount: total_amount,
+            discount_amount: 0,
+            delivery_charges: delivery_charges,
+            tax_amount: 0,
+            net_amount: net_amount,
             payment_status:
               session.payment_status === 'paid' ? 'paid' : 'not_paid',
             status: 'preparing',
@@ -120,7 +141,7 @@ const StripeWebhooks = asyncHandler(async (req: Request, res: Response) => {
             },
             order_payments: {
               create: {
-                amount: (session.amount_total ?? 0) / 100,
+                amount: total_amount,
                 payment_mode:
                   session.payment_method_types[0] === 'card'
                     ? 'Debit_Credit_Card'

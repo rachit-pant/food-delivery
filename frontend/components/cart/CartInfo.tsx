@@ -380,14 +380,19 @@ const CartInfo = () => {
           <div className="bg-gradient-to-r from-primary/5 to-secondary/5 rounded-xl p-6 border border-primary/20">
             <div className="flex items-center justify-between">
               <div className="space-y-1">
-                <p className="text-sm text-muted-foreground">Total Amount</p>
+                <p className="text-sm text-muted-foreground">
+                  Total Amount including delivery charges
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Will be reduced in orders if you have a subscription
+                </p>
                 <p className="text-3xl font-bold gradient-text">
                   $
                   {cartInfo
                     .reduce(
                       (sum, item) =>
                         sum + item.menu_variants.price * item.quantity,
-                      0
+                      50
                     )
                     .toFixed(2)}
                 </p>
