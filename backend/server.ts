@@ -11,6 +11,7 @@ const WebAddress = require('./routes/WebAddress');
 const AdditionalRoutes = require('./routes/additionalRoutes');
 const path = require('path');
 const StripeWebhooks = require('./routes/StripeWebhooks');
+const Franchise = require('./routes/franchise');
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
@@ -52,6 +53,8 @@ app.use('/cart', CartControl);
 app.use('/orders', OrderControl);
 
 app.use('/auths', ExtraRoutes);
+
+app.use('/franchise', Franchise);
 
 app.use('/address', WebAddress);
 

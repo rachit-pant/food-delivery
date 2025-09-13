@@ -6,6 +6,7 @@ import {
   Search,
   ChartBarDecreasing,
   LayoutDashboard,
+  BookText,
 } from 'lucide-react';
 
 import {
@@ -86,6 +87,17 @@ export function AppSidebar() {
                       <a href="/subscription">
                         <Calendar />
                         <span>Subscription</span>
+                      </a>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                )}
+                {isMerchant && (
+                  <SidebarMenuItem key="merchantFranchise">
+                    <SidebarMenuButton asChild>
+                      {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+                      <a href="/merchant/franchise">
+                        <BookText />
+                        <span>Franchise</span>
                       </a>
                     </SidebarMenuButton>
                   </SidebarMenuItem>

@@ -120,7 +120,7 @@ model orders {
   order_addresses  order_addresses?
   order_items      order_items[]
   order_payments   order_payments[]
-  restaurants      restaurants?     @relation(fields: [restaurant_id], references: [id], onDelete: SetNull, onUpdate: NoAction)
+  restaurants      restaurants?     @relation(fields: [restaurant_id], references: [id], onUpdate: NoAction)
   users            users?           @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   reviews          reviews[]
 }
@@ -135,22 +135,26 @@ model restaurant_timings {
 }
 
 model restaurants {
-  id                 Int                      @id @default(autoincrement())
-  user_id            Int?
-  name               String                   @db.VarChar
-  address            String?
-  city_id            Int?
-  rating             Float?
-  status             restaurant_status?       @default(inactive)
-  imageurl           String?
-  search_vector      Unsupported("tsvector")?
-  carts              carts[]                  @relation("RestaurantCarts")
-  menus              menus[]
-  orders             orders[]
-  restaurant_timings restaurant_timings[]
-  cities             cities?                  @relation(fields: [city_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  users              users?                   @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  reviews            reviews[]
+  id                       Int                      @id @default(autoincrement())
+  user_id                  Int?
+  name                     String                   @db.VarChar
+  address                  String?
+  city_id                  Int?
+  rating                   Float?
+  status                   restaurant_status?       @default(inactive)
+  imageurl                 String?
+  search_vector            Unsupported("tsvector")?
+  franchiseId              Int?
+  restaurant_categories_id Int                      @default(1)
+  carts                    carts[]                  @relation("RestaurantCarts")
+  menus                    menus[]
+  orders                   orders[]
+  restaurant_timings       restaurant_timings[]
+  cities                   cities?                  @relation(fields: [city_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  franchise                Franchise?               @relation(fields: [franchiseId], references: [id])
+  restaurant_categories    restaurant_categories    @relation(fields: [restaurant_categories_id], references: [id])
+  users                    users?                   @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  reviews                  reviews[]
 
   @@index([search_vector], map: "restaurants_search_gin", type: Gin)
 }
@@ -197,8 +201,8 @@ model reviews {
 model user_roles {
   id        Int     @id @default(autoincrement())
   role_name String  @unique
-  users     users[]
   plans     Plan[]
+  users     users[]
 }
 
 model users {
@@ -209,42 +213,109 @@ model users {
   phone_number   String?          @unique @db.VarChar
   password       String           @default("changeme123")
   refreshToken   String?
+  Franchise      Franchise[]
+  subs           Sub[]
   carts          carts[]
   orders         orders[]
   restaurants    restaurants[]
   reviews        reviews[]
+  staff          staff[]
   user_addresses user_addresses[]
   user_devices   user_devices[]
-  subs           Sub[]
   user_roles     user_roles?      @relation(fields: [role_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
-model Plan {
-  id        Int      @id @default(autoincrement())
-  name      String
-  price     Decimal  @db.Decimal(10,2)
-  role_id    Int
-  role      user_roles     @relation(fields: [role_id], references: [id])
-  duration  PlanDuration
-  features  Json @db.JsonB
-  subs      Sub[]
-  stripe_price_id  String? @unique
-}
-model Sub {
-  id         Int                @id @default(autoincrement())
-  user_id     Int
-  plan_id     Int
-  status     SubscriptionStatus @default(active)
-   stripe_subscription_id String? @unique
-  startDate  DateTime           
-  endDate    DateTime
-  paymentStatus payment_response    
-  isDefault  Boolean            @default(false)
-  price      Decimal           @db.Decimal(10,2)
-  createdAt  DateTime           @default(now()) @db.Timestamptz(3)
-  updatedAt  DateTime           @updatedAt @db.Timestamptz(3)
 
-  user users @relation(fields: [user_id], references: [id])
-  plan Plan @relation(fields: [plan_id], references: [id])
+model Plan {
+  id              Int          @id @default(autoincrement())
+  name            String
+  price           Decimal      @db.Decimal(10, 2)
+  role_id         Int
+  duration        PlanDuration
+  features        Json
+  stripe_price_id String?      @unique
+  role            user_roles   @relation(fields: [role_id], references: [id])
+  subs            Sub[]
+}
+
+model Sub {
+  id                     Int                @id @default(autoincrement())
+  user_id                Int
+  plan_id                Int
+  status                 SubscriptionStatus @default(active)
+  startDate              DateTime
+  endDate                DateTime
+  isDefault              Boolean            @default(false)
+  price                  Decimal            @db.Decimal(10, 2)
+  createdAt              DateTime           @default(now()) @db.Timestamptz(3)
+  updatedAt              DateTime           @updatedAt @db.Timestamptz(3)
+  paymentStatus          payment_response
+  stripe_subscription_id String?            @unique
+  plan                   Plan               @relation(fields: [plan_id], references: [id])
+  user                   users              @relation(fields: [user_id], references: [id])
+}
+
+model Franchise {
+  id              Int              @id @default(autoincrement())
+  userId          Int
+  name            String?
+  address         String?
+  image_url       String?
+  status          FranchiseStatus  @default(ACTIVE)
+  createdAt       DateTime         @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime         @updatedAt @db.Timestamptz(3)
+  owner           users            @relation(fields: [userId], references: [id])
+  franchise_staff FranchiseStaff[]
+  restaurants     restaurants[]
+}
+
+model staff {
+  id          Int              @id @default(autoincrement())
+  userId      Int
+  fullName    String?
+  staffRoleId Int
+  status      StaffStatus      @default(ACTIVE)
+  createdAt   DateTime         @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime         @updatedAt @db.Timestamptz(3)
+  franchises  FranchiseStaff[]
+  role        StaffRole        @relation(fields: [staffRoleId], references: [id])
+  user        users            @relation(fields: [userId], references: [id])
+}
+
+model StaffRole {
+  id          Int      @id @default(autoincrement())
+  role        String
+  description String?
+  createdAt   DateTime @default(now()) @db.Timestamptz(3)
+  staff       staff[]
+}
+
+model FranchiseStaff {
+  id          Int       @id @default(autoincrement())
+  staffId     Int
+  franchiseId Int
+  position    String?
+  isActive    Boolean   @default(true)
+  assignedAt  DateTime  @default(now()) @db.Timestamptz(3)
+  endedAt     DateTime? @db.Timestamptz(3)
+  franchise   Franchise @relation(fields: [franchiseId], references: [id])
+  staff       staff     @relation(fields: [staffId], references: [id])
+}
+
+model restaurant_categories {
+  id          Int           @id @default(autoincrement())
+  cat_name    String        @db.VarChar
+  restaurants restaurants[]
+}
+
+enum FranchiseStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum StaffStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
 }
 
 enum SubscriptionStatus {
@@ -257,6 +328,7 @@ enum PlanDuration {
   month
   year
 }
+
 enum device_type {
   phone
   desktop
@@ -278,6 +350,7 @@ enum payment_mode {
   COD
   Debit_Credit_Card @map("Debit/Credit Card")
 }
+
 enum payment_response {
   draft
   open
