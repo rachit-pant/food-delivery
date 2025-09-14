@@ -4,7 +4,6 @@ const { getUsers, getUser } = require('../controllers/user/getUsers');
 const { regUser, login } = require('../controllers/user/loginRegisterUser');
 const authorize = require('../middleware/authorize');
 const updateUser = require('../controllers/user/updateUser');
-import { Request, response, Response } from 'express';
 const UserAccess = require('../middleware/userAccess');
 const DeleteUser = require('../controllers/user/deleteUser');
 const UserAddr = require('../controllers/user/createAddresses');

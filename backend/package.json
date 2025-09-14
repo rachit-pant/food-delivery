@@ -1,8 +1,9 @@
 {
-  "name": "proj",
+  "name": "backend-restaurant-code",
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
+    "dev": "npx ts-node server.ts",
     "test": "jest",
     "stripe": "stripe listen --forward-to localhost:5000/stripe/webhooks"
   },
