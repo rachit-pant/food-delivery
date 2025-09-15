@@ -30,7 +30,7 @@ const CardRestaurant = ({ image, name, rating, id }: props) => {
               fill
               className="object-cover transition-transform duration-500 group-hover:scale-110"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
             <div className="absolute top-4 right-4">
               <Badge className="bg-primary/90 backdrop-blur-sm text-primary-foreground border-0 shadow-lg">
@@ -39,7 +39,7 @@ const CardRestaurant = ({ image, name, rating, id }: props) => {
               </Badge>
             </div>
 
-            <div className="absolute bottom-4 left-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <div className="absolute bottom-4 left-4 flex gap-2 opacity-100 transition-opacity duration-300">
               <Badge
                 variant="secondary"
                 className="bg-background/90 backdrop-blur-sm text-foreground border-0"
@@ -65,7 +65,7 @@ const CardRestaurant = ({ image, name, rating, id }: props) => {
                 {name}
               </CardTitle>
               <CardDescription className="text-muted-foreground mt-1 flex items-center gap-1">
-                <span className="text-sm">Fast Food • Indian • ₹₹</span>
+                <span className="text-sm">Fast Food • Indian </span>
               </CardDescription>
             </div>
           </div>

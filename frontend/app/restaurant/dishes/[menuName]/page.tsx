@@ -17,8 +17,14 @@ const page = async ({ params }: { params: Promise<{ menuName: string }> }) => {
   }
   return (
     <div>
-      <Filter />
-      <PopularMenu data={data} Name={Name} />
+      <div className="container mx-auto px-4 py-8  ">
+        <div className="flex justify-center">
+          <div className="rounded-2xl p-6 border-1 inset-shadow-sm mt-5">
+            <Filter />
+          </div>
+        </div>
+        <PopularMenu data={data} Name={Name} />
+      </div>
     </div>
   );
 };

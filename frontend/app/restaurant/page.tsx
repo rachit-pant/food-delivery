@@ -6,19 +6,19 @@ import TopBrands from '@/components/GridRestro/TopBrands';
 const Restaurant = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-background">
-      <div className="container mx-auto px-4 py-8 space-y-12">
+      <div className="container mx-auto px-4 py-8 ">
         <div className="flex justify-center">
-          <div className="backdrop-blur-sm bg-card/80 border border-border/50 rounded-2xl p-6 shadow-xl">
+          <div className="rounded-2xl p-6 border-1 inset-shadow-sm mt-5">
             <Filter />
           </div>
         </div>
 
-        <div className="space-y-16">
+        <div>
           <PopularDishes />
-          <div className="border-t border-border/30 pt-16">
+          <div>
             <TopBrands />
           </div>
-          <div className="border-t border-border/30 pt-16">
+          <div>
             <GridRestra />
           </div>
         </div>

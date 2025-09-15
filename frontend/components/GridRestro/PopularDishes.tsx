@@ -61,10 +61,10 @@ const PopularDishes = () => {
   ];
 
   return (
-    <section className="py-12">
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-muted/30 via-background to-muted/20 p-8 md:p-12">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -translate-y-32 translate-x-32"></div>
-        <div className="absolute bottom-0 left-0 w-48 h-48 bg-secondary/5 rounded-full blur-3xl translate-y-24 -translate-x-24"></div>
+    <section>
+      <div className="relative overflow-hidden rounded-3xl p-8 md:p-12">
+        <div className="absolute top-0 right-0 w-64 h-64 rounded-full blur-3xl -translate-y-32 translate-x-32"></div>
+        <div className="absolute bottom-0 left-0 w-48 h-48 rounded-full blur-3xl translate-y-24 -translate-x-24"></div>
 
         <div className="relative z-10 max-w-7xl mx-auto">
           <div className="text-center mb-12">

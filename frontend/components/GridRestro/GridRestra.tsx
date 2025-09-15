@@ -44,12 +44,12 @@ const GridRestaurant = () => {
   }, [filter, country]);
 
   return (
-    <div className="max-w-7xl mx-auto px-4">
+    <div className="max-w-7xl mx-auto px-4 mt-10">
       <div className="text-center mb-12">
         <h1 className="text-4xl md:text-5xl font-bold gradient-text mb-4">
           Featured Restaurants
         </h1>
-        <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+        <p className="text-muted-foreground text-lg max-w-2xl mx-auto ">
           Discover amazing restaurants near you with the best ratings and
           fastest delivery
         </p>

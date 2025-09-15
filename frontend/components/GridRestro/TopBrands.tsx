@@ -61,7 +61,7 @@ const TopBrands = () => {
   ];
 
   return (
-    <section className="py-12">
+    <section>
       <div className="max-w-7xl mx-auto px-4">
         <div className="text-center mb-12">
           <div className="flex items-center justify-center gap-3 mb-4">
