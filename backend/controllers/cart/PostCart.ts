@@ -5,6 +5,7 @@ const prisma = new PrismaClient();
 
 const PostCart = asyncHandler(async (req: Request, res: Response) => {
   const variantId = Number(req.body.variant);
+  const quantity = Number(req.body.quantity);
   const variant = await prisma.menu_variants.findUnique({
     where: { id: variantId },
     select: {
@@ -52,7 +53,7 @@ const PostCart = asyncHandler(async (req: Request, res: Response) => {
         },
       },
       data: {
-        quantity: cart.quantity + (Number(req.body.quantity) || 1),
+        quantity: cart.quantity + (quantity || 1),
       },
     });
   } else {
@@ -61,7 +62,7 @@ const PostCart = asyncHandler(async (req: Request, res: Response) => {
         user_id: Number(req.user?.id),
         menu_id: Number(variant.menu_id),
         variant_id: variantId,
-        quantity: Number(req.body.quantity) || 1,
+        quantity: quantity || 1,
         restaurant_id: Number(variant.menus?.restaurant_id),
       },
       select: {

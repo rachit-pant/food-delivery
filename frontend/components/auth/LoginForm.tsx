@@ -19,12 +19,16 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { loginSchema } from '@/schema/loginSchema';
 import { Login } from '@/api/login';
 import { handleError } from '@/lib/handleError';
-import { useRouter } from 'next/navigation';
-
+import { api } from '@/api/api';
+import { useAppSelector } from '@/lib/hooks';
+import { useAppDispatch } from '@/lib/hooks';
+import {
+  setCartLogin,
+  setQuantityCart,
+} from '@/components/GridRestro/cartloginslice';
 type LoginData = z.infer<typeof loginSchema>;
 
 const LoginForm = () => {
-  const router = useRouter();
   const form = useForm<LoginData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -32,11 +36,31 @@ const LoginForm = () => {
       password: '',
     },
   });
-
+  const selector = useAppSelector((state) => state.cartLogin.id);
+  const quantity = useAppSelector((state) => state.cartLogin.quantity);
+  const dispatch = useAppDispatch();
   const onSubmit: SubmitHandler<LoginData> = async (data) => {
     try {
       const res = await Login(data);
       console.log('success', res);
+      const selectVariant = selector;
+
+      if (selectVariant !== 0 || selectVariant !== null) {
+        try {
+          const res = await api.post('/cart', {
+            variant: selectVariant,
+            quantity,
+          });
+          console.log('success', res);
+          dispatch(setCartLogin(0));
+          dispatch(setQuantityCart(1));
+          window.location.href = '/cart';
+        } catch (error) {
+          const err = handleError(error);
+          console.log(err);
+          throw err;
+        }
+      }
       window.location.href = '/restaurant';
     } catch (error) {
       console.error('Error', error);

@@ -21,6 +21,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { userUpdate } from '@/api/userUpdate';
 import { User, Mail, Phone, Lock, Edit3, LogOut, Shield } from 'lucide-react';
 import { disconnectSocket } from '@/lib/sockets';
+import { useAppDispatch } from '@/lib/hooks';
+import { setRole } from '@/lib/roleMiddlewareSlice';
 type Data = {
   full_name: string;
   email: string;
@@ -57,10 +59,12 @@ const Profile = () => {
     }
     fetchProfile();
   }, []);
-
+  const dispatch = useAppDispatch();
   async function handleLogout() {
     try {
       await api.post('/auths/logout', {});
+
+      dispatch(setRole(0));
       disconnectSocket();
       window.location.href = '/auth/login';
     } catch (error) {

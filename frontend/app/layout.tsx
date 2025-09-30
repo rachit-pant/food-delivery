@@ -30,7 +30,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const role = await jwt();
-
+  console.log(role);
   return (
     <html lang="en">
       <body

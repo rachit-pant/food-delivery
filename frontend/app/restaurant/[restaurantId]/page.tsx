@@ -5,7 +5,6 @@ import AddButton from '@/components/GridRestro/AddButton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
 import { Star, Clock, MapPin, Users } from 'lucide-react';
-
 import { cookies } from 'next/headers';
 import Reviews from '@/components/GridRestro/Reviews';
 
@@ -53,55 +52,56 @@ interface RestaurantTiming {
   end_time: Date;
 }
 
-interface Order {
-  order_items: OrderItem[];
-}
-
-interface OrderItem {
-  product_name: string;
-  menus: Menus;
-}
-
-interface Menus {
-  image_url: string;
-}
-
-export interface Reviews {
+export interface ReviewsType {
   id: number;
   review: string;
   rating: number;
-  user: Use;
-  order: Orde;
-}
-
-export interface Orde {
-  order_items: OrderIte[];
-}
-
-export interface OrderIte {
-  product_name: string;
-  menus: Menu;
-}
-
-export interface Menu {
-  image_url: string;
-}
-
-export interface Use {
-  full_name: string;
+  user: { full_name: string };
+  order: {
+    order_items: { product_name: string; menus: { image_url: string } }[];
+  };
 }
 
 type MenuData = Record<string, MenuItem[]>;
+
+function isRestaurantOpen(timings: RestaurantTiming[], now: Date): boolean {
+  if (!timings || timings.length === 0) return false;
+
+  return timings.some((timing) => {
+    const start = new Date(timing.start_time);
+    const end = new Date(timing.end_time);
+
+    const todayStart = new Date(now);
+    todayStart.setHours(start.getHours(), start.getMinutes(), 0, 0);
+
+    const todayEnd = new Date(now);
+    todayEnd.setHours(end.getHours(), end.getMinutes(), 0, 0);
+
+    if (todayEnd <= todayStart) {
+      todayEnd.setDate(todayEnd.getDate() + 1);
+    }
+
+    return now >= todayStart && now <= todayEnd;
+  });
+}
+
+function formatTime(date: Date): string {
+  return new Date(date).toLocaleTimeString([], {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
 
 const Menus = async ({
   params,
 }: {
   params: Promise<{ restaurantId: number }>;
 }) => {
-  let dataMenu;
-  let dataRestro;
-  let restaurantId;
-  let reviews;
+  let dataMenu: MenuData;
+  let dataRestro: RestroData;
+  let reviews: ReviewsType[];
+  let restaurantId: number;
+
   try {
     restaurantId = (await params).restaurantId;
     dataRestro = (await api.get(`restaurants/${restaurantId}`))
@@ -109,13 +109,15 @@ const Menus = async ({
     dataMenu = (await api.get(`restaurants/${restaurantId}/menus`))
       .data as MenuData;
     reviews = (await api.get(`/restaurants/${restaurantId}/menus/reviews/all`))
-      .data as Reviews[];
+      .data as ReviewsType[];
   } catch (error) {
-    console.log(error);
+    console.error(error);
     throw error;
   }
+
   const cookieStore = await cookies();
   const refreshtoken = cookieStore.get('refreshtoken')?.value;
+
   const todayWeekDay = new Date().toLocaleDateString('en-US', {
     weekday: 'long',
   });
@@ -123,89 +125,104 @@ const Menus = async ({
     (timing) => timing.week_day === todayWeekDay
   );
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background">
-      <div className="sticky top-0 bg-card/95 backdrop-blur-md border-b border-border shadow-lg z-50">
-        <div className="max-w-7xl mx-auto p-6">
-          <div className="flex flex-col lg:flex-row items-center gap-8">
-            <div className="relative w-40 h-40 flex-shrink-0 rounded-2xl overflow-hidden shadow-2xl image-overlay group">
-              <Image
-                src={`http://localhost:5000${dataRestro.imageurl}`}
-                alt={dataRestro.name}
-                fill
-                className="object-cover transition-transform duration-500 group-hover:scale-110"
-              />
+  const now = new Date();
+  const isOpen = isRestaurantOpen(todayTimings, now);
+
+  const Header = (
+    <div className="sticky top-0 bg-card/95 backdrop-blur-md border-b border-border shadow-lg z-50">
+      <div className="max-w-7xl mx-auto p-6">
+        <div className="flex flex-col lg:flex-row items-center gap-8">
+          <div className="relative w-40 h-40 flex-shrink-0 rounded-2xl overflow-hidden shadow-2xl image-overlay group">
+            <Image
+              src={`http://localhost:5000${dataRestro.imageurl}`}
+              alt={dataRestro.name}
+              fill
+              className="object-cover transition-transform duration-500 group-hover:scale-110"
+            />
+          </div>
+
+          <div className="flex-1 text-center lg:text-left space-y-5">
+            <div>
+              <h1 className="text-4xl lg:text-5xl font-bold text-foreground tracking-tight mb-3">
+                {dataRestro.name}
+              </h1>
+              <div className="flex items-center justify-center lg:justify-start gap-2 text-muted-foreground">
+                <MapPin className="w-4 h-4 mt-0.5" />
+                <p className="text-lg leading-relaxed">
+                  {dataRestro.address}, {dataRestro.cities.city_name},{' '}
+                  {dataRestro.cities.states.state_name}
+                </p>
+              </div>
             </div>
 
-            <div className="flex-1 text-center lg:text-left space-y-4">
-              <div>
-                <h1 className="text-4xl lg:text-5xl font-bold text-foreground mb-2 tracking-tight">
-                  {dataRestro.name}
-                </h1>
-                <div className="flex items-center justify-center lg:justify-start gap-2 text-muted-foreground mb-4">
-                  <MapPin className="w-4 h-4" />
-                  <p className="text-lg">{dataRestro.address}</p>
-                </div>
-              </div>
+            <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
+              <Badge
+                variant="default"
+                className="px-4 py-2 text-sm font-medium bg-primary"
+              >
+                <Star className="w-3 h-3 mr-1 fill-current" />
+                {dataRestro.rating.toFixed(1)}
+              </Badge>
 
-              <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
-                <Badge
-                  variant="secondary"
-                  className="px-4 py-2 text-sm font-medium"
-                >
-                  <MapPin className="w-3 h-3 mr-1" />
-                  {dataRestro.cities.city_name},{' '}
-                  {dataRestro.cities.states.state_name}
-                </Badge>
+              {isOpen ? (
                 <Badge
                   variant="default"
-                  className="px-4 py-2 text-sm font-medium bg-primary"
+                  className="px-4 py-1.5 text-sm font-medium"
                 >
-                  <Star className="w-3 h-3 mr-1 fill-current" />
-                  {dataRestro.rating.toFixed(1)}
+                  <Clock className="w-3 h-3 mr-1" />
+                  Open Now {formatTime(now)}
                 </Badge>
+              ) : (
                 <Badge
-                  variant={
-                    dataRestro.status === 'open' ? 'default' : 'destructive'
-                  }
-                  className="px-4 py-2 text-sm font-medium"
+                  variant="destructive"
+                  className="px-4 py-1.5 text-sm font-medium"
                 >
-                  {dataRestro.status.toUpperCase()}
+                  <Clock className="w-3 h-3 mr-1" />
+                  Closed Now {formatTime(now)}
                 </Badge>
-              </div>
+              )}
+            </div>
 
-              <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
-                {todayTimings.length > 0 ? (
-                  todayTimings.map((timing) => (
-                    <Badge
-                      key={timing.id}
-                      variant="outline"
-                      className="px-3 py-1"
-                    >
-                      <Clock className="w-3 h-3 mr-1" />
-                      {timing.week_day}:{' '}
-                      {new Date(timing.start_time).toLocaleTimeString([], {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}{' '}
-                      -{' '}
-                      {new Date(timing.end_time).toLocaleTimeString([], {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}
-                    </Badge>
-                  ))
-                ) : (
-                  <Badge variant="destructive" className="px-3 py-1">
+            <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
+              {todayTimings.length > 0 ? (
+                todayTimings.map((timing) => (
+                  <Badge
+                    key={timing.id}
+                    variant="outline"
+                    className="px-4 py-1.5 text-sm font-medium"
+                  >
                     <Clock className="w-3 h-3 mr-1" />
-                    Closed Today
+                    {timing.week_day}: {formatTime(timing.start_time)} -{' '}
+                    {formatTime(timing.end_time)}
                   </Badge>
-                )}
-              </div>
+                ))
+              ) : (
+                <Badge
+                  variant="destructive"
+                  className="px-4 py-1.5 text-sm font-medium"
+                >
+                  <Clock className="w-3 h-3 mr-1" />
+                  Closed Today
+                </Badge>
+              )}
             </div>
           </div>
         </div>
       </div>
+    </div>
+  );
+
+  if (!isOpen) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background">
+        {Header}
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background">
+      {Header}
 
       <Tabs defaultValue="tab-1" className="w-full">
         <div className="sticky top-[200px] lg:top-[160px] bg-background/95 backdrop-blur-md border-b border-border z-40">
@@ -228,7 +245,7 @@ const Menus = async ({
           </div>
         </div>
 
-        <TabsContent value="tab-1" className="mt-0">
+        <TabsContent value="tab-1">
           <div className="max-w-6xl mx-auto px-6 py-8">
             {Object.entries(dataMenu).map(([category, items]) => (
               <div
@@ -251,32 +268,27 @@ const Menus = async ({
                       style={{ animationDelay: `${index * 0.1}s` }}
                     >
                       <CardContent className="p-0">
-                        <div className="flex flex-col lg:flex-col">
-                          <div className="relative w-full lg:w-80 h-64 lg:h-48 flex-shrink-0 overflow-hidden rounded-t-lg lg:rounded-l-lg lg:rounded-tr-none image-overlay">
+                        <div className="flex flex-col">
+                          <div className="relative w-full h-64 lg:h-48 overflow-hidden rounded-t-lg image-overlay">
                             <Image
                               src={`http://localhost:5000${item.image_url}`}
                               alt={item.item_name}
                               fill
                               className="object-cover transition-transform duration-500 group-hover:scale-110 my-2"
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                           </div>
 
                           <div className="flex-1 p-6 flex flex-col justify-between">
-                            <div className="space-y-1 flex items-center justify-between">
-                              <div>
-                                <h3 className="text-2xl font-bold text-card-foreground group-hover:text-primary transition-colors duration-200">
-                                  {item.item_name}
-                                </h3>
-                              </div>
-                              <div>
-                                <Badge variant="outline" className="w-fit">
-                                  {item.menu_categories.cat_name}
-                                </Badge>
-                              </div>
+                            <div className="flex items-center justify-between">
+                              <h3 className="text-2xl font-bold text-card-foreground group-hover:text-primary transition-colors duration-200">
+                                {item.item_name}
+                              </h3>
+                              <Badge variant="outline">
+                                {item.menu_categories.cat_name}
+                              </Badge>
                             </div>
 
-                            <div className="mt-3 flex justify-start">
+                            <div className="mt-3">
                               <AddButton
                                 key={item.id}
                                 variant={item.menu_variants}
@@ -293,7 +305,7 @@ const Menus = async ({
           </div>
         </TabsContent>
 
-        <TabsContent value="tab-2" className="mt-0">
+        <TabsContent value="tab-2">
           <div className="max-w-7xl mx-auto px-6 py-8">
             <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
               {reviews.map((review, index) => (
@@ -307,11 +319,9 @@ const Menus = async ({
                       <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-bold text-lg shadow-lg">
                         {review.user.full_name.charAt(0)}
                       </div>
-                      <div>
-                        <h3 className="font-semibold text-lg text-card-foreground">
-                          {review.user.full_name}
-                        </h3>
-                      </div>
+                      <h3 className="font-semibold text-lg text-card-foreground">
+                        {review.user.full_name}
+                      </h3>
                     </div>
 
                     <div className="flex items-center gap-1">
@@ -336,16 +346,15 @@ const Menus = async ({
 
                     <div className="space-y-3">
                       <h4 className="font-semibold text-card-foreground flex items-center gap-2">
-                        <Users className="w-4 h-4" />
-                        Ordered Items:
+                        <Users className="w-4 h-4" /> Ordered Items:
                       </h4>
                       <div className="space-y-2">
-                        {review.order.order_items.map((item, itemIndex) => (
+                        {review.order.order_items.map((item, i) => (
                           <div
-                            key={itemIndex}
+                            key={i}
                             className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg"
                           >
-                            <div className="relative w-12 h-12 rounded-lg overflow-hidden flex-shrink-0">
+                            <div className="relative w-12 h-12 rounded-lg overflow-hidden">
                               <Image
                                 src={`http://localhost:5000${item.menus.image_url}`}
                                 alt={item.product_name}

@@ -12,7 +12,12 @@ import { handleError } from '@/lib/handleError';
 import { api } from '@/api/api';
 import { ShoppingCart, Plus, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
-
+import { useAppSelector, useAppDispatch } from '@/lib/hooks';
+import {
+  setCartLogin,
+  setQuantityCart,
+} from '@/components/GridRestro/cartloginslice';
+import { useRouter } from 'next/navigation';
 const AddButton = ({
   variant,
 }: {
@@ -26,17 +31,27 @@ const AddButton = ({
   const [selectVariant, setselectVariant] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isAdded, setIsAdded] = useState(false);
-
+  const [quantity, setQuantity] = useState(1);
+  const role = useAppSelector((state) => state.roleMiddleware.role);
+  const dispatch = useAppDispatch();
+  const router = useRouter();
   async function handleSubmit() {
     if (!selectVariant) {
       alert('Please select a variant');
       return;
     }
-
+    if (role === 0) {
+      dispatch(setCartLogin(Number(selectVariant)));
+      dispatch(setQuantityCart(quantity));
+      alert('Please login to add to cart');
+      router.push('/auth/login');
+      return;
+    }
     setIsLoading(true);
     try {
       const res = await api.post('/cart', {
         variant: selectVariant,
+        quantity,
       });
       console.log('success', res);
       setIsAdded(true);
@@ -57,7 +72,10 @@ const AddButton = ({
   return (
     <div className="space-y-4 min-w-[280px]">
       <div className="flex flex-row justify-between items-center ">
-        <Select onValueChange={(val) => setselectVariant(val)}>
+        <Select
+          value={selectVariant ?? ''}
+          onValueChange={(val) => setselectVariant(val)}
+        >
           <SelectTrigger className="h-12 border-2 border-border hover:border-primary/50 transition-colors duration-200 bg-card">
             <SelectValue placeholder="Choose your variant" />
           </SelectTrigger>
@@ -83,10 +101,26 @@ const AddButton = ({
 
         {selectedVariantDetails && (
           <div className="text-right text-sm text-muted-foreground">
-            Selected:{' '}
-            <span className="font-semibold text-primary">
-              ₹{selectedVariantDetails.price}
-            </span>
+            <Button
+              onClick={() => setQuantity(quantity + 1)}
+              className="h-8 w-8"
+            >
+              +
+            </Button>
+            <span className="mx-2">{quantity}</span>
+            <Button
+              onClick={() => {
+                if (quantity > 1) {
+                  setQuantity(quantity - 1);
+                } else {
+                  setselectVariant(null);
+                  setQuantity(1);
+                }
+              }}
+              className="h-8 w-8"
+            >
+              -
+            </Button>
           </div>
         )}
       </div>
