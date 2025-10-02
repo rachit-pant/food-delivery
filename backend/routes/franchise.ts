@@ -13,6 +13,11 @@ const postFranchise = require('../controllers/franchise/postFranchise');
 const deleteFranchise = require('../controllers/franchise/deleteFranchise');
 const deleteRestro = require('../controllers/franchise/deleteRestroFranchise');
 const dashboard = require('../controllers/franchise/dashboard');
+const getStaffRoles = require('../controllers/franchise/getStaffRoles');
+const addStaffInvites = require('../controllers/franchise/addStaffInvites');
+const franchiseRoleinfo = require('../controllers/franchise/franchiseRoleinfo');
+const getAllStaff = require('../controllers/franchise/getAllStaff');
+const { login, regUser } = require('../controllers/franchise/createStaff');
 const storage = diskStorage({
   destination: function (
     req: Request,
@@ -33,4 +38,10 @@ router.delete('/:restaurantId', authorize, deleteFranchise);
 router.get('/list/:franchiseId', authorize, list);
 router.delete('/list/:restaurantId/:franchiseId', authorize, deleteRestro);
 router.get('/dashboard/:franchiseId', authorize, dashboard);
+router.get('/getStaffRoles', authorize, getStaffRoles);
+router.post('/addStaffInvites', authorize, addStaffInvites);
+router.post('/franchiseRoleinfo', authorize, franchiseRoleinfo);
+router.get('/getAllStaff', authorize, getAllStaff);
+router.post('/login', login);
+router.post('/register', regUser);
 module.exports = router;

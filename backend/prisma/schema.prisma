@@ -266,6 +266,7 @@ model Franchise {
   owner           users            @relation(fields: [userId], references: [id])
   franchise_staff FranchiseStaff[]
   restaurants     restaurants[]
+  franchise         StaffInvite[]
 }
 
 model staff {
@@ -287,6 +288,7 @@ model StaffRole {
   description String?
   createdAt   DateTime @default(now()) @db.Timestamptz(3)
   staff       staff[]
+  invites     StaffInvite[]
 }
 
 model FranchiseStaff {
@@ -300,13 +302,30 @@ model FranchiseStaff {
   franchise   Franchise @relation(fields: [franchiseId], references: [id])
   staff       staff     @relation(fields: [staffId], references: [id])
 }
+model StaffInvite {
+  id          Int      @id @default(autoincrement())
+  email       String
+  franchiseId Int
+  roleId      Int
+  token       String   @unique
+  status      StaffInviteStatus @default(PENDING)
+  createdAt   DateTime @default(now()) @db.Timestamptz(3)
+  expiresAt   DateTime @db.Timestamptz(3)
+  acceptedAt  DateTime? @db.Timestamptz(3)
 
+  franchise   Franchise @relation(fields: [franchiseId], references: [id])
+  staffRole   StaffRole @relation(fields: [roleId], references: [id])
+}
 model restaurant_categories {
   id          Int           @id @default(autoincrement())
   cat_name    String        @db.VarChar
   restaurants restaurants[]
 }
-
+enum StaffInviteStatus {
+  PENDING
+  ACCEPTED
+  EXPIRED
+}
 enum FranchiseStatus {
   ACTIVE
   INACTIVE
