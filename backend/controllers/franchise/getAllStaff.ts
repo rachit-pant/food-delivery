@@ -18,12 +18,15 @@ const getAllStaff = asyncHandler(async (req: Request, res: Response) => {
   }
   const staff = await prisma.franchiseStaff.findMany({
     where: {
+      isActive: true,
       franchise: {
         userId: userId,
       },
     },
     include: {
       staff: true,
+      staffRole: true,
+      franchise: true,
     },
   });
 

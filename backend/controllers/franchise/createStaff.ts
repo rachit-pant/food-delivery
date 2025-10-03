@@ -76,20 +76,16 @@ const regUser = asyncHandler(async (req: Request, res: Response) => {
         data: {
           userId: user.id,
           fullName: user.full_name,
-          staffRoleId: invite.roleId,
           status: 'ACTIVE',
         },
       });
     }
 
-    const role = await tx.staffRole.findUnique({
-      where: { id: invite.roleId },
-    });
     await tx.franchiseStaff.create({
       data: {
         staffId: staff.id,
         franchiseId: invite.franchiseId,
-        position: role?.role,
+        staffRoleId: invite.roleId,
         isActive: true,
       },
     });
@@ -176,7 +172,6 @@ const login = asyncHandler(async (req: Request, res: Response) => {
         data: {
           userId: user.id,
           fullName: user.full_name,
-          staffRoleId: invite.roleId,
           status: 'ACTIVE',
         },
       });
@@ -188,14 +183,11 @@ const login = asyncHandler(async (req: Request, res: Response) => {
       });
     }
 
-    const role = await tx.staffRole.findUnique({
-      where: { id: invite.roleId },
-    });
     await tx.franchiseStaff.create({
       data: {
         staffId: staff.id,
         franchiseId: invite.franchiseId,
-        position: role?.role,
+        staffRoleId: invite.roleId,
         isActive: true,
       },
     });

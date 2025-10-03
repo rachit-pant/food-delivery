@@ -18,6 +18,13 @@ const addStaffInvites = require('../controllers/franchise/addStaffInvites');
 const franchiseRoleinfo = require('../controllers/franchise/franchiseRoleinfo');
 const getAllStaff = require('../controllers/franchise/getAllStaff');
 const { login, regUser } = require('../controllers/franchise/createStaff');
+const updateRole = require('../controllers/franchise/updateRole');
+const deleteFranchiseStaff = require('../controllers/franchise/deleteFranchiseStaff');
+const {
+  getStaff,
+  StaffNotFranchise,
+} = require('../controllers/franchise/exisitngStaffFranchise');
+const createAlreadyCreatedStaff = require('../controllers/franchise/createAlreadyCreatedStaff');
 const storage = diskStorage({
   destination: function (
     req: Request,
@@ -44,4 +51,13 @@ router.post('/franchiseRoleinfo', authorize, franchiseRoleinfo);
 router.get('/getAllStaff', authorize, getAllStaff);
 router.post('/login', login);
 router.post('/register', regUser);
+router.post('/updateRole', authorize, updateRole);
+router.delete(
+  '/deleteFranchiseStaff/:franchiseStaffId',
+  authorize,
+  deleteFranchiseStaff
+);
+router.get('/getStaff', authorize, getStaff);
+router.get('/existingStaffFranchise/:staffId', authorize, StaffNotFranchise);
+router.post('/createAlreadyCreatedStaff', authorize, createAlreadyCreatedStaff);
 module.exports = router;

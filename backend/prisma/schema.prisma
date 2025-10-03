@@ -273,12 +273,10 @@ model staff {
   id          Int              @id @default(autoincrement())
   userId      Int
   fullName    String?
-  staffRoleId Int
   status      StaffStatus      @default(ACTIVE)
   createdAt   DateTime         @default(now()) @db.Timestamptz(3)
   updatedAt   DateTime         @updatedAt @db.Timestamptz(3)
   franchises  FranchiseStaff[]
-  role        StaffRole        @relation(fields: [staffRoleId], references: [id])
   user        users            @relation(fields: [userId], references: [id])
 }
 
@@ -287,7 +285,7 @@ model StaffRole {
   role        String
   description String?
   createdAt   DateTime @default(now()) @db.Timestamptz(3)
-  staff       staff[]
+  staff       FranchiseStaff[]
   invites     StaffInvite[]
 }
 
@@ -295,12 +293,13 @@ model FranchiseStaff {
   id          Int       @id @default(autoincrement())
   staffId     Int
   franchiseId Int
-  position    String?
+  staffRoleId Int
   isActive    Boolean   @default(true)
   assignedAt  DateTime  @default(now()) @db.Timestamptz(3)
   endedAt     DateTime? @db.Timestamptz(3)
   franchise   Franchise @relation(fields: [franchiseId], references: [id])
   staff       staff     @relation(fields: [staffId], references: [id])
+  staffRole   StaffRole @relation(fields: [staffRoleId], references: [id])
 }
 model StaffInvite {
   id          Int      @id @default(autoincrement())
