@@ -39,8 +39,9 @@ export function AppSidebar() {
       icon: Search,
     },
   ];
-  const isMerchant = [2, 3].includes(role);
+  const isMerchant = [2].includes(role);
   const isSubscription = [1, 2].includes(role);
+  const isStaff = [4].includes(role);
   return (
     <>
       <Sidebar className="sticky top-17 left-0 h-[calc(100vh-5rem)]">
@@ -98,6 +99,28 @@ export function AppSidebar() {
                       <a href="/merchant/franchise">
                         <BookText />
                         <span>Franchise</span>
+                      </a>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                )}
+                {isMerchant && (
+                  <SidebarMenuItem key="merchantFranchise">
+                    <SidebarMenuButton asChild>
+                      {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+                      <a href="/merchant/franchise/manage">
+                        <BookText />
+                        <span>Staff</span>
+                      </a>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                )}
+                {isStaff && (
+                  <SidebarMenuItem key="staffFranchise">
+                    <SidebarMenuButton asChild>
+                      {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+                      <a href="/staff">
+                        <BookText />
+                        <span>Jobs</span>
                       </a>
                     </SidebarMenuButton>
                   </SidebarMenuItem>

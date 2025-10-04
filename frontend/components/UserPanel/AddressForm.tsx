@@ -22,7 +22,7 @@ type AddressData = {
   };
 };
 
-const AddressForm = () => {
+const AddressForm = ({ redirect }: { redirect?: string }) => {
   const [data, setData] = useState<AddressData[]>([]);
   const [loading, setLoading] = useState(true);
   const [refresh, setRefresh] = useState(false);
@@ -190,7 +190,7 @@ const AddressForm = () => {
                 </div>
               </div>
               <div className="p-6">
-                <AddressEnter update={refreshData} />
+                <AddressEnter update={refreshData} redirect={redirect} />
               </div>
             </div>
           </div>

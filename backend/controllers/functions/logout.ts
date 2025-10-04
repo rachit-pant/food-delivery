@@ -10,6 +10,7 @@ const logout = asyncHandler(async (req: Request, res: Response) => {
   };
   res.clearCookie('accesstoken', settings);
   res.clearCookie('refreshtoken', settings);
+  res.clearCookie('staffToken', settings);
   res.status(200).json({
     msessage: 'Logged out ',
   });

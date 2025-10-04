@@ -1,16 +1,24 @@
 import { PrismaClient } from '../generated/prisma';
 import { Request, Response, NextFunction } from 'express';
 import asyncHandler from 'express-async-handler';
+const { BetterError } = require('../middleware/errorHandler');
 const prisma = new PrismaClient();
 interface JwtPayload {
   id: number;
   role: number;
   email: string;
 }
+interface StaffPayload {
+  id: number;
+  role: string;
+  franchiseId: number;
+}
+
 declare global {
   namespace Express {
     interface Request {
       user?: JwtPayload;
+      staff?: StaffPayload;
     }
   }
 }
@@ -22,12 +30,22 @@ const DAR = asyncHandler(
         id: ResId,
       },
     });
+    if (
+      req.staff &&
+      req.staff.id === 1 &&
+      req.staff.franchiseId === ResData?.franchiseId
+    ) {
+      return next();
+    }
     if (ResData?.user_id === req.user?.id || req.user?.role === 3) {
-      next();
+      return next();
     } else {
-      const error = new Error('you dont have permission');
-      (error as any).statusCode = 403;
-      throw error;
+      throw new BetterError(
+        'you dont have permission',
+        403,
+        'FORBIDDEN',
+        'Permission Error'
+      );
     }
   }
 );

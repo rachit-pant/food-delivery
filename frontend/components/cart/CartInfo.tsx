@@ -287,6 +287,11 @@ const CartInfo = () => {
                     </svg>
                     Delivery Address
                   </label>
+                  <Button
+                    onClick={() => router.push('/user/address?redirect=/cart')}
+                  >
+                    Add Address
+                  </Button>
                   <Select onValueChange={(value) => setStorage(value)}>
                     <SelectTrigger className="h-12 bg-background border-border/50 rounded-xl">
                       <SelectValue placeholder="Select delivery address" />

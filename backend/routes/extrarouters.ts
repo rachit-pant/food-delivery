@@ -9,6 +9,7 @@ const search = require('../controllers/functions/search');
 const PostSubscription = require('../controllers/subscription/PostSubscription');
 const CheckoutItems = require('../controllers/subscription/CheckoutItems');
 const Dashboard = require('../controllers/functions/dashboard');
+const cartCount = require('../controllers/functions/cartCount');
 router.get('/refreshToken', refreshToken);
 
 router.post('/logout', authorize, logout);
@@ -19,4 +20,5 @@ router.get('/search', search);
 router.post('/subscribe', authorize, PostSubscription);
 router.get('/checkoutItemsView', authorize, CheckoutItems);
 router.get('/dashboard', authorize, Dashboard);
+router.get('/cartCount', authorize, cartCount);
 module.exports = router;

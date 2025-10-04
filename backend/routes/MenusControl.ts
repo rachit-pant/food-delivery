@@ -3,6 +3,7 @@ const router = express.Router({ mergeParams: true });
 const MenusAdd = require('../controllers/menu/PostMenus');
 const OwnerAdminAcess = require('../middleware/OwnerAdminAcess');
 const authorize = require('../middleware/authorize');
+const staffIdentifier = require('../middleware/StaffIdentifier');
 const GetMenus = require('../controllers/menu/GetMenus');
 const DeleteMenus = require('../controllers/menu/DeleteMenus');
 const PatchMenus = require('../controllers/menu/PatchMenus');
@@ -27,12 +28,31 @@ const storage = diskStorage({
   },
 });
 const upload = multer({ storage });
-router.post('/', authorize, OwnerAdminAcess, upload.single('image'), MenusAdd);
+router.post(
+  '/',
+  authorize,
+  staffIdentifier,
+  OwnerAdminAcess,
+  upload.single('image'),
+  MenusAdd
+);
 router.get('/', GetMenus);
 
-router.patch('/:menuId', authorize, OwnerAdminAcess, PatchMenus);
+router.patch(
+  '/:menuId',
+  authorize,
+  staffIdentifier,
+  OwnerAdminAcess,
+  PatchMenus
+);
 
-router.delete('/:menuId', authorize, OwnerAdminAcess, DeleteMenus);
+router.delete(
+  '/:menuId',
+  authorize,
+  staffIdentifier,
+  OwnerAdminAcess,
+  DeleteMenus
+);
 
 router.get('/reviews', authorize, getItemsReviews);
 

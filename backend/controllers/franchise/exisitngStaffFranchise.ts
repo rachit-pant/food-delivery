@@ -20,6 +20,7 @@ const StaffNotFranchise = asyncHandler(async (req: Request, res: Response) => {
       franchise_staff: {
         none: {
           staffId: staffId,
+          isActive: true,
         },
       },
     },

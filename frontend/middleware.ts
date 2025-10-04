@@ -7,15 +7,17 @@ interface JwtPayload {
   role: number;
 }
 
-const roleRoutes = ['/merchant', 'subscription'];
+const roleRoutes = ['/merchant', '/subscription'];
+const staffRoutes = ['/staff'];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
   if (pathname === '/cart/success' || pathname === '/cart/failure') {
     return NextResponse.next();
   }
-  const refreshtoken = request.cookies.get('refreshtoken')?.value;
 
+  const refreshtoken = request.cookies.get('refreshtoken')?.value;
   if (!refreshtoken) {
     return NextResponse.redirect(new URL('/auth/login', request.url));
   }
@@ -31,8 +33,38 @@ export async function middleware(request: NextRequest) {
     console.error('JWT verify error:', err);
     return NextResponse.redirect(new URL('/auth/login', request.url));
   }
+
+  let decodedStaff: JwtPayload | undefined;
+
+  if (decoded.role === 4) {
+    const staffToken = request.cookies.get('staffToken')?.value;
+
+    if (staffToken) {
+      try {
+        const { payload } = await jwtVerify(
+          staffToken,
+          new TextEncoder().encode(process.env.REFRESH_SECRET_KEY!)
+        );
+        decodedStaff = payload as unknown as JwtPayload;
+      } catch (err) {
+        console.error('Invalid staff token:', err);
+      }
+    }
+  }
+  console.log('decoded', decoded, 'decodedStaff', decodedStaff);
   if (roleRoutes.some((route) => pathname.startsWith(route))) {
+    const isMerchantIdRoute = /^\/merchant\/\d+$/.test(pathname);
     if (![2, 3].includes(decoded.role)) {
+      if (
+        !(decoded.role === 4 && decodedStaff?.id === 1 && isMerchantIdRoute)
+      ) {
+        return NextResponse.redirect(new URL('/user', request.url));
+      }
+    }
+  }
+
+  if (staffRoutes.some((route) => pathname.startsWith(route))) {
+    if (![4].includes(decoded.role)) {
       return NextResponse.redirect(new URL('/user', request.url));
     }
   }
@@ -47,5 +79,6 @@ export const config = {
     '/orders/:path*',
     '/merchant/:path*',
     '/subscription/:path*',
+    '/staff/:path*',
   ],
 };

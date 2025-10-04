@@ -26,6 +26,7 @@ import { api } from '@/api/api';
 import { handleError } from '@/lib/handleError';
 import { AddreessPost } from '@/api/address';
 import { MapPin, Globe, Building, Home } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 type countries = {
   id: number;
@@ -42,7 +43,14 @@ type city = {
   state_id: number;
 };
 
-const AddressEnter = ({ update }: { update: () => void }) => {
+const AddressEnter = ({
+  update,
+  redirect,
+}: {
+  update: () => void;
+  redirect?: string;
+}) => {
+  const router = useRouter();
   const form = useForm<z.infer<typeof addressSchema>>({
     resolver: zodResolver(addressSchema),
     defaultValues: {
@@ -68,6 +76,9 @@ const AddressEnter = ({ update }: { update: () => void }) => {
       });
       setState([]);
       setCity([]);
+      if (redirect !== '0') {
+        router.push(`/cart`);
+      }
     } catch (error) {
       console.error('Error', error);
       const err = handleError(error);

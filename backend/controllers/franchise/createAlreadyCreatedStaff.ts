@@ -19,6 +19,7 @@ const createAlreadyCrestedStaff = expressAsyncHandler(
         staffId: Number(staffId),
         franchiseId: Number(franchiseId),
         staffRoleId: Number(roleId),
+        isActive: true,
       },
     });
     if (existingStaff) {
@@ -34,6 +35,7 @@ const createAlreadyCrestedStaff = expressAsyncHandler(
         staffId: Number(staffId),
         franchiseId: Number(franchiseId),
         staffRoleId: Number(roleId),
+        isActive: true,
       },
     });
     res.status(200).json({

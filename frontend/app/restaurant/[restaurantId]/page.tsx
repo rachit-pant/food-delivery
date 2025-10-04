@@ -184,7 +184,7 @@ const Menus = async ({
             </div>
 
             <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
-              {todayTimings.length > 0 ? (
+              {todayTimings.length > 0 &&
                 todayTimings.map((timing) => (
                   <Badge
                     key={timing.id}
@@ -195,16 +195,7 @@ const Menus = async ({
                     {timing.week_day}: {formatTime(timing.start_time)} -{' '}
                     {formatTime(timing.end_time)}
                   </Badge>
-                ))
-              ) : (
-                <Badge
-                  variant="destructive"
-                  className="px-4 py-1.5 text-sm font-medium"
-                >
-                  <Clock className="w-3 h-3 mr-1" />
-                  Closed Today
-                </Badge>
-              )}
+                ))}
             </div>
           </div>
         </div>

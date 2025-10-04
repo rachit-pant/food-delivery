@@ -25,6 +25,8 @@ const {
   StaffNotFranchise,
 } = require('../controllers/franchise/exisitngStaffFranchise');
 const createAlreadyCreatedStaff = require('../controllers/franchise/createAlreadyCreatedStaff');
+const getFranchiseOfStaff = require('../controllers/franchise/getFranchiseOfStaff');
+const getUserRole = require('../controllers/franchise/getUserRole');
 const storage = diskStorage({
   destination: function (
     req: Request,
@@ -60,4 +62,6 @@ router.delete(
 router.get('/getStaff', authorize, getStaff);
 router.get('/existingStaffFranchise/:staffId', authorize, StaffNotFranchise);
 router.post('/createAlreadyCreatedStaff', authorize, createAlreadyCreatedStaff);
+router.get('/getFranchiseOfStaff', authorize, getFranchiseOfStaff);
+router.get('/getUserRole/:franchiseId', authorize, getUserRole);
 module.exports = router;
