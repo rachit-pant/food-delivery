@@ -86,7 +86,9 @@ const AddStaff = () => {
 
   const onSubmit = async (data: AddStaffData) => {
     try {
-      const response = await api.post('/franchise/addStaffInvites', data);
+      const response = await api.post('/franchise/addStaffInvites', data, {
+        timeout: 150000,
+      });
       console.log(response.data);
       form.reset();
     } catch (error) {

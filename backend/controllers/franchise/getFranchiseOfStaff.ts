@@ -49,6 +49,7 @@ const getFranchiseOfStaff = expressAsyncHandler(
         franchise_staff: {
           where: {
             isActive: true,
+            staffId: staff.id,
           },
           select: {
             staffRole: true,

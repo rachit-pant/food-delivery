@@ -114,7 +114,7 @@ const addStaffInvites = expressAsyncHandler(
         (err as Error).message
       );
     }
-
+    console.time('addStaffInvites');
     res.status(200).json({
       success: true,
       message: 'Invitation sent successfully',
