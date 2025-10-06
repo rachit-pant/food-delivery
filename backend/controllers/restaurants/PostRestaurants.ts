@@ -14,6 +14,11 @@ const AddResta = asyncHandler(async (req: Request, res: Response) => {
     start_time: `1970-01-01T${t.start_time}:00Z`,
     end_time: `1970-01-01T${t.end_time}:00Z`,
   }));
+  const latitude = parseFloat(req.body.latitude);
+  const longitude = parseFloat(req.body.longitude);
+  if (!latitude || !longitude) {
+    throw new Error('Latitude and longitude are required');
+  }
   const AddResta = await prisma.restaurants.create({
     data: {
       user_id: UserId,
@@ -23,6 +28,8 @@ const AddResta = asyncHandler(async (req: Request, res: Response) => {
       rating: 4,
       status: 'active',
       imageurl: `/images/${image}`,
+      lat: latitude,
+      lng: longitude,
     },
     select: {
       id: true,

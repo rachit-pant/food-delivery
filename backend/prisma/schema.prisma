@@ -113,6 +113,7 @@ model orders {
   delivery_charges Float?
   tax_amount       Float?
   net_amount       Float?
+  delivery_agent_id Int?
   payment_status   payment_status?
   status           order_status?    @default(placed)
   createdAt        DateTime         @default(now())
@@ -122,6 +123,7 @@ model orders {
   order_payments   order_payments[]
   restaurants      restaurants?     @relation(fields: [restaurant_id], references: [id], onUpdate: NoAction)
   users            users?           @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  delivery_agents  delivery_agents? @relation(fields: [delivery_agent_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   reviews          reviews[]
 }
 
@@ -143,6 +145,8 @@ model restaurants {
   rating                   Float?
   status                   restaurant_status?       @default(inactive)
   imageurl                 String?
+  lat                      Float?
+  lng                      Float?
   search_vector            Unsupported("tsvector")?
   franchiseId              Int?
   restaurant_categories_id Int                      @default(1)
@@ -155,7 +159,7 @@ model restaurants {
   restaurant_categories    restaurant_categories    @relation(fields: [restaurant_categories_id], references: [id])
   users                    users?                   @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   reviews                  reviews[]
-
+  @@index([lat, lng])
   @@index([search_vector], map: "restaurants_search_gin", type: Gin)
 }
 
@@ -172,10 +176,13 @@ model user_addresses {
   user_id         Int?
   address         String?
   city_id         Int?
+  lat             Float?
+  lng             Float?
   is_default      Boolean           @default(false)
   order_addresses order_addresses[]
   cities          cities?           @relation(fields: [city_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   users           users?            @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  @@index([lat, lng])
 }
 
 model user_devices {
@@ -222,6 +229,7 @@ model users {
   staff          staff[]
   user_addresses user_addresses[]
   user_devices   user_devices[]
+  delivery_agents delivery_agents?
   user_roles     user_roles?      @relation(fields: [role_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
@@ -314,6 +322,17 @@ model StaffInvite {
 
   franchise   Franchise @relation(fields: [franchiseId], references: [id])
   staffRole   StaffRole @relation(fields: [roleId], references: [id])
+}
+model delivery_agents {
+  id         Int       @id @default(autoincrement())
+  user_id    Int       @unique
+  currentLat Float?
+  currentLng Float?
+  status     StaffStatus @default(ACTIVE)
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  user       users      @relation(fields: [user_id], references: [id])
+  orders     orders[]
 }
 model restaurant_categories {
   id          Int           @id @default(autoincrement())

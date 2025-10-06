@@ -6,10 +6,19 @@ const createAddr = asyncHandler(async (req: Request, res: Response) => {
   const Id = Number(req.user?.id);
   const { address } = req.body;
   const city_id = Number(req.body.city_id);
+  const { latitude, longitude } = req.body;
 
   if (!address || !city_id) {
     throw new BetterError(
       'Address and City ID are required',
+      400,
+      'BAD_REQUEST',
+      'User Error'
+    );
+  }
+  if (!latitude || !longitude) {
+    throw new BetterError(
+      'Latitude and longitude are required',
       400,
       'BAD_REQUEST',
       'User Error'
@@ -30,6 +39,8 @@ const createAddr = asyncHandler(async (req: Request, res: Response) => {
         address,
         city_id,
         is_default: findAddress.length === 0,
+        lat: latitude,
+        lng: longitude,
       },
     });
 

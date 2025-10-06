@@ -34,6 +34,7 @@ import { api } from '@/api/api';
 import { handleError } from '@/lib/handleError';
 import { useRouter } from 'next/navigation';
 import Dropzone from '@/components/Merchant/Dropzone';
+import { Autocomplete, Libraries, LoadScript } from '@react-google-maps/api';
 
 const daySchema = z
   .object({
@@ -159,7 +160,7 @@ export default function NewRestaurantForm() {
       }
     })();
   }, []);
-
+  const libraries: Libraries = ['places'];
   const countryId = form.watch('countryId');
   useEffect(() => {
     if (!countryId) {
@@ -207,11 +208,35 @@ export default function NewRestaurantForm() {
       }
     })();
   }, [stateId]);
+  const [autocomplete, setAutocomplete] =
+    useState<google.maps.places.Autocomplete | null>(null);
+  const [coordinates, setCoordinates] = useState<{
+    lat: number;
+    lng: number;
+  } | null>(null);
+  const onLoad = (autoC: google.maps.places.Autocomplete) =>
+    setAutocomplete(autoC);
 
+  const onPlaceChanged = () => {
+    if (!autocomplete) return;
+    const place = autocomplete.getPlace();
+    if (place.geometry?.location) {
+      const lat = place.geometry.location.lat();
+      const lng = place.geometry.location.lng();
+      setCoordinates({ lat, lng });
+      form.setValue('address', place.formatted_address ?? '');
+    }
+  };
   const onSubmit = async (values: RestaurantFormValues) => {
     try {
       setSubmitting(true);
-
+      if (!coordinates?.lat || !coordinates?.lng) {
+        form.setError('root', {
+          type: 'server',
+          message: 'Please select a location',
+        });
+        return;
+      }
       const hasImage = values.image instanceof File;
       if (hasImage) {
         const fd = new FormData();
@@ -223,7 +248,10 @@ export default function NewRestaurantForm() {
         fd.append('city_id', values.cityId);
 
         fd.append('image', values.image as File);
-
+        if (coordinates) {
+          fd.append('latitude', coordinates.lat.toString());
+          fd.append('longitude', coordinates.lng.toString());
+        }
         const timings = days.map((d) => ({
           week_day: d,
 
@@ -243,7 +271,8 @@ export default function NewRestaurantForm() {
           country_id: values.countryId,
           state_id: values.stateId,
           city_id: values.cityId,
-
+          latitude: coordinates.lat,
+          longitude: coordinates.lng,
           timings: days.map((d) => ({
             week_day: d,
 
@@ -251,6 +280,7 @@ export default function NewRestaurantForm() {
             end_time: values.timings[d].end || null,
           })),
         };
+
         await api.post('/restaurants', payload);
       }
 
@@ -268,287 +298,299 @@ export default function NewRestaurantForm() {
   const dayAbbrev = (d: string) => d.slice(0, 3);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6">
-      <div className="max-w-5xl mx-auto space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-slate-900">
-              Add New Restaurant
-            </h1>
-            <p className="text-slate-600">
-              Create a restaurant with location and weekly hours
-            </p>
-          </div>
-          <Badge variant="secondary" className="text-slate-700">
-            Merchant
-          </Badge>
-        </div>
-
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <Card className="border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Building2 className="w-5 h-5" /> Basic Information
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="grid gap-4 md:grid-cols-2">
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem className="md:col-span-2">
-                      <FormLabel>Restaurant Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="e.g. Spice Route" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="address"
-                  render={({ field }) => (
-                    <FormItem className="md:col-span-2">
-                      <FormLabel>Address</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          rows={3}
-                          placeholder="Street, Area, Landmark"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="description"
-                  render={({ field }) => (
-                    <FormItem className="md:col-span-2">
-                      <FormLabel>Description</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          rows={3}
-                          placeholder="Short description (optional)"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="image"
-                  rules={{ required: true }}
-                  render={({ field }) => (
-                    <FormItem className="md:col-span-2">
-                      <FormLabel>Cover Image</FormLabel>
-                      <FormControl>
-                        <Dropzone
-                          onFileUpload={(file: File) => field.onChange(file)}
-                        />
-                      </FormControl>
-                      <FormDescription>PNG/JPG up to ~5MB</FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </CardContent>
-            </Card>
-
-            <Card className="border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <MapPin className="w-5 h-5" /> Location
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="grid gap-4 md:grid-cols-3">
-                <FormField
-                  control={form.control}
-                  name="countryId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Country</FormLabel>
-                      <Select
-                        value={field.value}
-                        onValueChange={field.onChange}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select country" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {countries.map((c) => (
-                            <SelectItem key={c.id} value={c.id}>
-                              {c.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="stateId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>State</FormLabel>
-                      <Select
-                        value={field.value}
-                        onValueChange={field.onChange}
-                        disabled={!countryId}
-                      >
-                        <SelectTrigger>
-                          <SelectValue
-                            placeholder={
-                              countryId
-                                ? 'Select state'
-                                : 'Select country first'
-                            }
-                          />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {states.map((s) => (
-                            <SelectItem key={s.id} value={s.id}>
-                              {s.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="cityId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>City</FormLabel>
-                      <Select
-                        value={field.value}
-                        onValueChange={field.onChange}
-                        disabled={!stateId}
-                      >
-                        <SelectTrigger>
-                          <SelectValue
-                            placeholder={
-                              stateId ? 'Select city' : 'Select state first'
-                            }
-                          />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {cities.map((c) => (
-                            <SelectItem key={c.id} value={c.id}>
-                              {c.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </CardContent>
-            </Card>
-
-            <Card className="border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Clock className="w-5 h-5" /> Opening Hours
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {days.map((d) => (
-                  <div
-                    key={d}
-                    className="grid grid-cols-1  md:grid-cols-[100px_100px_1fr_1fr] items-center gap-3 px-10"
-                  >
-                    <div className="font-medium">{dayAbbrev(d)}</div>
-
-                    <FormField
-                      control={form.control}
-                      name={`timings.${d}.open` as const}
-                      render={({ field }) => (
-                        <FormItem className="flex items-center gap-2">
-                          <FormLabel className="text-slate-500">Open</FormLabel>
-                          <FormControl>
-                            <Switch
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name={`timings.${d}.start` as const}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="sr-only">Start</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="time"
-                              disabled={
-                                !form.getValues(`timings.${d}.open` as const)
-                              }
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name={`timings.${d}.end` as const}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="sr-only">End</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="time"
-                              disabled={
-                                !form.getValues(`timings.${d}.open` as const)
-                              }
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                ))}
-                <p className="text-xs text-slate-500 text-center">
-                  If a day is closed, toggle off Open — start/end are ignored.
-                </p>
-              </CardContent>
-            </Card>
-
-            <div className="flex items-center justify-end gap-3">
-              <Button type="submit" disabled={submitting}>
-                <Save className="w-4 h-4 mr-2" />{' '}
-                {submitting ? 'Saving...' : 'Save Restaurant'}
-              </Button>
+    <LoadScript
+      googleMapsApiKey={process.env.NEXT_PUBLIC_MAPS_PLACES_API_KEY!}
+      libraries={libraries}
+    >
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6">
+        <div className="max-w-5xl mx-auto space-y-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-slate-900">
+                Add New Restaurant
+              </h1>
+              <p className="text-slate-600">
+                Create a restaurant with location and weekly hours
+              </p>
             </div>
-          </form>
-        </Form>
+            <Badge variant="secondary" className="text-slate-700">
+              Merchant
+            </Badge>
+          </div>
+
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <Card className="border-0 shadow-lg">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Building2 className="w-5 h-5" /> Basic Information
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="grid gap-4 md:grid-cols-2">
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem className="md:col-span-2">
+                        <FormLabel>Restaurant Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="e.g. Spice Route" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="address"
+                    render={({ field }) => (
+                      <FormItem className="md:col-span-2">
+                        <FormLabel>Address</FormLabel>
+                        <FormControl>
+                          <Autocomplete
+                            onLoad={onLoad}
+                            onPlaceChanged={onPlaceChanged}
+                          >
+                            <Input
+                              placeholder="123 Main Street, Apt 4B"
+                              {...field}
+                              className="h-12 rounded-xl border-2 border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all duration-200"
+                            />
+                          </Autocomplete>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="description"
+                    render={({ field }) => (
+                      <FormItem className="md:col-span-2">
+                        <FormLabel>Description</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            rows={3}
+                            placeholder="Short description (optional)"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="image"
+                    rules={{ required: true }}
+                    render={({ field }) => (
+                      <FormItem className="md:col-span-2">
+                        <FormLabel>Cover Image</FormLabel>
+                        <FormControl>
+                          <Dropzone
+                            onFileUpload={(file: File) => field.onChange(file)}
+                          />
+                        </FormControl>
+                        <FormDescription>PNG/JPG up to ~5MB</FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </CardContent>
+              </Card>
+
+              <Card className="border-0 shadow-lg">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <MapPin className="w-5 h-5" /> Location
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="grid gap-4 md:grid-cols-3">
+                  <FormField
+                    control={form.control}
+                    name="countryId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Country</FormLabel>
+                        <Select
+                          value={field.value}
+                          onValueChange={field.onChange}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select country" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {countries.map((c) => (
+                              <SelectItem key={c.id} value={c.id}>
+                                {c.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="stateId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>State</FormLabel>
+                        <Select
+                          value={field.value}
+                          onValueChange={field.onChange}
+                          disabled={!countryId}
+                        >
+                          <SelectTrigger>
+                            <SelectValue
+                              placeholder={
+                                countryId
+                                  ? 'Select state'
+                                  : 'Select country first'
+                              }
+                            />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {states.map((s) => (
+                              <SelectItem key={s.id} value={s.id}>
+                                {s.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="cityId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>City</FormLabel>
+                        <Select
+                          value={field.value}
+                          onValueChange={field.onChange}
+                          disabled={!stateId}
+                        >
+                          <SelectTrigger>
+                            <SelectValue
+                              placeholder={
+                                stateId ? 'Select city' : 'Select state first'
+                              }
+                            />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {cities.map((c) => (
+                              <SelectItem key={c.id} value={c.id}>
+                                {c.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </CardContent>
+              </Card>
+
+              <Card className="border-0 shadow-lg">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Clock className="w-5 h-5" /> Opening Hours
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {days.map((d) => (
+                    <div
+                      key={d}
+                      className="grid grid-cols-1  md:grid-cols-[100px_100px_1fr_1fr] items-center gap-3 px-10"
+                    >
+                      <div className="font-medium">{dayAbbrev(d)}</div>
+
+                      <FormField
+                        control={form.control}
+                        name={`timings.${d}.open` as const}
+                        render={({ field }) => (
+                          <FormItem className="flex items-center gap-2">
+                            <FormLabel className="text-slate-500">
+                              Open
+                            </FormLabel>
+                            <FormControl>
+                              <Switch
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name={`timings.${d}.start` as const}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="sr-only">Start</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="time"
+                                disabled={
+                                  !form.getValues(`timings.${d}.open` as const)
+                                }
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name={`timings.${d}.end` as const}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="sr-only">End</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="time"
+                                disabled={
+                                  !form.getValues(`timings.${d}.open` as const)
+                                }
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  ))}
+                  <p className="text-xs text-slate-500 text-center">
+                    If a day is closed, toggle off Open — start/end are ignored.
+                  </p>
+                </CardContent>
+              </Card>
+
+              <div className="flex items-center justify-end gap-3">
+                <Button type="submit" disabled={submitting}>
+                  <Save className="w-4 h-4 mr-2" />{' '}
+                  {submitting ? 'Saving...' : 'Save Restaurant'}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </div>
       </div>
-    </div>
+    </LoadScript>
   );
 }

@@ -5,10 +5,14 @@ export const AddreessPost = async (data: {
   city: string;
   country: string;
   state: string;
+  latitude: number;
+  longitude: number;
 }) => {
   const payload = {
     address: data.address,
     city_id: data.city,
+    latitude: data.latitude,
+    longitude: data.longitude,
   };
   const res = await api.post('/users/address', payload);
   return res.data;

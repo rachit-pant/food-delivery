@@ -296,14 +296,20 @@ const CartInfo = () => {
                     <SelectTrigger className="h-12 bg-background border-border/50 rounded-xl">
                       <SelectValue placeholder="Select delivery address" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="max-h-60 w-[300px] overflow-y-auto">
                       <SelectGroup>
                         {address.map((details) => (
                           <SelectItem
                             key={details.id}
                             value={String(details.id)}
+                            className="w-full overflow-hidden text-ellipsis whitespace-nowrap"
                           >
-                            {details.address}
+                            <div
+                              className="w-[260px] overflow-hidden text-ellipsis whitespace-nowrap"
+                              title={details.address}
+                            >
+                              {details.address}
+                            </div>
                           </SelectItem>
                         ))}
                       </SelectGroup>
