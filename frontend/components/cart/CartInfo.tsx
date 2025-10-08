@@ -155,8 +155,8 @@ const CartInfo = () => {
         payment_status: paymentstatus,
         restaurant_id: resId,
       });
-      console.log('success', res);
-      router.push('/orders');
+      console.log('success', res.data.order.id);
+      router.push(`/delivery/${res.data.order.id}`);
     } catch (error) {
       const err = handleError(error);
       console.log(err);

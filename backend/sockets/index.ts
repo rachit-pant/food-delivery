@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { parse } from 'cookie';
 import { Server, Socket } from 'socket.io';
+import prisma from '../prisma/client';
 
 interface JwtPayload {
   id: number;
@@ -43,7 +44,60 @@ function socketLoader(io: Server) {
       const existing = onlineUsers.get(socket.user.id) || [];
       onlineUsers.set(socket.user.id, [...existing, socket.id]);
     }
+    socket.on('OrderId', async (orderId: string) => {
+      if (socket.user?.id) {
+        const userSocketId: string[] | [] =
+          onlineUsers.get(socket.user.id) || [];
 
+        const orderData = await prisma.orders.findUnique({
+          where: { id: Number(orderId), user_id: socket.user?.id },
+          select: {
+            restaurants: {
+              select: {
+                address: true,
+                lat: true,
+                lng: true,
+                name: true,
+                id: true,
+              },
+            },
+            order_addresses: {
+              select: {
+                user_addresses: {
+                  select: {
+                    address: true,
+                    lat: true,
+                    lng: true,
+                    id: true,
+                  },
+                },
+              },
+            },
+          },
+        });
+
+        const restaurant = orderData?.restaurants;
+
+        const userAddress = orderData?.order_addresses?.user_addresses;
+
+        if (userSocketId.length > 0) {
+          userSocketId.forEach((id) => {
+            io.to(id).emit('OrderLocations', {
+              restaurant_address: restaurant?.address,
+              restaurant_lat: restaurant?.lat,
+              restaurant_lng: restaurant?.lng,
+              restaurant_name: restaurant?.name,
+              restaurant_id: restaurant?.id,
+              user_address: userAddress?.address,
+              user_address_lat: userAddress?.lat,
+              user_address_lng: userAddress?.lng,
+              user_address_id: userAddress?.id,
+              order_id: orderId,
+            });
+          });
+        }
+      }
+    });
     socket.on('disconnect', () => {
       if (socket.user?.id) {
         const existing = onlineUsers.get(socket.user.id) || [];
@@ -52,7 +106,6 @@ function socketLoader(io: Server) {
           onlineUsers.delete(socket.user.id);
         } else {
           onlineUsers.set(socket.user.id, updated);
-          //need to look at later
         }
       }
     });
