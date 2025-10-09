@@ -56,6 +56,11 @@ interface Coordinates {
   user_address_id: number;
   order_id: number;
 }
+interface DeliveryAgentLocation {
+  lat: number;
+  lng: number;
+  orderId: number;
+}
 
 const containerStyle = {
   width: '100%',
@@ -66,17 +71,23 @@ const DeliveryPage = ({ orderId }: { orderId: string }) => {
   const [coordinates, setCoordinates] = useState<Coordinates | null>(null);
   const [orderDetails, setOrderDetails] = useState<Order | null>(null);
   const [routePath, setRoutePath] = useState<google.maps.LatLngLiteral[]>([]);
+  const [deliveryAgentLocation, setDeliveryAgentLocation] =
+    useState<DeliveryAgentLocation | null>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
 
   useEffect(() => {
     const socket = getSocket();
     socket.emit('OrderId', orderId);
+    socket.emit('joinRoom', orderId);
     const handleOrderLocations = (data: Coordinates) => {
       console.log(' OrderLocations received');
       setCoordinates(data);
       console.log('OrderLocations data:', data);
     };
     socket.on('OrderLocations', handleOrderLocations);
+    socket.on('DeliveryAgentLocation', (data: DeliveryAgentLocation) => {
+      setDeliveryAgentLocation(data);
+    });
     return () => {
       socket.off('OrderLocations', handleOrderLocations);
     };
@@ -186,6 +197,15 @@ const DeliveryPage = ({ orderId }: { orderId: string }) => {
                   }}
                   label="🏠"
                 />
+                {deliveryAgentLocation && (
+                  <Marker
+                    position={{
+                      lat: deliveryAgentLocation.lat,
+                      lng: deliveryAgentLocation.lng,
+                    }}
+                    label="🚗"
+                  />
+                )}
 
                 {routePath.length > 0 && (
                   <Polyline

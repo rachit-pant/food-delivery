@@ -19,7 +19,9 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { useAppSelector } from '@/lib/hooks';
-
+import { useState } from 'react';
+import { Button } from './ui/button';
+import DeliveryStaff from './Delivery/DeliveryStaff';
 export function AppSidebar() {
   const role = useAppSelector((state) => state.roleMiddleware.role);
   const items = [
@@ -42,6 +44,8 @@ export function AppSidebar() {
   const isMerchant = [2].includes(role);
   const isSubscription = [1, 2].includes(role);
   const isStaff = [4].includes(role);
+  const isDeliveryAgent = [5].includes(role);
+  const [isDeliveryAgentOpen, setIsDeliveryAgentOpen] = useState(false);
   return (
     <>
       <Sidebar className="sticky top-17 left-0 h-[calc(100vh-5rem)]">
@@ -124,6 +128,27 @@ export function AppSidebar() {
                       </a>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
+                )}
+                {isDeliveryAgent && (
+                  <SidebarMenuItem key="deliveryAgent">
+                    <SidebarMenuButton asChild>
+                      {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+                      <Button
+                        variant="link"
+                        className="hover:cursor-pointer font-normal -ml-1"
+                        onClick={() => setIsDeliveryAgentOpen(true)}
+                      >
+                        <BookText />
+                        <span>Delivery Agent</span>
+                      </Button>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                )}
+                {isDeliveryAgentOpen && (
+                  <DeliveryStaff
+                    isOpen={isDeliveryAgentOpen}
+                    setIsOpen={setIsDeliveryAgentOpen}
+                  />
                 )}
               </SidebarMenu>
             </SidebarGroupContent>

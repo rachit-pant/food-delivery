@@ -353,6 +353,7 @@ enum StaffStatus {
   ACTIVE
   INACTIVE
   SUSPENDED
+  BUSY
 }
 
 enum SubscriptionStatus {

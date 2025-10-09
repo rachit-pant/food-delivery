@@ -12,6 +12,7 @@ const AdditionalRoutes = require('./routes/additionalRoutes');
 const path = require('path');
 const StripeWebhooks = require('./routes/StripeWebhooks');
 const Franchise = require('./routes/franchise');
+const delivery = require('./routes/delivery');
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
@@ -59,6 +60,8 @@ app.use('/franchise', Franchise);
 app.use('/address', WebAddress);
 
 app.use('/extra', AdditionalRoutes);
+
+app.use('/delivery', delivery);
 
 app.use(errorHandler);
 httpServer.listen(port, () => {
