@@ -17,6 +17,9 @@ import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import { Server } from 'socket.io';
+import { createAdapter } from '@socket.io/redis-adapter';
+import Redis from 'ioredis';
+import emitDeliverQueries from './Redis/queues/EmitDeliverQueries';
 const socketloader = require('./sockets/index');
 dotenv.config();
 const corsOptions: cors.CorsOptions = {
@@ -32,7 +35,23 @@ const io = new Server(httpServer, {
     credentials: true,
   },
 });
+async function initRedisAdapter(io: Server) {
+  const pubClient = new Redis({
+    host: 'localhost',
+    port: 6379,
+    maxRetriesPerRequest: null,
+  });
+  const subClient = pubClient.duplicate();
+
+  await pubClient.connect();
+  await subClient.connect();
+
+  io.adapter(createAdapter(pubClient, subClient));
+}
+
+initRedisAdapter(io).catch(console.error);
 const onlineUsers = socketloader(io);
+emitDeliverQueries(io, onlineUsers);
 app.set('io', io);
 app.set('onlineUsers', onlineUsers);
 app.use('/images', express.static(path.join(__dirname, 'images')));

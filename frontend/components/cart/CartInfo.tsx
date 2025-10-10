@@ -156,7 +156,7 @@ const CartInfo = () => {
         restaurant_id: resId,
       });
       console.log('success', res.data.order.id);
-      router.push(`/delivery/${res.data.order.id}`);
+      router.push(`/delivery/${res.data.order.id}/user`);
     } catch (error) {
       const err = handleError(error);
       console.log(err);

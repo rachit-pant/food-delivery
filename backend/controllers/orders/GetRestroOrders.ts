@@ -1,8 +1,7 @@
-import { PrismaClient } from '../../generated/prisma';
 import { Request, Response } from 'express';
 import asyncHandler from 'express-async-handler';
+import prisma from '../../prisma/client';
 const { BetterError } = require('../../middleware/errorHandler');
-const prisma = new PrismaClient();
 
 const getRestroOrders = asyncHandler(async (req: Request, res: Response) => {
   const restroId = Number(req.params.restaurantId);
@@ -22,6 +21,7 @@ const getRestroOrders = asyncHandler(async (req: Request, res: Response) => {
       restaurants: {
         franchiseId,
       },
+      status: 'preparing',
       NOT: { status: 'cancelled' },
     },
   });
@@ -31,6 +31,7 @@ const getRestroOrders = asyncHandler(async (req: Request, res: Response) => {
       restaurants: {
         franchiseId,
       },
+      status: 'preparing',
       NOT: {
         status: 'cancelled',
       },

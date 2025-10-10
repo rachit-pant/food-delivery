@@ -8,6 +8,7 @@ import StateJwt from '@/components/StateJwt';
 import { jwt } from '@/lib/jwt';
 import { Toaster } from 'sonner';
 import Notification from '@/components/notification/Notification';
+import OrderNotification from '@/components/notification/OrderNotification';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -30,7 +31,6 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const role = await jwt();
-  console.log(role);
   return (
     <html lang="en">
       <body
@@ -44,6 +44,7 @@ export default async function RootLayout({
           {children}
           <Toaster />
           <Notification />
+          {role == 5 && <OrderNotification />}
         </StoreProvider>
       </body>
     </html>

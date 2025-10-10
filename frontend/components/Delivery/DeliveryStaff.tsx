@@ -219,7 +219,7 @@ const DeliveryStaff = ({
                                 <Button
                                   size="sm"
                                   onClick={() => {
-                                    router.push(`/deliveryView/${order.id}`);
+                                    router.push(`/delivery/${order.id}/agent`);
                                   }}
                                 >
                                   Go

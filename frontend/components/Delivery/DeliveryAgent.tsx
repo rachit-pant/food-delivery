@@ -1,13 +1,26 @@
 'use client';
-import React, { useEffect, useState, useCallback, useRef } from 'react';
-import {
-  GoogleMap,
-  Marker,
-  Polyline,
-  LoadScript,
-} from '@react-google-maps/api';
 import { api } from '@/api/api';
 import { getSocket } from '@/lib/sockets';
+import {
+  GoogleMap,
+  LoadScript,
+  Marker,
+  Polyline,
+} from '@react-google-maps/api';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Button } from '../ui/button';
+interface Coordinates {
+  restaurant_address: string;
+  restaurant_lat: number;
+  restaurant_lng: number;
+  restaurant_name: string;
+  restaurant_id: number;
+  user_address: string;
+  user_address_lat: number;
+  user_address_lng: number;
+  user_address_id: number;
+  order_id: number;
+}
 export interface Order {
   id: number;
   user_id: number;
@@ -44,69 +57,63 @@ export interface OrderPayment {
   payment_mode: string;
   payment_status: string;
 }
-interface Coordinates {
-  restaurant_address: string;
-  restaurant_lat: number;
-  restaurant_lng: number;
-  restaurant_name: string;
-  restaurant_id: number;
-  user_address: string;
-  user_address_lat: number;
-  user_address_lng: number;
-  user_address_id: number;
-  order_id: number;
-}
+const containerStyle = {
+  width: '100%',
+  height: '100%',
+};
 interface DeliveryAgentLocation {
   lat: number;
   lng: number;
   orderId: number;
 }
-
-const containerStyle = {
-  width: '100%',
-  height: '100%',
-};
-
-const DeliveryPage = ({ orderId }: { orderId: string }) => {
+const DeliveryAgent = ({ orderId }: { orderId: string }) => {
   const [coordinates, setCoordinates] = useState<Coordinates | null>(null);
   const [orderDetails, setOrderDetails] = useState<Order | null>(null);
-  const [routePath, setRoutePath] = useState<google.maps.LatLngLiteral[]>([]);
+  const mapRef = useRef<google.maps.Map | null>(null);
   const [deliveryAgentLocation, setDeliveryAgentLocation] =
     useState<DeliveryAgentLocation | null>(null);
-  const mapRef = useRef<google.maps.Map | null>(null);
-
+  const [routePath, setRoutePath] = useState<google.maps.LatLngLiteral[]>([]);
   useEffect(() => {
     const socket = getSocket();
     socket.emit('OrderId', orderId);
     socket.emit('joinRoom', orderId);
-    const handleOrderLocations = (data: Coordinates) => {
-      console.log(' OrderLocations received');
+    socket.on('OrderLocations', (data: Coordinates) => {
       setCoordinates(data);
-      console.log('OrderLocations data:', data);
-    };
-    socket.on('OrderLocations', handleOrderLocations);
-    socket.on('DeliveryAgentLocation', (data: DeliveryAgentLocation) => {
-      setDeliveryAgentLocation(data);
+    });
+    let lastEmit = 0;
+    const watchId = navigator.geolocation.watchPosition((position) => {
+      const { latitude, longitude } = position.coords;
+      const now = Date.now();
+      if (now - lastEmit < 5000) return;
+      lastEmit = now;
+      setDeliveryAgentLocation({
+        lat: latitude,
+        lng: longitude,
+        orderId: Number(orderId),
+      });
+      socket.emit('DeliveryAgent', {
+        lat: latitude,
+        lng: longitude,
+        orderId: Number(orderId),
+      });
     });
     return () => {
-      socket.off('OrderLocations', handleOrderLocations);
+      navigator.geolocation.clearWatch(watchId);
+      socket.off('OrderLocations');
     };
   }, [orderId]);
-
   useEffect(() => {
     if (!coordinates?.order_id) return;
     const fetchOrderDetails = async () => {
       try {
         const { data } = await api.get(`/orders/info/${coordinates.order_id}`);
         setOrderDetails(data);
-        console.log('OrderDetails data:', data);
       } catch (err) {
         console.error('Failed to fetch order details:', err);
       }
     };
     fetchOrderDetails();
   }, [coordinates?.order_id]);
-
   const onLoad = useCallback(
     (map: google.maps.Map) => {
       mapRef.current = map;
@@ -116,6 +123,10 @@ const DeliveryPage = ({ orderId }: { orderId: string }) => {
     },
     [coordinates]
   );
+  const openNavigation = (destinationLat: number, destinationLng: number) => {
+    const url = `https://www.google.com/maps/dir/?api=1&destination=${destinationLat},${destinationLng}&travelmode=driving&dir_action=navigate`;
+    window.open(url, '_blank');
+  };
   const calculateRoute = (coords: Coordinates) => {
     if (!window.google || !mapRef.current) return;
 
@@ -125,13 +136,15 @@ const DeliveryPage = ({ orderId }: { orderId: string }) => {
       user_address_lat,
       user_address_lng,
     } = coords;
+    const { lat: deliveryAgentLocationLat, lng: deliveryAgentLocationLng } =
+      deliveryAgentLocation || {};
     if (
       restaurant_lat == null ||
       restaurant_lng == null ||
       user_address_lat == null ||
       user_address_lng == null ||
-      deliveryAgentLocation?.lat == null ||
-      deliveryAgentLocation?.lng == null
+      deliveryAgentLocationLat == null ||
+      deliveryAgentLocationLng == null
     )
       return;
 
@@ -139,8 +152,8 @@ const DeliveryPage = ({ orderId }: { orderId: string }) => {
     directionsService.route(
       {
         origin: {
-          lat: deliveryAgentLocation?.lat,
-          lng: deliveryAgentLocation?.lng,
+          lat: deliveryAgentLocationLat,
+          lng: deliveryAgentLocationLng,
         },
         destination: { lat: user_address_lat, lng: user_address_lng },
         travelMode: google.maps.TravelMode.DRIVING,
@@ -168,8 +181,7 @@ const DeliveryPage = ({ orderId }: { orderId: string }) => {
     if (coordinates && mapRef.current) {
       calculateRoute(coordinates);
     }
-  }, [coordinates, deliveryAgentLocation]);
-
+  }, [coordinates]);
   return (
     <div className="h-screen w-full grid grid-cols-1 lg:grid-cols-2">
       <div className="relative h-[50vh] lg:h-full">
@@ -271,6 +283,16 @@ const DeliveryPage = ({ orderId }: { orderId: string }) => {
                 </div>
               ))}
             </div>
+            <Button
+              onClick={() =>
+                openNavigation(
+                  coordinates?.user_address_lat ?? 0,
+                  coordinates?.user_address_lng ?? 0
+                )
+              }
+            >
+              Open Navigation
+            </Button>
           </div>
         )}
       </div>
@@ -278,4 +300,4 @@ const DeliveryPage = ({ orderId }: { orderId: string }) => {
   );
 };
 
-export default DeliveryPage;
+export default DeliveryAgent;

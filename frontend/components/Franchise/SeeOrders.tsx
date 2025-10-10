@@ -16,6 +16,7 @@ import { MapPin, CreditCard, Package } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { api } from '@/api/api';
+import { Button } from '../ui/button';
 
 interface OrderItem {
   name: string;
@@ -88,7 +89,23 @@ export default function RestaurantOrders({
 
     fetchOrders();
   }, [restaurantId, currentPage, franchiseId]);
-
+  const isPrepared = async (orderId: number) => {
+    try {
+      await api.patch(`/orders/${orderId}`);
+      setData((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          orders: prev.orders.filter((order) => {
+            return order.orderId !== orderId;
+          }),
+        };
+      });
+    } catch (error) {
+      console.error('Failed to fetch order status:', error);
+      return false;
+    }
+  };
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
       pending: 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20',
@@ -261,6 +278,12 @@ export default function RestaurantOrders({
                                 {' '}
                                 × {item.quantity}
                               </span>
+                              <Button
+                                onClick={() => isPrepared(order.orderId)}
+                                className="ml-2"
+                              >
+                                Prepare
+                              </Button>
                             </p>
                           </div>
                         </div>

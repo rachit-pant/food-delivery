@@ -50,7 +50,7 @@ function socketLoader(io: Server) {
       if (socket.user?.id) {
         try {
           const orderData = await prisma.orders.findUnique({
-            where: { id: Number(orderId), user_id: socket.user?.id },
+            where: { id: Number(orderId) },
             select: {
               restaurants: {
                 select: {
@@ -101,7 +101,6 @@ function socketLoader(io: Server) {
         }
       }
     });
-    socket.data.lastEmit = {};
     socket.on('DeliveryData', async (orderId: string) => {
       if (socket.user?.id && socket.user?.role === 5) {
         try {
@@ -157,6 +156,7 @@ function socketLoader(io: Server) {
         }
       }
     });
+    socket.data.lastEmit = {};
     socket.on('DeliveryAgent', async (data) => {
       if (socket.user?.role !== 5) {
         console.log('wrong role');
