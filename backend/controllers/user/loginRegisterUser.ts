@@ -1,12 +1,11 @@
-import prisma from '../../prisma/client';
-import { Request, Response } from 'express';
-import asyncHandler from 'express-async-handler';
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-const { AccessToken, RefreshToken } = require('../functions/jwt');
-const { BetterError } = require('../../middleware/errorHandler');
+import type { Request, Response } from 'express';
+import asyncHandler from 'express-async-handler';
+import { BetterError } from '../../middleware/errorHandler.js';
+import prisma from '../../prisma/client.js';
+import { AccessToken, RefreshToken } from '../functions/jwt.js';
 
-const regUser = asyncHandler(async (req: Request, res: Response) => {
+export const regUser = asyncHandler(async (req: Request, res: Response) => {
   const { full_name, email, phone_number, password } = req.body;
   if (email === '' || password === '') {
     throw new BetterError(
@@ -19,7 +18,7 @@ const regUser = asyncHandler(async (req: Request, res: Response) => {
   let hash: string;
   try {
     hash = await bcrypt.hash(password, 10);
-  } catch (err) {
+  } catch (_err) {
     throw new BetterError('Wrong Password', 500, 'Password', 'User Error');
   }
   try {
@@ -63,7 +62,7 @@ const regUser = asyncHandler(async (req: Request, res: Response) => {
     throw err;
   }
 });
-const login = asyncHandler(async (req: Request, res: Response) => {
+export const login = asyncHandler(async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -79,7 +78,7 @@ const login = asyncHandler(async (req: Request, res: Response) => {
     user = await prisma.users.findUnique({
       where: { email },
     });
-  } catch (err) {
+  } catch (_err) {
     throw new BetterError(
       'User not found',
       404,
@@ -117,7 +116,7 @@ const login = asyncHandler(async (req: Request, res: Response) => {
       role: user.role_id,
       message: 'Login successful',
     });
-  } catch (err) {
+  } catch (_err) {
     throw new BetterError(
       'User not updated',
       404,
@@ -126,5 +125,3 @@ const login = asyncHandler(async (req: Request, res: Response) => {
     );
   }
 });
-
-module.exports = { regUser, login };

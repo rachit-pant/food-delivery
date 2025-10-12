@@ -1,7 +1,7 @@
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import asyncHandler from 'express-async-handler';
-import prisma from '../../prisma/client';
-const { BetterError } = require('../../middleware/errorHandler');
+import { BetterError } from '../../middleware/errorHandler.js';
+import prisma from '../../prisma/client.js';
 
 const getRestroOrders = asyncHandler(async (req: Request, res: Response) => {
   const restroId = Number(req.params.restaurantId);
@@ -9,11 +9,21 @@ const getRestroOrders = asyncHandler(async (req: Request, res: Response) => {
   const page = Number(req.query.page) || 1;
   const limit = Number(req.query.limit) || 10;
   const skip = (page - 1) * limit;
-  if (franchiseId && franchiseId == 0) {
-    throw new BetterError(400, 'Franchise ID is required');
+  if (franchiseId && franchiseId === 0) {
+    throw new BetterError(
+      'Franchise ID is required',
+      400,
+      'FRANCHISE_ID_REQUIRED',
+      'Franchise Error'
+    );
   }
   if (!restroId) {
-    throw new BetterError(400, 'Restaurant ID is required');
+    throw new BetterError(
+      'Restaurant not found',
+      404,
+      'RESTAURANT_NOT_FOUND',
+      'Restaurant Error'
+    );
   }
   const totalOrders = await prisma.orders.count({
     where: {
@@ -133,4 +143,4 @@ const getRestroOrders = asyncHandler(async (req: Request, res: Response) => {
   });
 });
 
-module.exports = getRestroOrders;
+export default getRestroOrders;

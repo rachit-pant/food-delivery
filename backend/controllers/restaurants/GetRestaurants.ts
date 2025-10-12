@@ -1,8 +1,9 @@
-import { PrismaClient } from '../../generated/prisma';
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import asyncHandler from 'express-async-handler';
+import { PrismaClient } from '../../generated/prisma/index.js';
+
 const prisma = new PrismaClient();
-const GetRestro = asyncHandler(async (req: Request, res: Response) => {
+export const GetRestro = asyncHandler(async (req: Request, res: Response) => {
   const filter = req.query.filter as string;
   const country = req.query.country as string;
 
@@ -55,7 +56,7 @@ const GetRestro = asyncHandler(async (req: Request, res: Response) => {
   });
   res.status(200).json(filteredRes);
 });
-const GetPer = asyncHandler(async (req: Request, res: Response) => {
+export const GetPer = asyncHandler(async (req: Request, res: Response) => {
   const id = Number(req.params.restaurantId);
   const GetPer = await prisma.restaurants.findUnique({
     where: {
@@ -82,5 +83,3 @@ const GetPer = asyncHandler(async (req: Request, res: Response) => {
   }
   res.status(200).json(GetPer);
 });
-
-module.exports = { GetRestro, GetPer };

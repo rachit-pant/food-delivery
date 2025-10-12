@@ -1,10 +1,7 @@
-import prisma from '../../prisma/client';
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import asyncHandler from 'express-async-handler';
-import bcrypt from 'bcrypt';
-import crypto from 'crypto';
-const { AccessToken, RefreshToken } = require('../functions/jwt');
-const { BetterError } = require('../../middleware/errorHandler');
+import { BetterError } from '../../middleware/errorHandler.js';
+import prisma from '../../prisma/client.js';
 
 const getAllStaff = asyncHandler(async (req: Request, res: Response) => {
   const userId = Number(req.user?.id);
@@ -32,4 +29,5 @@ const getAllStaff = asyncHandler(async (req: Request, res: Response) => {
 
   res.status(200).json(staff);
 });
-module.exports = getAllStaff;
+
+export default getAllStaff;

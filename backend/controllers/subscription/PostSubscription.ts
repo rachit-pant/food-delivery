@@ -1,9 +1,9 @@
-import { Request, Response } from 'express';
-import Stripe from 'stripe';
+import type { Request, Response } from 'express';
 import expressAsyncHandler from 'express-async-handler';
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
-import prisma from '../../prisma/client';
-const { BetterError } = require('../../middleware/errorHandler');
+import Stripe from 'stripe';
+import { BetterError } from '../../middleware/errorHandler.js';
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const allowedPlans = [
   'price_1S2qniFuZCtCjNMxyYhqD9Fj',
   'price_1S2qp5FuZCtCjNMx2iiBNqT3',
@@ -25,8 +25,7 @@ const PostSubscription = expressAsyncHandler(
     const id = Number(req.user?.id);
     if (!id) {
       throw new BetterError(
-        console.log('id not found'),
-        'no id found',
+        'id not found',
         404,
         'NO_ID_FOUND',
         'Subscription Error'
@@ -34,17 +33,15 @@ const PostSubscription = expressAsyncHandler(
     }
     if (!priceId || typeof priceId !== 'string') {
       throw new BetterError(
-        console.log('priceId not found'),
-        'no id found',
+        'priceId not found',
         404,
-        'NO_ID_FOUND',
+        'PRICE_ID_NOT_FOUND',
         'Subscription Error'
       );
     }
     console.log(priceId);
     if (!allowedPlans.includes(priceId)) {
       throw new BetterError(
-        console.log('invalid id'),
         'invalid id',
         404,
         'INVALID_ID',
@@ -67,4 +64,5 @@ const PostSubscription = expressAsyncHandler(
     res.json({ url: session.url });
   }
 );
-module.exports = PostSubscription;
+
+export default PostSubscription;

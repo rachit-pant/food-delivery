@@ -1,8 +1,9 @@
-import { Request, Response } from 'express';
-import Stripe from 'stripe';
+import type { Request, Response } from 'express';
 import expressAsyncHandler from 'express-async-handler';
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
-const { BetterError } = require('../../middleware/errorHandler');
+import Stripe from 'stripe';
+import { BetterError } from '../../middleware/errorHandler.js';
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const CheckoutItems = expressAsyncHandler(
   async (req: Request, res: Response) => {
     const { sessionId } = req.query;
@@ -22,7 +23,7 @@ const CheckoutItems = expressAsyncHandler(
         message: 'Session retrieved successfully',
         data: session,
       });
-    } catch (error) {
+    } catch (_error) {
       throw new BetterError(
         'no session found',
         404,
@@ -32,4 +33,5 @@ const CheckoutItems = expressAsyncHandler(
     }
   }
 );
-module.exports = CheckoutItems;
+
+export default CheckoutItems;

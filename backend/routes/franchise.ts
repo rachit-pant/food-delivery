@@ -1,41 +1,42 @@
-import express from 'express';
-const multer = require('multer');
-const diskStorage = require('multer').diskStorage;
-const path = require('path');
-const router = express.Router();
-const {
-  getSelectedRestaurants,
-  getFranchise,
-} = require('../controllers/franchise/getFranchise');
-const list = require('../controllers/franchise/FranchiseRestoList');
-const authorize = require('../middleware/authorize');
-const postFranchise = require('../controllers/franchise/postFranchise');
-const deleteFranchise = require('../controllers/franchise/deleteFranchise');
-const deleteRestro = require('../controllers/franchise/deleteRestroFranchise');
-const dashboard = require('../controllers/franchise/dashboard');
-const getStaffRoles = require('../controllers/franchise/getStaffRoles');
-const addStaffInvites = require('../controllers/franchise/addStaffInvites');
-const franchiseRoleinfo = require('../controllers/franchise/franchiseRoleinfo');
-const getAllStaff = require('../controllers/franchise/getAllStaff');
-const { login, regUser } = require('../controllers/franchise/createStaff');
-const updateRole = require('../controllers/franchise/updateRole');
-const deleteFranchiseStaff = require('../controllers/franchise/deleteFranchiseStaff');
-const {
+import path from 'node:path';
+import express, { type Request } from 'express';
+import multer from 'multer';
+import addStaffInvites from '../controllers/franchise/addStaffInvites.js';
+import createAlreadyCreatedStaff from '../controllers/franchise/createAlreadyCreatedStaff.js';
+import { login, regUser } from '../controllers/franchise/createStaff.js';
+import dashboard from '../controllers/franchise/dashboard.js';
+import deleteFranchise from '../controllers/franchise/deleteFranchise.js';
+import deleteFranchiseStaff from '../controllers/franchise/deleteFranchiseStaff.js';
+import deleteRestro from '../controllers/franchise/deleteRestroFranchise.js';
+import {
   getStaff,
   StaffNotFranchise,
-} = require('../controllers/franchise/exisitngStaffFranchise');
-const createAlreadyCreatedStaff = require('../controllers/franchise/createAlreadyCreatedStaff');
-const getFranchiseOfStaff = require('../controllers/franchise/getFranchiseOfStaff');
-const getUserRole = require('../controllers/franchise/getUserRole');
-const storage = diskStorage({
-  destination: function (
-    req: Request,
-    file: Express.Multer.File,
-    cb: Function
-  ) {
+} from '../controllers/franchise/exisitngStaffFranchise.js';
+import list from '../controllers/franchise/FranchiseRestoList.js';
+import franchiseRoleinfo from '../controllers/franchise/franchiseRoleinfo.js';
+import getAllStaff from '../controllers/franchise/getAllStaff.js';
+import {
+  getFranchise,
+  getSelectedRestaurants,
+} from '../controllers/franchise/getFranchise.js';
+import getFranchiseOfStaff from '../controllers/franchise/getFranchiseOfStaff.js';
+import getStaffRoles from '../controllers/franchise/getStaffRoles.js';
+import getUserRole from '../controllers/franchise/getUserRole.js';
+import postFranchise from '../controllers/franchise/postFranchise.js';
+import updateRole from '../controllers/franchise/updateRole.js';
+import authorize from '../middleware/authorize.js';
+
+const router = express.Router();
+type MulterCallback = (error: Error | null, value: string) => void;
+const storage = multer.diskStorage({
+  destination: (
+    _req: Request,
+    _file: Express.Multer.File,
+    cb: MulterCallback
+  ) => {
     cb(null, path.join(__dirname, '..', 'images'));
   },
-  filename: function (req: Request, file: Express.Multer.File, cb: Function) {
+  filename: (_req: Request, file: Express.Multer.File, cb: MulterCallback) => {
     cb(null, file.originalname);
   },
 });
@@ -64,4 +65,5 @@ router.get('/existingStaffFranchise/:staffId', authorize, StaffNotFranchise);
 router.post('/createAlreadyCreatedStaff', authorize, createAlreadyCreatedStaff);
 router.get('/getFranchiseOfStaff', authorize, getFranchiseOfStaff);
 router.get('/getUserRole/:franchiseId', authorize, getUserRole);
-module.exports = router;
+
+export default router;

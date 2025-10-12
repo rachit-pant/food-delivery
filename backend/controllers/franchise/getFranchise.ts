@@ -1,9 +1,9 @@
+import type { Request, Response } from 'express';
 import expressAsyncHandler from 'express-async-handler';
-import prisma from '../../prisma/client';
-import { Request, Response } from 'express';
-const { BetterError } = require('../../middleware/errorHandler');
+import { BetterError } from '../../middleware/errorHandler.js';
+import prisma from '../../prisma/client.js';
 
-const getSelectedRestaurants = expressAsyncHandler(
+export const getSelectedRestaurants = expressAsyncHandler(
   async (req: Request, res: Response) => {
     const userId = req.user?.id;
     if (!userId) {
@@ -27,7 +27,7 @@ const getSelectedRestaurants = expressAsyncHandler(
     res.status(200).json(restaurants);
   }
 );
-const getFranchise = expressAsyncHandler(
+export const getFranchise = expressAsyncHandler(
   async (req: Request, res: Response) => {
     const userId = req.user?.id;
     if (!userId) {
@@ -45,7 +45,7 @@ const getFranchise = expressAsyncHandler(
         },
       });
       res.status(200).json(franchise);
-    } catch (error) {
+    } catch (_error) {
       throw new BetterError(
         'no franchise found',
         400,
@@ -55,5 +55,3 @@ const getFranchise = expressAsyncHandler(
     }
   }
 );
-
-module.exports = { getSelectedRestaurants, getFranchise };

@@ -1,7 +1,10 @@
-import { PrismaClient } from '../../generated/prisma';
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import asyncHandler from 'express-async-handler';
-import groupBy from 'lodash/groupBy';
+import _ from 'lodash';
+
+const { groupBy } = _;
+import { PrismaClient } from '../../generated/prisma/index.js';
+
 const prisma = new PrismaClient();
 
 const GetMenus = asyncHandler(async (req: Request, res: Response) => {
@@ -27,4 +30,4 @@ const GetMenus = asyncHandler(async (req: Request, res: Response) => {
   res.status(200).json(groupedMenus);
 });
 
-module.exports = GetMenus;
+export default GetMenus;

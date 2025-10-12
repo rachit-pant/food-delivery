@@ -1,15 +1,15 @@
 import express from 'express';
+import cartCount from '../controllers/functions/cartCount.js';
+import Dashboard from '../controllers/functions/dashboard.js';
+import logout from '../controllers/functions/logout.js';
+import refreshToken from '../controllers/functions/refreshtoken.js';
+import search from '../controllers/functions/search.js';
+import createPaymentIntent from '../controllers/functions/stripe.js';
+import CheckoutItems from '../controllers/subscription/CheckoutItems.js';
+import PostSubscription from '../controllers/subscription/PostSubscription.js';
+import authorize from '../middleware/authorize.js';
+
 const router = express.Router();
-const refreshToken = require('../controllers/functions/refreshtoken');
-const SimilarCountry = require('../controllers/functions/getSimilarCountry');
-const logout = require('../controllers/functions/logout');
-const authorize = require('../middleware/authorize');
-const createPaymentIntent = require('../controllers/functions/stripe');
-const search = require('../controllers/functions/search');
-const PostSubscription = require('../controllers/subscription/PostSubscription');
-const CheckoutItems = require('../controllers/subscription/CheckoutItems');
-const Dashboard = require('../controllers/functions/dashboard');
-const cartCount = require('../controllers/functions/cartCount');
 router.get('/refreshToken', refreshToken);
 
 router.post('/logout', authorize, logout);
@@ -21,4 +21,5 @@ router.post('/subscribe', authorize, PostSubscription);
 router.get('/checkoutItemsView', authorize, CheckoutItems);
 router.get('/dashboard', authorize, Dashboard);
 router.get('/cartCount', authorize, cartCount);
-module.exports = router;
+
+export default router;

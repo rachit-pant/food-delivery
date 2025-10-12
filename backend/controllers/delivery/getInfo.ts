@@ -1,7 +1,7 @@
-import prisma from '../../prisma/client';
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import asyncHandler from 'express-async-handler';
-const { BetterError } = require('../../middleware/errorHandler');
+import { BetterError } from '../../middleware/errorHandler.js';
+import prisma from '../../prisma/client.js';
 
 const getInfo = asyncHandler(async (req: Request, res: Response) => {
   const userId = req.user?.id;
@@ -44,17 +44,15 @@ const getInfo = asyncHandler(async (req: Request, res: Response) => {
         },
       },
     });
-    if (!deliveryAgent) {
-      throw new BetterError(
-        'Delivery agent not found',
-        404,
-        'DELIVERY_AGENT_NOT_FOUND',
-        'Delivery Agent Error'
-      );
-    }
     res.status(200).json(deliveryAgent);
-  } catch (err) {
-    throw err;
+  } catch (_err) {
+    throw new BetterError(
+      'Delivery agent not found',
+      404,
+      'DELIVERY_AGENT_NOT_FOUND',
+      'Delivery Agent Error'
+    );
   }
 });
-module.exports = getInfo;
+
+export default getInfo;

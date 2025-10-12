@@ -1,8 +1,11 @@
-import { Request, Response } from 'express';
-import Stripe from 'stripe';
+import type { Request, Response } from 'express';
 import expressAsyncHandler from 'express-async-handler';
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
-import { PrismaClient } from '../../generated/prisma';
+import Stripe from 'stripe';
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+import { PrismaClient } from '../../generated/prisma/index.js';
+
 const prisma = new PrismaClient();
 
 const createPaymentIntent = expressAsyncHandler(
@@ -100,4 +103,4 @@ const createPaymentIntent = expressAsyncHandler(
   }
 );
 
-module.exports = createPaymentIntent;
+export default createPaymentIntent;

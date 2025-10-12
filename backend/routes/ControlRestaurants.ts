@@ -1,35 +1,35 @@
-const express = require('express');
-const multer = require('multer');
-const diskStorage = require('multer').diskStorage;
-const path = require('path');
+import path from 'node:path';
+import express, { type Request } from 'express';
+import multer from 'multer';
+import PopularDish from '../controllers/menu/PopularDish.js';
+import AddCategory from '../controllers/restaurants/Categories.js';
+import DeleteRestro from '../controllers/restaurants/DeleteRestaurants.js';
+import {
+  GetPer,
+  GetRestro,
+} from '../controllers/restaurants/GetRestaurants.js';
+import {
+  MerchantGetMenus,
+  MerchantGetRestro,
+} from '../controllers/restaurants/Merchant.js';
+import PostResta from '../controllers/restaurants/PostRestaurants.js';
+import UpdateRestro from '../controllers/restaurants/UpdateRestaurants.js';
+import AllowRoles from '../middleware/AllowRoles.js';
+import authorize from '../middleware/authorize.js';
+import OwnerAdminAcess from '../middleware/OwnerAdminAcess.js';
 
 const router = express.Router();
-const authorize = require('../middleware/authorize');
+type MulterCallback = (error: Error | null, value: string) => void;
 
-const AllowRoles = require('../middleware/AllowRoles');
-const PostResta = require('../controllers/restaurants/PostRestaurants');
-const {
-  GetRestro,
-  GetPer,
-} = require('../controllers/restaurants/GetRestaurants');
-const DeleteRestro = require('../controllers/restaurants/DeleteRestaurants');
-const OwnerAdminAcess = require('../middleware/OwnerAdminAcess');
-const UpdateRestro = require('../controllers/restaurants/UpdateRestaurants');
-const PopularDish = require('../controllers/menu/PopularDish');
-const {
-  MerchantGetRestro,
-  MerchantGetMenus,
-} = require('../controllers/restaurants/Merchant');
-const AddCategory = require('../controllers/restaurants/Categories');
-const storage = diskStorage({
-  destination: function (
-    req: Request,
-    file: Express.Multer.File,
-    cb: Function
-  ) {
+const storage = multer.diskStorage({
+  destination: (
+    _req: Request,
+    _file: Express.Multer.File,
+    cb: MulterCallback
+  ) => {
     cb(null, path.join(__dirname, '..', 'images'));
   },
-  filename: function (req: Request, file: Express.Multer.File, cb: Function) {
+  filename: (_req: Request, file: Express.Multer.File, cb: MulterCallback) => {
     cb(null, file.originalname);
   },
 });
@@ -58,5 +58,4 @@ router.get('/merchant/restaurant/:restaurantId', authorize, MerchantGetMenus);
 
 router.get('/merchant/categories', authorize, AddCategory);
 
-module.exports = router;
-export interface Timings {}
+export default router;

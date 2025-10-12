@@ -1,8 +1,9 @@
 import { QueueEvents } from 'bullmq';
-import Redis from 'ioredis';
-import { Server } from 'socket.io';
-import prisma from '../../prisma/client';
-import myQueue from './DeliveryQueue';
+import { Redis } from 'ioredis';
+import type { Server } from 'socket.io';
+import prisma from '../../prisma/client.js';
+import myQueue from './DeliveryQueue.js';
+
 interface Returnvalue {
   orderId: number;
 }
@@ -14,8 +15,8 @@ interface UpdateOrder {
 }
 function emitDeliverQueries(io: Server, onlineUsers: Map<number, string[]>) {
   const pubClient = new Redis({
-    host: 'localhost',
-    port: 6379,
+    host: process.env.REDIS_HOST || 'localhost',
+    port: Number(process.env.REDIS_PORT) || 6379,
     maxRetriesPerRequest: null,
   });
   const deliveryAgentQueueEvents = new QueueEvents('delivery-agent-queue', {

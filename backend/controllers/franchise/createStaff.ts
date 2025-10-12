@@ -1,16 +1,16 @@
-import prisma from '../../prisma/client';
-import { Request, Response } from 'express';
-import asyncHandler from 'express-async-handler';
+import crypto from 'node:crypto';
 import bcrypt from 'bcrypt';
-import crypto from 'crypto';
-const { AccessToken, RefreshToken } = require('../functions/jwt');
-const { BetterError } = require('../../middleware/errorHandler');
+import type { Request, Response } from 'express';
+import asyncHandler from 'express-async-handler';
+import { BetterError } from '../../middleware/errorHandler.js';
+import prisma from '../../prisma/client.js';
+import { AccessToken, RefreshToken } from '../functions/jwt.js';
 
 function hashToken(rawToken: string) {
   return crypto.createHash('sha256').update(rawToken).digest('hex');
 }
 
-const regUser = asyncHandler(async (req: Request, res: Response) => {
+export const regUser = asyncHandler(async (req: Request, res: Response) => {
   const { full_name, email, phone_number, password, receivedToken } = req.body;
   console.log(
     'req.body',
@@ -101,7 +101,7 @@ const regUser = asyncHandler(async (req: Request, res: Response) => {
   });
 });
 
-const login = asyncHandler(async (req: Request, res: Response) => {
+export const login = asyncHandler(async (req: Request, res: Response) => {
   const { email, password, receivedToken } = req.body;
 
   if (!email || !password) {
@@ -215,5 +215,3 @@ const login = asyncHandler(async (req: Request, res: Response) => {
     });
   });
 });
-
-module.exports = { regUser, login };

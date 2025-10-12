@@ -1,14 +1,14 @@
-import express from 'express';
+import express from "express";
+import getInfo from "../controllers/delivery/getInfo.js";
+import {
+	getStatus,
+	updateStatus,
+} from "../controllers/delivery/updateStatus.js";
+import authorize from "../middleware/authorize.js";
+
 const router = express.Router();
-const authorize = require('../middleware/authorize');
-const getInfo = require('../controllers/delivery/getInfo');
-const {
-  updateStatus,
-  getStatus,
-} = require('../controllers/delivery/updateStatus');
+router.get("/", authorize, getInfo);
+router.patch("/updateStatus", authorize, updateStatus);
+router.get("/status", authorize, getStatus);
 
-router.get('/', authorize, getInfo);
-router.patch('/updateStatus', authorize, updateStatus);
-router.get('/status', authorize, getStatus);
-
-module.exports = router;
+export default router;

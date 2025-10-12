@@ -1,43 +1,43 @@
-const express = require('express');
+import express from "express";
+import SimilarCountry from "../controllers/functions/getSimilarCountry.js";
+import OrdersHistory from "../controllers/orders/GetOrdersHistory.js";
+import UserAddr from "../controllers/user/createAddresses.js";
+import DeleteAddress from "../controllers/user/deleteAddress.js";
+import DeleteUser from "../controllers/user/deleteUser.js";
+import { getUser, getUsers } from "../controllers/user/getUsers.js";
+import { login, regUser } from "../controllers/user/loginRegisterUser.js";
+import ReadAddress from "../controllers/user/readAddresses.js";
+import SendAddressHome from "../controllers/user/SendeAddressesHome.js";
+import updateAddress from "../controllers/user/updateAddresses.js";
+import updateUser from "../controllers/user/updateUser.js";
+import authorize from "../middleware/authorize.js";
+import UserAccess from "../middleware/userAccess.js";
+
 const router = express.Router();
-const { getUsers, getUser } = require('../controllers/user/getUsers');
-const { regUser, login } = require('../controllers/user/loginRegisterUser');
-const authorize = require('../middleware/authorize');
-const updateUser = require('../controllers/user/updateUser');
+router.post("/register", regUser);
 
-const UserAccess = require('../middleware/userAccess');
-const DeleteUser = require('../controllers/user/deleteUser');
-const UserAddr = require('../controllers/user/createAddresses');
-const ReadAddress = require('../controllers/user/readAddresses');
-const DeleteAddress = require('../controllers/user/deleteAddress');
-const SendAddressHome = require('../controllers/user/SendeAddressesHome');
-const SimilarCountry = require('../controllers/functions/getSimilarCountry');
-const OrdersHistory = require('../controllers/orders/GetOrdersHistory');
-const updateAddress = require('../controllers/user/updateAddresses');
-router.post('/register', regUser);
+router.get("/allUsers", authorize, getUsers);
 
-router.get('/allUsers', authorize, getUsers);
+router.post("/login", login);
 
-router.post('/login', login);
+router.get("/", authorize, getUser);
 
-router.get('/', authorize, getUser);
+router.patch("/", authorize, updateUser);
 
-router.patch('/', authorize, updateUser);
+router.delete("/:id", authorize, UserAccess, DeleteUser);
 
-router.delete('/:id', authorize, UserAccess, DeleteUser);
+router.post("/address", authorize, UserAddr);
 
-router.post('/address', authorize, UserAddr);
+router.get("/address", authorize, ReadAddress);
 
-router.get('/address', authorize, ReadAddress);
+router.delete("/address/:addressId", authorize, DeleteAddress);
 
-router.delete('/address/:addressId', authorize, DeleteAddress);
+router.get("/address/homepage", authorize, SendAddressHome);
 
-router.get('/address/homepage', authorize, SendAddressHome);
+router.get("/similarcountry/homepage", SimilarCountry);
 
-router.get('/similarcountry/homepage', SimilarCountry);
+router.get("/orders", authorize, OrdersHistory);
 
-router.get('/orders', authorize, OrdersHistory);
+router.patch("/address/:addressId", authorize, updateAddress);
 
-router.patch('/address/:addressId', authorize, updateAddress);
-
-module.exports = router;
+export default router;

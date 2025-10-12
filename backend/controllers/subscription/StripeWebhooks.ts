@@ -1,21 +1,24 @@
+import type { Request, Response } from 'express';
 import asyncHandler from 'express-async-handler';
-import { Request, Response } from 'express';
 import Stripe from 'stripe';
-const { BetterError } = require('../../middleware/errorHandler');
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
-import prisma from '../../prisma/client';
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+import { BetterError } from '../../middleware/errorHandler.js';
+import prisma from '../../prisma/client.js';
+
 const StripeWebhooks = asyncHandler(async (req: Request, res: Response) => {
   const sig = req.headers['stripe-signature'];
   let event: Stripe.Event;
   console.log(sig);
-  console.log(process.env.STRIPE_WEBHOOK_SECRET!);
+
   try {
     event = stripe.webhooks.constructEvent(
       req.body,
       sig as string,
-      process.env.STRIPE_WEBHOOK_SECRET!
+      process.env.STRIPE_WEBHOOK_SECRET
     );
-  } catch (error) {
+  } catch (_error) {
     console.log(
       '111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111'
     );
@@ -28,7 +31,7 @@ const StripeWebhooks = asyncHandler(async (req: Request, res: Response) => {
   }
   console.log(event);
   switch (event.type) {
-    case 'checkout.session.completed':
+    case 'checkout.session.completed': {
       const session = event.data.object as Stripe.Checkout.Session;
 
       if (!session.subscription) {
@@ -101,13 +104,13 @@ const StripeWebhooks = asyncHandler(async (req: Request, res: Response) => {
         let net_amount = 0;
         let delivery_charges = 0;
         if (subsId.length) {
-          (delivery_charges = 0),
-            (total_amount = (session.amount_total ?? 0) / 100),
-            (net_amount = (session.amount_total ?? 0) / 100);
+          delivery_charges = 0;
+          total_amount = (session.amount_total ?? 0) / 100;
+          net_amount = (session.amount_total ?? 0) / 100;
         } else {
-          (delivery_charges = 50),
-            (total_amount = (session.amount_total ?? 0) / 100 - 50),
-            (net_amount = (session.amount_total ?? 0) / 100);
+          delivery_charges = 50;
+          total_amount = (session.amount_total ?? 0) / 100 - 50;
+          net_amount = (session.amount_total ?? 0) / 100;
         }
         const newOrder = await prisma.orders.create({
           data: {
@@ -248,6 +251,7 @@ const StripeWebhooks = asyncHandler(async (req: Request, res: Response) => {
         message: 'Subscription created successfully',
       });
       break;
+    }
     case 'invoice.payment_succeeded': {
       const invoice = event.data.object as Stripe.Invoice;
       const customer = invoice.customer_email as string;
@@ -365,4 +369,5 @@ const StripeWebhooks = asyncHandler(async (req: Request, res: Response) => {
       break;
   }
 });
-module.exports = StripeWebhooks;
+
+export default StripeWebhooks;

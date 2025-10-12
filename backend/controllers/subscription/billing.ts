@@ -1,9 +1,10 @@
-import { Request, Response } from 'express';
-import Stripe from 'stripe';
+import type { Request, Response } from 'express';
 import expressAsyncHandler from 'express-async-handler';
-import prisma from '../../prisma/client';
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
-const { BetterError } = require('../../middleware/errorHandler');
+import Stripe from 'stripe';
+import { BetterError } from '../../middleware/errorHandler.js';
+import prisma from '../../prisma/client.js';
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const BillingPortalSession = expressAsyncHandler(
   async (req: Request, res: Response) => {
     const userId = req.user?.id;
@@ -35,9 +36,9 @@ const BillingPortalSession = expressAsyncHandler(
     );
     let configurations = '';
     if (role === 1) {
-      configurations = process.env.CUSTOMER_BILING_ID!;
+      configurations = process.env.CUSTOMER_BILING_ID;
     } else {
-      configurations = process.env.MERCHANT_BILING_ID!;
+      configurations = process.env.MERCHANT_BILING_ID;
     }
     const session = await stripe.billingPortal.sessions.create({
       customer: subscription.customer as string,
@@ -50,4 +51,5 @@ const BillingPortalSession = expressAsyncHandler(
     });
   }
 );
-module.exports = BillingPortalSession;
+
+export default BillingPortalSession;

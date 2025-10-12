@@ -1,8 +1,10 @@
-import express from 'express';
+import express from "express";
+import BillingPortalSession from "../controllers/subscription/billing.js";
+import GetPlans from "../controllers/subscription/GetPlans.js";
+import authorize from "../middleware/authorize.js";
+
 const router = express.Router();
-const GetPlans = require('../controllers/subscription/GetPlans');
-const authorize = require('../middleware/authorize');
-const BillingPortalSession = require('../controllers/subscription/billing');
-router.get('/plans', authorize, GetPlans);
-router.get('/billing', authorize, BillingPortalSession);
-module.exports = router;
+router.get("/plans", authorize, GetPlans);
+router.get("/billing", authorize, BillingPortalSession);
+
+export default router;

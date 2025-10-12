@@ -1,34 +1,36 @@
-import prisma from '../../prisma/client';
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import asyncHandler from 'express-async-handler';
-const { BetterError } = require('../../middleware/errorHandler');
+import { BetterError } from '../../middleware/errorHandler.js';
+import prisma from '../../prisma/client.js';
 
-const getStaff = asyncHandler(async (req: Request, res: Response) => {
+export const getStaff = asyncHandler(async (_req: Request, res: Response) => {
   const staff = await prisma.staff.findMany();
   res.status(200).json(staff);
 });
 
-const StaffNotFranchise = asyncHandler(async (req: Request, res: Response) => {
-  const staffId = Number(req.params.staffId);
-  const userId = Number(req.user?.id);
-  if (!staffId || !userId) {
-    throw new BetterError('Invalid staffId or userId', 400);
-  }
-  const franchise = await prisma.franchise.findMany({
-    where: {
-      userId: userId,
-      franchise_staff: {
-        none: {
-          staffId: staffId,
-          isActive: true,
+export const StaffNotFranchise = asyncHandler(
+  async (req: Request, res: Response) => {
+    const staffId = Number(req.params.staffId);
+    const userId = Number(req.user?.id);
+    if (!staffId || !userId) {
+      throw new BetterError(
+        'Invalid staffId or userId',
+        400,
+        'BAD_REQUEST',
+        'User Error'
+      );
+    }
+    const franchise = await prisma.franchise.findMany({
+      where: {
+        userId: userId,
+        franchise_staff: {
+          none: {
+            staffId: staffId,
+            isActive: true,
+          },
         },
       },
-    },
-  });
-  res.status(200).json(franchise);
-});
-
-module.exports = {
-  getStaff,
-  StaffNotFranchise,
-};
+    });
+    res.status(200).json(franchise);
+  }
+);

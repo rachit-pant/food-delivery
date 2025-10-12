@@ -1,0 +1,12 @@
+import express from "express";
+import DeleteCart from "../controllers/cart/DeleteCart.js";
+import GetCart from "../controllers/cart/GetCart.js";
+import PatchCart from "../controllers/cart/PatchCart.js";
+import PostCart from "../controllers/cart/PostCart.js";
+import authorize from "../middleware/authorize.js";
+const router = express.Router();
+router.post("/", authorize, PostCart);
+router.get("/", authorize, GetCart);
+router.delete("/:itemId", authorize, DeleteCart);
+router.patch("/:cartId", authorize, PatchCart);
+export default router;

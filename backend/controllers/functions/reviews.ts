@@ -1,8 +1,9 @@
+import type { Request, Response } from 'express';
 import expressAsyncHandler from 'express-async-handler';
-import { PrismaClient } from '../../generated/prisma';
-import { Request, Response } from 'express';
+import { PrismaClient } from '../../generated/prisma/index.js';
+
 const prisma = new PrismaClient();
-const getItemsReviews = expressAsyncHandler(
+export const getItemsReviews = expressAsyncHandler(
   async (req: Request, res: Response) => {
     const Id = req.user?.id;
     const resId = Number(req.params.restaurantId);
@@ -42,7 +43,7 @@ const getItemsReviews = expressAsyncHandler(
   }
 );
 
-const postItemReviews = expressAsyncHandler(
+export const postItemReviews = expressAsyncHandler(
   async (req: Request, res: Response) => {
     const userId = Number(req.user?.id);
     const { review, rating } = req.body;
@@ -62,38 +63,39 @@ const postItemReviews = expressAsyncHandler(
     res.status(201).json({ message: 'Review added successfully' });
   }
 );
-const showReviews = expressAsyncHandler(async (req: Request, res: Response) => {
-  const resId = Number(req.params.restaurantId);
-  const showReviews = await prisma.reviews.findMany({
-    where: {
-      restaurant_id: resId,
-    },
-    select: {
-      id: true,
-      review: true,
-      rating: true,
-      user: {
-        select: {
-          full_name: true,
-        },
+export const showReviews = expressAsyncHandler(
+  async (req: Request, res: Response) => {
+    const resId = Number(req.params.restaurantId);
+    const showReviews = await prisma.reviews.findMany({
+      where: {
+        restaurant_id: resId,
       },
-      order: {
-        select: {
-          order_items: {
-            select: {
-              product_name: true,
-              menus: {
-                select: {
-                  image_url: true,
+      select: {
+        id: true,
+        review: true,
+        rating: true,
+        user: {
+          select: {
+            full_name: true,
+          },
+        },
+        order: {
+          select: {
+            order_items: {
+              select: {
+                product_name: true,
+                menus: {
+                  select: {
+                    image_url: true,
+                  },
                 },
               },
             },
           },
         },
       },
-    },
-  });
+    });
 
-  res.status(200).json(showReviews);
-});
-module.exports = { getItemsReviews, postItemReviews, showReviews };
+    res.status(200).json(showReviews);
+  }
+);

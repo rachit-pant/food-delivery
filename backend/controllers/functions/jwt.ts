@@ -10,7 +10,7 @@ interface User {
   refreshToken: string | null;
 }
 
-const AccessToken = (user: User) => {
+export const AccessToken = (user: User) => {
   return jwt.sign(
     {
       id: user.id,
@@ -22,7 +22,7 @@ const AccessToken = (user: User) => {
   );
 };
 
-const RefreshToken = (user: User) => {
+export const RefreshToken = (user: User) => {
   return jwt.sign(
     {
       id: user.id,
@@ -32,5 +32,3 @@ const RefreshToken = (user: User) => {
     { expiresIn: '1d' }
   );
 };
-
-module.exports = { AccessToken, RefreshToken };

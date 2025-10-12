@@ -1,12 +1,12 @@
-import expressAsyncHandler from 'express-async-handler';
-import prisma from '../../prisma/client';
-import { Request, Response } from 'express';
 import crypto from 'node:crypto';
-const { BetterError } = require('../../middleware/errorHandler');
+import type { Request, Response } from 'express';
+import expressAsyncHandler from 'express-async-handler';
 import { Resend } from 'resend';
+import { BetterError } from '../../middleware/errorHandler.js';
+import prisma from '../../prisma/client.js';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
+const FRONTEND_URL = 'http://localhost:3000';
 
 const addStaffInvites = expressAsyncHandler(
   async (req: Request, res: Response) => {
@@ -123,4 +123,4 @@ const addStaffInvites = expressAsyncHandler(
   }
 );
 
-module.exports = addStaffInvites;
+export default addStaffInvites;

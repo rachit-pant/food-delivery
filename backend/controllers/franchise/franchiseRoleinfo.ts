@@ -1,8 +1,8 @@
-import expressAsyncHandler from 'express-async-handler';
-import prisma from '../../prisma/client';
-import { Request, Response } from 'express';
 import crypto from 'node:crypto';
-const { BetterError } = require('../../middleware/errorHandler');
+import type { Request, Response } from 'express';
+import expressAsyncHandler from 'express-async-handler';
+
+import prisma from '../../prisma/client.js';
 
 const franchiseRoleinfo = expressAsyncHandler(
   async (req: Request, res: Response) => {
@@ -33,4 +33,5 @@ const franchiseRoleinfo = expressAsyncHandler(
     res.status(200).json(invite);
   }
 );
-module.exports = franchiseRoleinfo;
+
+export default franchiseRoleinfo;

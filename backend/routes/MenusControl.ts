@@ -1,29 +1,30 @@
-import express from 'express';
-const router = express.Router({ mergeParams: true });
-const MenusAdd = require('../controllers/menu/PostMenus');
-const OwnerAdminAcess = require('../middleware/OwnerAdminAcess');
-const authorize = require('../middleware/authorize');
-const staffIdentifier = require('../middleware/StaffIdentifier');
-const GetMenus = require('../controllers/menu/GetMenus');
-const DeleteMenus = require('../controllers/menu/DeleteMenus');
-const PatchMenus = require('../controllers/menu/PatchMenus');
-const multer = require('multer');
-const diskStorage = require('multer').diskStorage;
-const path = require('path');
-const {
+import path from 'node:path';
+import express, { type Request } from 'express';
+import multer from 'multer';
+import {
   getItemsReviews,
   postItemReviews,
   showReviews,
-} = require('../controllers/functions/reviews');
-const storage = diskStorage({
-  destination: function (
-    req: Request,
-    file: Express.Multer.File,
-    cb: Function
-  ) {
+} from '../controllers/functions/reviews.js';
+import DeleteMenus from '../controllers/menu/DeleteMenus.js';
+import GetMenus from '../controllers/menu/GetMenus.js';
+import PatchMenus from '../controllers/menu/PatchMenus.js';
+import MenusAdd from '../controllers/menu/PostMenus.js';
+import authorize from '../middleware/authorize.js';
+import OwnerAdminAcess from '../middleware/OwnerAdminAcess.js';
+import staffIdentifier from '../middleware/StaffIdentifier.js';
+
+const router = express.Router({ mergeParams: true });
+type MulterCallback = (error: Error | null, value: string) => void;
+const storage = multer.diskStorage({
+  destination: (
+    _req: Request,
+    _file: Express.Multer.File,
+    cb: MulterCallback
+  ) => {
     cb(null, path.join(__dirname, '..', 'images'));
   },
-  filename: function (req: Request, file: Express.Multer.File, cb: Function) {
+  filename: (_req: Request, file: Express.Multer.File, cb: MulterCallback) => {
     cb(null, file.originalname);
   },
 });
@@ -60,4 +61,4 @@ router.post('/reviews', authorize, postItemReviews);
 
 router.get('/reviews/all', showReviews);
 
-module.exports = router;
+export default router;

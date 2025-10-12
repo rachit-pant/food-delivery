@@ -1,7 +1,8 @@
+import type { Request, Response } from 'express';
 import expressAsyncHandler from 'express-async-handler';
-import prisma from '../../prisma/client';
-import { Request, Response } from 'express';
-const { BetterError } = require('../../middleware/errorHandler');
+import { BetterError } from '../../middleware/errorHandler.js';
+import prisma from '../../prisma/client.js';
+
 interface restaurant {
   restaurant_id: number;
   restaurant_name: string;
@@ -19,12 +20,9 @@ const postFranchise = expressAsyncHandler(
       );
     }
     const image = req.file?.filename;
-    let restaurants;
-    if (image) {
-      restaurants = JSON.parse(req.body.restaurants);
-    } else {
-      restaurants = req.body.restaurants;
-    }
+    const restaurants = image
+      ? JSON.parse(req.body.restaurants)
+      : req.body.restaurants;
     console.log(restaurants);
     const franchise = await prisma.franchise.create({
       data: {
@@ -41,4 +39,5 @@ const postFranchise = expressAsyncHandler(
     res.status(200).json(franchise);
   }
 );
-module.exports = postFranchise;
+
+export default postFranchise;

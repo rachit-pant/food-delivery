@@ -1,16 +1,16 @@
+import type { Request, Response } from 'express';
 import expressAsyncHandler from 'express-async-handler';
-import { PrismaClient } from '../../generated/prisma';
-import { Request, Response } from 'express';
+import { PrismaClient } from '../../generated/prisma/index.js';
 
 const prisma = new PrismaClient();
 
-const AllCountryFetch = expressAsyncHandler(
-  async (req: Request, res: Response) => {
+export const AllCountryFetch = expressAsyncHandler(
+  async (_req: Request, res: Response) => {
     const fetchedData = await prisma.countries.findMany();
     res.status(200).json(fetchedData);
   }
 );
-const AllStatesCountry = expressAsyncHandler(
+export const AllStatesCountry = expressAsyncHandler(
   async (req: Request, res: Response) => {
     const countryId = Number(req.params?.id);
     if (!countryId) {
@@ -26,7 +26,7 @@ const AllStatesCountry = expressAsyncHandler(
     res.status(200).json(fetchedData);
   }
 );
-const AllCityStates = expressAsyncHandler(
+export const AllCityStates = expressAsyncHandler(
   async (req: Request, res: Response) => {
     const stateId = Number(req.params?.stateId);
     if (!stateId) {
@@ -42,5 +42,3 @@ const AllCityStates = expressAsyncHandler(
     res.status(200).json(fetchedData);
   }
 );
-
-module.exports = { AllCountryFetch, AllStatesCountry, AllCityStates };
