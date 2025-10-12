@@ -105,7 +105,7 @@ export default function Notification() {
                     <Image
                       width={60}
                       height={60}
-                      src={`http://localhost:5000${notifications.restaurant_image}`}
+                      src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${notifications.restaurant_image}`}
                       alt={notifications.restaurant_name}
                       className="h-15 w-15 object-cover"
                     />

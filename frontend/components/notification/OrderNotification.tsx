@@ -1,3 +1,4 @@
+'use client';
 import { getSocket } from '@/lib/sockets';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'sonner';
@@ -31,6 +32,7 @@ interface OrderItems {
 const OrderNotification = () => {
   const [orderRequest, setOrderRequest] = useState<Orders | null>(null);
   const [open, setOpen] = useState(false);
+
   useEffect(() => {
     const socket = getSocket();
 
@@ -94,16 +96,11 @@ const OrderNotification = () => {
                     {item.product_name} x {item.quantity}
                   </p>
                 ))}
+                <Button onClick={handleAccept}>Accept</Button>
               </DialogDescription>
             </>
           )}
         </DialogContent>
-        <DialogFooter>
-          <Button onClick={handleAccept}>Accept</Button>
-          <DialogClose>
-            <Button>Reject</Button>
-          </DialogClose>
-        </DialogFooter>
       </Dialog>
     </div>
   );

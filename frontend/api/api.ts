@@ -1,9 +1,14 @@
 import axios from 'axios';
+const backendUrl =
+  typeof window === 'undefined'
+    ? process.env.NEXT_PUBLIC_BACKEND_URL
+    : 'http://localhost:5000';
 export const api = axios.create({
-  baseURL: 'http://localhost:5000',
+  baseURL: backendUrl,
   timeout: 1000,
   withCredentials: true,
 });
+
 let refreshRequest: Promise<unknown> | null = null;
 api.interceptors.response.use(
   (response) => response,

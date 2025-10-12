@@ -134,7 +134,7 @@ const Menus = async ({
         <div className="flex flex-col lg:flex-row items-center gap-8">
           <div className="relative w-40 h-40 flex-shrink-0 rounded-2xl overflow-hidden shadow-2xl image-overlay group">
             <Image
-              src={`http://localhost:5000${dataRestro.imageurl}`}
+              src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${dataRestro.imageurl}`}
               alt={dataRestro.name}
               fill
               className="object-cover transition-transform duration-500 group-hover:scale-110"
@@ -262,7 +262,7 @@ const Menus = async ({
                         <div className="flex flex-col">
                           <div className="relative w-full h-64 lg:h-48 overflow-hidden rounded-t-lg image-overlay">
                             <Image
-                              src={`http://localhost:5000${item.image_url}`}
+                              src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${item.image_url}`}
                               alt={item.item_name}
                               fill
                               className="object-cover transition-transform duration-500 group-hover:scale-110 my-2"
@@ -347,7 +347,7 @@ const Menus = async ({
                           >
                             <div className="relative w-12 h-12 rounded-lg overflow-hidden">
                               <Image
-                                src={`http://localhost:5000${item.menus.image_url}`}
+                                src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${item.menus.image_url}`}
                                 alt={item.product_name}
                                 fill
                                 className="object-cover"

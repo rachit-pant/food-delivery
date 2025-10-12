@@ -36,6 +36,7 @@ const LoginForm = () => {
       password: '',
     },
   });
+  console.log(process.env.NEXT_PUBLIC_BACKEND_URL);
   const selector = useAppSelector((state) => state.cartLogin.id);
   const quantity = useAppSelector((state) => state.cartLogin.quantity);
   const dispatch = useAppDispatch();

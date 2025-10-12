@@ -247,7 +247,7 @@ export default function RestaurantOrders({
                             {item.image ? (
                               <Image
                                 src={
-                                  `http://localhost:5000${item.image}` ||
+                                  `${process.env.NEXT_PUBLIC_BACKEND_URL}${item.image}` ||
                                   '/placeholder.svg'
                                 }
                                 alt={item.name}

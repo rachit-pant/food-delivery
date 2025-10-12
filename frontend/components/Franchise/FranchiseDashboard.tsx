@@ -461,7 +461,7 @@ const FranchiseDashboard = ({ franchiseId }: { franchiseId: string }) => {
                         <div className="flex items-center gap-4">
                           <Avatar className="h-12 w-12 ring-2 ring-blue-200">
                             <AvatarImage
-                              src={`http://localhost:5000${order.restaurants.imageurl}`}
+                              src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${order.restaurants.imageurl}`}
                               alt={order.restaurants.name}
                             />
                             <AvatarFallback className="bg-gradient-to-br from-blue-400 to-purple-500 text-white font-semibold">

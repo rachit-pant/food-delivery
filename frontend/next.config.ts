@@ -8,6 +8,6 @@ export default nextConfig;
 
 module.exports = {
   images: {
-    domains: ['localhost'],
+    domains: ['localhost', 'backend'],
   },
 };

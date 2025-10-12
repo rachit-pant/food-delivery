@@ -44,7 +44,7 @@ export default async function RootLayout({
           {children}
           <Toaster />
           <Notification />
-          {role == 5 && <OrderNotification />}
+          <OrderNotification />
         </StoreProvider>
       </body>
     </html>

@@ -139,7 +139,7 @@ const FranchiseList = ({
                     <CardContent className="space-y-4">
                       <div className="relative aspect-video rounded-md overflow-hidden bg-muted">
                         <Image
-                          src={`http://localhost:5000${items.imageurl}`}
+                          src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${items.imageurl}`}
                           alt={items.name}
                           fill
                           className="object-cover"

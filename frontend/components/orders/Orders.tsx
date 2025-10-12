@@ -117,7 +117,7 @@ const Orders = () => {
                   <div className="flex items-center gap-4">
                     <div className="relative">
                       <Image
-                        src={`http://localhost:5000${order.restaurant.image}`}
+                        src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${order.restaurant.image}`}
                         alt={order.restaurant.name}
                         width={100}
                         height={100}
@@ -172,7 +172,7 @@ const Orders = () => {
                       className="flex items-center gap-4 p-4 bg-background/50 rounded-xl border border-border/30"
                     >
                       <Image
-                        src={`http://localhost:5000${item.image}`}
+                        src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${item.image}`}
                         width={100}
                         height={100}
                         alt={item.name}

@@ -114,7 +114,7 @@ const Menus = async ({
         <div className="flex flex-col sm:flex-row items-center gap-6 max-w-7xl mx-auto p-6">
           <div className="relative w-32 h-32 flex-shrink-0 rounded-full overflow-hidden shadow-lg">
             <Image
-              src={`http://localhost:5000${dataRestro.imageurl}`}
+              src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${dataRestro.imageurl}`}
               alt={dataRestro.name}
               fill
               className="object-cover"
@@ -207,7 +207,7 @@ const Menus = async ({
                       >
                         <div className="relative w-28 h-28 sm:w-32 sm:h-32 flex-shrink-0 mx-auto sm:mx-0">
                           <Image
-                            src={`http://localhost:5000${item.image_url}`}
+                            src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${item.image_url}`}
                             alt={item.item_name}
                             fill
                             className="object-cover rounded-md"
@@ -278,7 +278,7 @@ const Menus = async ({
                         className="flex items-center gap-4 bg-gray-50 p-3 rounded-lg"
                       >
                         <Image
-                          src={`http://localhost:5000${item.menus.image_url}`}
+                          src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${item.menus.image_url}`}
                           width={120}
                           height={120}
                           alt={item.product_name}

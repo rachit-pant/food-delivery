@@ -6,6 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import Image from 'next/image';
+import { Button } from '../ui/button';
+import { useRouter } from 'next/navigation';
 
 type Root = Root2[];
 
@@ -51,6 +53,7 @@ interface Item {
 }
 
 const OrdersHistory = () => {
+  const router = useRouter();
   const [orders, setOrders] = useState<Root>([]);
 
   useEffect(() => {
@@ -58,6 +61,7 @@ const OrdersHistory = () => {
       try {
         const res = (await api.get('/users/orders')).data as Root;
         setOrders(res);
+        console.log('orders', res);
       } catch (error) {
         const err = handleError(error);
         console.error(err);
@@ -88,8 +92,8 @@ const OrdersHistory = () => {
                     order.status === 'delivered'
                       ? 'bg-green-500 text-white'
                       : order.status === 'preparing'
-                      ? 'bg-yellow-500 text-white'
-                      : 'bg-red-500 text-white'
+                        ? 'bg-yellow-500 text-white'
+                        : 'bg-red-500 text-white'
                   }
                 >
                   {order.status}
@@ -99,7 +103,7 @@ const OrdersHistory = () => {
               <CardContent>
                 <div className="flex items-center gap-3 mb-4">
                   <Image
-                    src={`http://localhost:5000${order.restaurant.image}`}
+                    src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${order.restaurant.image}`}
                     alt={order.restaurant.name}
                     width={50}
                     height={50}
@@ -124,7 +128,7 @@ const OrdersHistory = () => {
                     >
                       <div className="flex items-center gap-3">
                         <Image
-                          src={`http://localhost:5000${item.image}`}
+                          src={`http://backend:5000${item.image}`}
                           alt={item.name}
                           width={40}
                           height={40}
@@ -182,6 +186,12 @@ const OrdersHistory = () => {
                   </span>
                   )
                 </p>
+                <Button
+                  onClick={() => router.push(`/delivery/${order.orderId}/user`)}
+                  className="mt-4"
+                >
+                  Track Order
+                </Button>
               </CardContent>
             </Card>
           ))}

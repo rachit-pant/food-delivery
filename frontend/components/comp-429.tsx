@@ -1,9 +1,4 @@
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function Component() {
   return (
@@ -44,5 +39,5 @@ export default function Component() {
         </p>
       </TabsContent>
     </Tabs>
-  )
+  );
 }

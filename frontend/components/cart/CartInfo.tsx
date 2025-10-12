@@ -215,7 +215,7 @@ const CartInfo = () => {
                   >
                     <div className="relative w-20 h-20 flex-shrink-0 rounded-xl overflow-hidden shadow-md">
                       <Image
-                        src={`http://localhost:5000${items.menus.image_url}`}
+                        src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${items.menus.image_url}`}
                         alt={items.menus.item_name}
                         width={400}
                         height={300}

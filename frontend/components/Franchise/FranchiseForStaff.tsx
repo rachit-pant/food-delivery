@@ -149,7 +149,7 @@ const FranchiseForStaff = () => {
             <CardContent className="p-0">
               <div className="relative aspect-video w-full overflow-hidden rounded-t-lg bg-muted">
                 <Image
-                  src={`http://localhost:5000${f.image_url}`}
+                  src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${f.image_url}`}
                   alt={f.name}
                   fill
                   className="object-cover transition-transform duration-300 group-hover:scale-105"

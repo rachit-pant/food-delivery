@@ -17,7 +17,6 @@ type props = {
   rating: number;
   id: number;
 };
-
 const CardRestaurant = ({ image, name, rating, id }: props) => {
   return (
     <Link href={`/restaurant/${id}`} className="group block">
@@ -25,7 +24,7 @@ const CardRestaurant = ({ image, name, rating, id }: props) => {
         <CardHeader className="p-0 relative overflow-hidden">
           <div className="relative h-56 w-full">
             <Image
-              src={`http://localhost:5000${image}`}
+              src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${image}`}
               alt={`${name} restaurant`}
               fill
               className="object-cover transition-transform duration-500 group-hover:scale-110"

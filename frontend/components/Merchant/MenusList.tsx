@@ -119,7 +119,7 @@ const MenusList = ({ restaurantId }: { restaurantId: string }) => {
                     <div className="relative h-48 bg-gradient-to-r from-orange-100 to-red-100">
                       {item.image_url ? (
                         <Image
-                          src={`http://localhost:5000${item.image_url}`}
+                          src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${item.image_url}`}
                           alt={item.item_name}
                           fill
                           className="object-cover group-hover:scale-105 transition-transform duration-300"

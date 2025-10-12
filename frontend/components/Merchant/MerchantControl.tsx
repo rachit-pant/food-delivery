@@ -209,7 +209,7 @@ const MerchantControl = () => {
                 <div className="relative h-48 bg-gradient-to-r from-orange-400 to-red-500 overflow-hidden">
                   {restaurant.imageurl ? (
                     <Image
-                      src={`http://localhost:5000${restaurant.imageurl}`}
+                      src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${restaurant.imageurl}`}
                       width={100}
                       height={100}
                       alt={restaurant.name}
