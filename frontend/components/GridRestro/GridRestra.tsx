@@ -16,11 +16,23 @@ type restaurants = {
   rating: number;
   imageurl: string;
   status: string;
+  lat: number;
+  lng: number;
+  is_open: boolean;
 };
-
+interface userAddress {
+  id: number;
+  lat: number;
+  lng: number;
+}
 const GridRestaurant = () => {
   const [restaurants, setRestaurants] = useState<restaurants[]>([]);
   const [loading, setLoading] = useState(true);
+  const [userAddress, setUserAddress] = useState<userAddress>({
+    id: 0,
+    lat: 0,
+    lng: 0,
+  });
 
   const filter = useAppSelector((state) => state.filter.filterName);
   const country = useAppSelector((state) => state.country.countryName);
@@ -31,6 +43,7 @@ const GridRestaurant = () => {
         const data = (
           await api.get(`/restaurants?filter=${filter}&country=${country}`)
         ).data;
+        console.log('data', data);
         setRestaurants(data);
       } catch (error) {
         const err = handleError(error);
@@ -42,6 +55,38 @@ const GridRestaurant = () => {
     }
     fetchData();
   }, [filter, country]);
+
+  useEffect(() => {
+    async function fetchUserAddress() {
+      try {
+        const data = (await api.get('/address/address/user')).data;
+        setUserAddress(data);
+      } catch (error) {
+        const err = handleError(error);
+        console.log(err);
+        throw err;
+      }
+    }
+    fetchUserAddress();
+  }, [country]);
+
+  function getDistance(lat1: number, lng1: number, lat2: number, lng2: number) {
+    const R = 6371e3;
+    const φ1 = (lat1 * Math.PI) / 180;
+    const φ2 = (lat2 * Math.PI) / 180;
+    const Δφ = ((lat2 - lat1) * Math.PI) / 180;
+    const Δλ = ((lng2 - lng1) * Math.PI) / 180;
+
+    const a =
+      Math.sin(Δφ / 2) ** 2 +
+      Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) ** 2;
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return R * c;
+  }
+  const distances = restaurants.map(
+    (d) => getDistance(userAddress.lat, userAddress.lng, d.lat, d.lng) / 1000
+  );
 
   return (
     <div className="max-w-7xl mx-auto px-4 mt-10">
@@ -73,13 +118,15 @@ const GridRestaurant = () => {
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
           style={{ userSelect: 'none' }}
         >
-          {restaurants.map((restaurant: restaurants) => (
+          {restaurants.map((restaurant: restaurants, index) => (
             <CardRestra
               key={restaurant.id}
               image={restaurant.imageurl}
               name={restaurant.name}
               rating={restaurant.rating}
               id={restaurant.id}
+              distances={distances[index]}
+              is_open={restaurant.is_open}
             />
           ))}
         </div>
