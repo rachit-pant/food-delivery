@@ -38,9 +38,6 @@ export default async function RootLayout({
       >
         <StoreProvider>
           <StateJwt role={role} />
-          <div className="sticky top-0 z-50 bg-white shadow">
-            <Navbar />
-          </div>
           {children}
           <Toaster />
           <Notification />

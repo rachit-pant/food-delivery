@@ -8,11 +8,7 @@ import { CircleCheck, CircleX, Sparkles, Crown, Zap } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { api } from '@/api/api';
 import { handleError } from '@/lib/handleError';
-const tooltipContent = {
-  styles: 'Choose from a variety of styles to suit your preferences.',
-  filters: 'Choose from a variety of filters to enhance your portraits.',
-  credits: 'Use these credits to retouch your portraits.',
-};
+
 import { useRouter } from 'next/navigation';
 import type { MerchantFeatures, Plans, UserFeatures } from './AlltypesSubPlan';
 import { useAppSelector } from '@/lib/hooks';
@@ -45,9 +41,11 @@ const Pricing03 = () => {
       }
     };
     fetchPlans();
+  }, [role]);
+  useEffect(() => {
     const handleBilling = async () => {
       try {
-        const stipeData = (await api.get('/extra/billing')).data;
+        const stipeData = (await api.get('/extra/billing', { timeout: 5000 })).data;
         console.log(stipeData.data.url);
         setUrl(stipeData.data.url);
         setBillingerror(false);
@@ -57,8 +55,7 @@ const Pricing03 = () => {
       }
     };
     handleBilling();
-  }, [role]);
-
+  }, [fetchedPlans]);
   const monthlyPlans = fetchedPlans.filter((plan) => plan.duration === 'month');
   const yearlyPlans = fetchedPlans.filter((plan) => plan.duration === 'year');
   let monthlyPlan;

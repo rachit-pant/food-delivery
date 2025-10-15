@@ -18,6 +18,7 @@ import {
   setQuantityCart,
 } from '@/components/GridRestro/cartloginslice';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 const AddButton = ({
   variant,
 }: {
@@ -37,13 +38,13 @@ const AddButton = ({
   const router = useRouter();
   async function handleSubmit() {
     if (!selectVariant) {
-      alert('Please select a variant');
+      toast.warning('Please select a variant', { position: 'top-center', duration: 2000 });
       return;
     }
     if (role === 0) {
       dispatch(setCartLogin(Number(selectVariant)));
       dispatch(setQuantityCart(quantity));
-      alert('Please login to add to cart');
+      toast.warning('Please login to add to cart', { position: 'top-center', duration: 2000 });
       router.push('/auth/login');
       return;
     }

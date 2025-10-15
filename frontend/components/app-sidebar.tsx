@@ -22,6 +22,7 @@ import { useAppSelector } from '@/lib/hooks';
 import { useState } from 'react';
 import { Button } from './ui/button';
 import DeliveryStaff from './Delivery/DeliveryStaff';
+import Link from 'next/link';
 export function AppSidebar() {
   const role = useAppSelector((state) => state.roleMiddleware.role);
   const items = [
@@ -48,91 +49,92 @@ export function AppSidebar() {
   const [isDeliveryAgentOpen, setIsDeliveryAgentOpen] = useState(false);
   return (
     <>
-      <Sidebar className="sticky top-17 left-0 h-[calc(100vh-5rem)]">
+      <Sidebar className="sticky top-0 left-0 h-[calc(100vh-5rem)]">
         <SidebarContent>
           <SidebarGroup>
             <SidebarGroupContent>
               <SidebarMenu>
+                <SidebarMenuItem key="home">
+                  <SidebarMenuButton asChild>
+                    <Link href="/restaurant" >
+                      <Home />
+                      <span>Home</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
                 {items.map((item) => (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild>
-                      <a href={item.url}>
+                      <Link href={item.url}>
                         <item.icon />
                         <span>{item.title}</span>
-                      </a>
+                      </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 ))}
                 {isMerchant && (
                   <SidebarMenuItem key="merchant">
                     <SidebarMenuButton asChild>
-                      {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
-                      <a href="/merchant">
+                      <Link href="/merchant">
                         <ChartBarDecreasing />
                         <span>Merchant</span>
-                      </a>
+                      </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 )}
                 {isMerchant && (
                   <SidebarMenuItem key="merchantDashboard">
                     <SidebarMenuButton asChild>
-                      {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
-                      <a href="/merchant/dashboard">
+                      <Link href="/merchant/dashboard">
                         <LayoutDashboard />
                         <span>Dashboard</span>
-                      </a>
+                      </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 )}
                 {isSubscription && (
                   <SidebarMenuItem key="subscription">
                     <SidebarMenuButton asChild>
-                      {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
-                      <a href="/subscription">
+                      <Link href="/subscription">
                         <Calendar />
                         <span>Subscription</span>
-                      </a>
+                      </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 )}
                 {isMerchant && (
                   <SidebarMenuItem key="merchantFranchise">
                     <SidebarMenuButton asChild>
-                      {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
-                      <a href="/merchant/franchise">
+                      <Link href="/merchant/franchise">
                         <BookText />
                         <span>Franchise</span>
-                      </a>
+                      </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 )}
                 {isMerchant && (
                   <SidebarMenuItem key="merchantFranchise">
                     <SidebarMenuButton asChild>
-                      {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
-                      <a href="/merchant/franchise/manage">
+                      <Link href="/merchant/franchise/manage">
                         <BookText />
                         <span>Staff</span>
-                      </a>
+                      </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 )}
                 {isStaff && (
                   <SidebarMenuItem key="staffFranchise">
                     <SidebarMenuButton asChild>
-                      {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
-                      <a href="/staff">
+                      <Link href="/staff">
                         <BookText />
                         <span>Jobs</span>
-                      </a>
+                      </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 )}
                 {isDeliveryAgent && (
                   <SidebarMenuItem key="deliveryAgent">
                     <SidebarMenuButton asChild>
-                      {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
                       <Button
                         variant="link"
                         className="hover:cursor-pointer font-normal -ml-1"

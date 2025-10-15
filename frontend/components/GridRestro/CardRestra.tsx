@@ -30,11 +30,10 @@ const CardRestaurant = ({
   return (
     <Link
       href={is_open ? `/restaurant/${id}` : '#'}
-      className={`block transition-opacity duration-200 ${
-        is_open
-          ? 'opacity-100'
-          : 'opacity-50 pointer-events-none cursor-not-allowed'
-      }`}
+      className={`block transition-opacity duration-200 ${is_open
+        ? 'opacity-100'
+        : 'opacity-50 pointer-events-none cursor-not-allowed'
+        }`}
     >
       <Card className="food-card-hover border-0 bg-card/60 backdrop-blur-sm shadow-lg hover:shadow-2xl overflow-hidden group-hover:border-primary/20 transition-all duration-300">
         <CardHeader className="p-0 relative overflow-hidden">

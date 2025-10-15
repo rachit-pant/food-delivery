@@ -50,6 +50,7 @@ const formSchema = z.object({
 
 const Reviews = ({ restaurantId }: { restaurantId: number }) => {
   const [data, setData] = useState<Orders[]>([]);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
@@ -84,6 +85,7 @@ const Reviews = ({ restaurantId }: { restaurantId: number }) => {
         restaurantId: restaurantId,
       });
       console.log('success', res);
+      setOpen(false);
     } catch (error) {
       const err = handleError(error);
       console.log(err);
@@ -106,7 +108,7 @@ const Reviews = ({ restaurantId }: { restaurantId: number }) => {
   }
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button className="group relative h-14 w-14 rounded-full bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-110">
           <div className="absolute inset-0 rounded-full bg-gradient-to-r from-primary to-secondary opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
@@ -201,11 +203,10 @@ const Reviews = ({ restaurantId }: { restaurantId: number }) => {
                               {Array.from({ length: 5 }).map((_, idx) => (
                                 <Star
                                   key={idx}
-                                  className={`w-4 h-4 ${
-                                    idx < num
+                                  className={`w-4 h-4 ${idx < num
                                       ? 'text-yellow-400 fill-current'
                                       : 'text-gray-300'
-                                  }`}
+                                    }`}
                                 />
                               ))}
                             </div>

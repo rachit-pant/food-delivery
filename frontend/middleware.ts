@@ -54,7 +54,7 @@ export async function middleware(request: NextRequest) {
   console.log('decoded', decoded, 'decodedStaff', decodedStaff);
   if (roleRoutes.some((route) => pathname.startsWith(route))) {
     const isMerchantIdRoute = /^\/merchant\/\d+$/.test(pathname);
-    if (![2, 3].includes(decoded.role)) {
+    if (![1, 2, 3].includes(decoded.role)) {
       if (
         !(decoded.role === 4 && decodedStaff?.id === 1 && isMerchantIdRoute)
       ) {

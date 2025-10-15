@@ -85,7 +85,12 @@ const GridRestaurant = () => {
     return R * c;
   }
   const distances = restaurants.map(
-    (d) => getDistance(userAddress.lat, userAddress.lng, d.lat, d.lng) / 1000
+    (d) => {
+      if (userAddress?.lat && userAddress?.lng) {
+        return getDistance(userAddress.lat, userAddress.lng, d.lat, d.lng) / 1000;
+      }
+      return 20;
+    }
   );
 
   return (

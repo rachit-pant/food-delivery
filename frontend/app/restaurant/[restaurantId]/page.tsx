@@ -57,9 +57,6 @@ export interface ReviewsType {
   review: string;
   rating: number;
   user: { full_name: string };
-  order: {
-    order_items: { product_name: string; menus: { image_url: string } }[];
-  };
 }
 
 type MenuData = Record<string, MenuItem[]>;
@@ -110,6 +107,7 @@ const Menus = async ({
       .data as MenuData;
     reviews = (await api.get(`/restaurants/${restaurantId}/menus/reviews/all`))
       .data as ReviewsType[];
+    console.log('reviews', reviews);
   } catch (error) {
     console.error(error);
     throw error;
@@ -129,10 +127,10 @@ const Menus = async ({
   const isOpen = isRestaurantOpen(todayTimings, now);
 
   const Header = (
-    <div className="sticky top-0 bg-card/95 backdrop-blur-md border-b border-border shadow-lg z-50">
+    <div className="">
       <div className="max-w-7xl mx-auto p-6">
         <div className="flex flex-col lg:flex-row items-center gap-8">
-          <div className="relative w-40 h-40 flex-shrink-0 rounded-2xl overflow-hidden shadow-2xl image-overlay group">
+          <div className="relative w-40 h-40 flex-shrink-0 rounded-2xl overflow-hidden  image-overlay group">
             <Image
               src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${dataRestro.imageurl}`}
               alt={dataRestro.name}
@@ -216,22 +214,22 @@ const Menus = async ({
       {Header}
 
       <Tabs defaultValue="tab-1" className="w-full">
-        <div className="sticky top-[200px] lg:top-[160px] bg-background/95 backdrop-blur-md border-b border-border z-40">
+        <div className="bg-background/95 backdrop-blur-md border-b border-border z-40">
           <div className="max-w-7xl mx-auto px-6 py-4">
-            <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 bg-muted p-1 rounded-lg">
+            <TabsList className={reviews.length > 0 ? "grid w-full max-w-md mx-auto grid-cols-2 bg-muted p-1 rounded-lg" : "grid w-full max-w-40 mx-auto grid-cols-1 bg-muted p-1 rounded-lg"}>
               <TabsTrigger
                 value="tab-1"
                 className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-medium transition-all duration-200"
               >
-                Our Menu
+                Menu
               </TabsTrigger>
-              <TabsTrigger
+              {reviews.length > 0 && <TabsTrigger
                 value="tab-2"
                 className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-medium transition-all duration-200"
               >
                 <Users className="w-4 h-4 mr-2" />
                 Reviews
-              </TabsTrigger>
+              </TabsTrigger>}
             </TabsList>
           </div>
         </div>
@@ -319,11 +317,10 @@ const Menus = async ({
                       {Array.from({ length: 5 }).map((_, idx) => (
                         <Star
                           key={idx}
-                          className={`w-5 h-5 ${
-                            idx < review.rating
-                              ? 'text-yellow-400 fill-current'
-                              : 'text-gray-300'
-                          }`}
+                          className={`w-5 h-5 ${idx < review.rating
+                            ? 'text-yellow-400 fill-current'
+                            : 'text-gray-300'
+                            }`}
                         />
                       ))}
                       <span className="ml-2 text-sm text-muted-foreground">
@@ -335,31 +332,7 @@ const Menus = async ({
                       {review.review}
                     </blockquote>
 
-                    <div className="space-y-3">
-                      <h4 className="font-semibold text-card-foreground flex items-center gap-2">
-                        <Users className="w-4 h-4" /> Ordered Items:
-                      </h4>
-                      <div className="space-y-2">
-                        {review.order.order_items.map((item, i) => (
-                          <div
-                            key={i}
-                            className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg"
-                          >
-                            <div className="relative w-12 h-12 rounded-lg overflow-hidden">
-                              <Image
-                                src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${item.menus.image_url}`}
-                                alt={item.product_name}
-                                fill
-                                className="object-cover"
-                              />
-                            </div>
-                            <span className="text-card-foreground font-medium">
-                              {item.product_name}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
+
                   </CardContent>
                 </Card>
               ))}
