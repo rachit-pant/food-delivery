@@ -19,6 +19,7 @@ import {
 } from '@/components/GridRestro/cartloginslice';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 const AddButton = ({
   variant,
 }: {
@@ -30,40 +31,44 @@ const AddButton = ({
   }[];
 }) => {
   const [selectVariant, setselectVariant] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
   const [isAdded, setIsAdded] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const role = useAppSelector((state) => state.roleMiddleware.role);
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const queryClient = useQueryClient();
+  const addCart = useMutation({
+    mutationFn: async ({ variant, quantity }: { variant: string; quantity: number }) => {
+      const res = await api.post('/cart', {
+        variant,
+        quantity,
+      });
+      return res;
+    },
+    onSuccess: () => {
+      setIsAdded(true);
+      setTimeout(() => setIsAdded(false), 2000)
+      queryClient.invalidateQueries({ queryKey: ['cart'] });
+    },
+    onError: (error) => {
+      const err = handleError(error);
+      console.log(err);
+      toast.error(handleError(error).message);
+    }
+  })
   async function handleSubmit() {
     if (!selectVariant) {
-      toast.warning('Please select a variant', { position: 'top-center', duration: 2000 });
+      toast.warning('Please select a variant', { position: 'top-right', duration: 2000 });
       return;
     }
     if (role === 0) {
       dispatch(setCartLogin(Number(selectVariant)));
       dispatch(setQuantityCart(quantity));
-      toast.warning('Please login to add to cart', { position: 'top-center', duration: 2000 });
+      toast.warning('Please login to add to cart', { position: 'top-right', duration: 2000 });
       router.push('/auth/login');
       return;
     }
-    setIsLoading(true);
-    try {
-      const res = await api.post('/cart', {
-        variant: selectVariant,
-        quantity,
-      });
-      console.log('success', res);
-      setIsAdded(true);
-      setTimeout(() => setIsAdded(false), 2000);
-    } catch (error) {
-      const err = handleError(error);
-      console.log(err);
-      throw err;
-    } finally {
-      setIsLoading(false);
-    }
+    addCart.mutate({ variant: selectVariant, quantity });
   }
 
   const selectedVariantDetails = variant.find(
@@ -129,7 +134,7 @@ const AddButton = ({
       <Button
         type="submit"
         onClick={handleSubmit}
-        disabled={!selectVariant || isLoading}
+        disabled={!selectVariant || addCart.isPending}
         className={cn(
           'w-full h-12 font-semibold text-base transition-all duration-300 shadow-lg hover:shadow-xl',
           'bg-primary  text-primary-foreground',
@@ -139,7 +144,7 @@ const AddButton = ({
         )}
       >
         <div className="flex items-center justify-center gap-2">
-          {isLoading ? (
+          {addCart.isPending ? (
             <>
               <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               <span>Adding...</span>

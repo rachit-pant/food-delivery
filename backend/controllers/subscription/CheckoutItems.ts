@@ -2,12 +2,15 @@ import type { Request, Response } from 'express';
 import expressAsyncHandler from 'express-async-handler';
 import Stripe from 'stripe';
 import { BetterError } from '../../middleware/errorHandler.js';
-
+import { z } from 'zod';
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const CheckoutItems = expressAsyncHandler(
   async (req: Request, res: Response) => {
-    const { sessionId } = req.query;
-    if (!sessionId || typeof sessionId !== 'string') {
+    const schema = z.object({
+      sessionId: z.string(),
+    });
+    const validation = schema.safeParse(req.query);
+    if (!validation.success) {
       throw new BetterError(
         'no id found',
         404,
@@ -15,6 +18,7 @@ const CheckoutItems = expressAsyncHandler(
         'Subscription Error'
       );
     }
+    const sessionId = validation.data.sessionId;
     try {
       const session = await stripe.checkout.sessions.retrieve(sessionId, {
         expand: ['line_items'],

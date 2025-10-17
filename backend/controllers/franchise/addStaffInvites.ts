@@ -4,28 +4,32 @@ import expressAsyncHandler from 'express-async-handler';
 import { Resend } from 'resend';
 import { BetterError } from '../../middleware/errorHandler.js';
 import prisma from '../../prisma/client.js';
-
+import { z } from 'zod';
 const resend = new Resend(process.env.RESEND_API_KEY);
 const FRONTEND_URL = 'http://localhost:3000';
 
 const addStaffInvites = expressAsyncHandler(
   async (req: Request, res: Response) => {
-    const { email, franchiseId, role } = req.body;
-
-    if (!email || !franchiseId || !role) {
+    const schema = z.object({
+      email: z.email(),
+      franchiseId: z.coerce.number(),
+      role: z.coerce.number(),
+    });
+    const validation = schema.safeParse(req.body);
+    if (!validation.success) {
       throw new BetterError(
-        'Invalid Request',
+        'Invalid email or franchiseId or role',
         400,
-        'INVALID_REQUEST',
+        'INVALID_EMAIL_OR_FRANCHISE_ID_OR_ROLE',
         'Missing required fields'
       );
     }
-
+    const { email, franchiseId, role } = validation.data;
     const existingInvite = await prisma.staffInvite.findFirst({
       where: {
-        email: String(email),
-        franchiseId: Number(franchiseId),
-        roleId: Number(role),
+        email: email,
+        franchiseId: franchiseId,
+        roleId: role,
         status: 'PENDING',
       },
     });
@@ -40,8 +44,8 @@ const addStaffInvites = expressAsyncHandler(
     }
     const existingInviteFranchise = await prisma.staffInvite.findFirst({
       where: {
-        email: String(email),
-        franchiseId: Number(franchiseId),
+        email: email,
+        franchiseId: franchiseId,
         status: 'PENDING',
       },
     });
@@ -60,16 +64,16 @@ const addStaffInvites = expressAsyncHandler(
 
     await prisma.staffInvite.create({
       data: {
-        email: String(email),
+        email: email,
         token: tokenHash,
-        franchiseId: Number(franchiseId),
-        roleId: Number(role),
+        franchiseId: franchiseId,
+        roleId: role,
         expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
       },
     });
 
     const user = await prisma.users.findUnique({
-      where: { email: String(email) },
+      where: { email: email },
     });
     console.log('email', email);
     console.log('user', user);
@@ -102,7 +106,7 @@ const addStaffInvites = expressAsyncHandler(
     try {
       await resend.emails.send({
         from: 'onboarding@resend.dev',
-        to: String(email),
+        to: email,
         subject: 'You have been invited to join our team',
         html,
       });

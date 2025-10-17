@@ -2,11 +2,23 @@ import type { Request, Response } from 'express';
 import asyncHandler from 'express-async-handler';
 import { BetterError } from '../../middleware/errorHandler.js';
 import prisma from '../../prisma/client.js';
-
+import { z } from 'zod';
 export const updateStatus = asyncHandler(
   async (req: Request, res: Response) => {
     const userId = req.user?.id;
-    const status = Number(req.body.status) === 1 ? 'ACTIVE' : 'BUSY';
+    const schema = z.object({
+      status: z.coerce.number(),
+    });
+    const validation = schema.safeParse(req.body);
+    if (!validation.success) {
+      throw new BetterError(
+        'Invalid status',
+        400,
+        'INVALID_STATUS',
+        'Delivery Agent Error'
+      );
+    }
+    const status = validation.data.status === 1 ? 'ACTIVE' : 'BUSY';
     if (!userId) {
       throw new BetterError(
         'User not found',

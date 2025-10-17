@@ -9,6 +9,7 @@ import { jwt } from '@/lib/jwt';
 import { Toaster } from 'sonner';
 import Notification from '@/components/notification/Notification';
 import OrderNotification from '@/components/notification/OrderNotification';
+import ReactQueryProvider from '@/lib/provider';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -38,7 +39,9 @@ export default async function RootLayout({
       >
         <StoreProvider>
           <StateJwt role={role} />
-          {children}
+          <ReactQueryProvider>
+            {children}
+          </ReactQueryProvider>
           <Toaster />
           <Notification />
           <OrderNotification />

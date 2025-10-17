@@ -5,30 +5,30 @@ import asyncHandler from 'express-async-handler';
 import { BetterError } from '../../middleware/errorHandler.js';
 import prisma from '../../prisma/client.js';
 import { AccessToken, RefreshToken } from '../functions/jwt.js';
-
+import { z } from 'zod';
 function hashToken(rawToken: string) {
   return crypto.createHash('sha256').update(rawToken).digest('hex');
 }
 
 export const regUser = asyncHandler(async (req: Request, res: Response) => {
-  const { full_name, email, phone_number, password, receivedToken } = req.body;
-  console.log(
-    'req.body',
-    req.body,
-    full_name,
-    email,
-    phone_number,
-    password,
-    receivedToken
-  );
-  if (!email || !password) {
+  const schema = z.object({
+    full_name: z.string(),
+    email: z.email(),
+    phone_number: z.string(),
+    password: z.string(),
+    receivedToken: z.string(),
+  });
+  const validation = schema.safeParse(req.body);
+  if (!validation.success) {
     throw new BetterError(
-      'Email and password are required',
+      'Invalid Request',
       400,
-      'BAD_REQUEST',
-      'User Error'
+      'INVALID_REQUEST',
+      'Missing required fields'
     );
   }
+  const { full_name, email, phone_number, password, receivedToken } =
+    validation.data;
 
   const hashedPassword = await bcrypt.hash(password, 10);
   const tokenHash = hashToken(receivedToken);
@@ -54,7 +54,6 @@ export const regUser = asyncHandler(async (req: Request, res: Response) => {
         'Invite Error'
       );
     }
-    console.log('error');
     const user = await tx.users.create({
       data: {
         role_id: 4,
@@ -102,16 +101,21 @@ export const regUser = asyncHandler(async (req: Request, res: Response) => {
 });
 
 export const login = asyncHandler(async (req: Request, res: Response) => {
-  const { email, password, receivedToken } = req.body;
-
-  if (!email || !password) {
+  const schema = z.object({
+    email: z.email(),
+    password: z.string(),
+    receivedToken: z.string(),
+  });
+  const validation = schema.safeParse(req.body);
+  if (!validation.success) {
     throw new BetterError(
-      'Email and password are required',
+      'Invalid Request',
       400,
-      'BAD_REQUEST',
-      'User Error'
+      'INVALID_REQUEST',
+      'Missing required fields'
     );
   }
+  const { email, password, receivedToken } = validation.data;
 
   const user = await prisma.users.findUnique({ where: { email } });
   if (!user) {

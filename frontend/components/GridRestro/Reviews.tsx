@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -10,7 +10,6 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { api } from '@/api/api';
-import { handleError } from '@/lib/handleError';
 import {
   Form,
   FormControl,
@@ -31,7 +30,9 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Star, MessageSquarePlus, Sparkles } from 'lucide-react';
-
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
+import { Skeleton } from '../ui/skeleton';
 export interface Orders {
   order_id: number;
   product_name: string;
@@ -49,23 +50,19 @@ const formSchema = z.object({
 });
 
 const Reviews = ({ restaurantId }: { restaurantId: number }) => {
-  const [data, setData] = useState<Orders[]>([]);
   const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const res = (
-          await api.get(`/restaurants/${restaurantId}/menus/reviews`)
-        ).data;
-        setData(res);
-      } catch (error) {
-        const err = handleError(error);
-        console.log(err);
-      }
-    }
-    fetchData();
-  }, [restaurantId]);
+  const queryClient = useQueryClient();
+  const fetchReviews = useQuery({
+    queryKey: ['reviews', restaurantId],
+    queryFn: async () => {
+      const res = (
+        await api.get(`/restaurants/${restaurantId}/menus/reviews`)
+      ).data;
+      return res as Orders[];
+    },
+    staleTime: 3 * 60 * 1000,
+    enabled: !!restaurantId,
+  });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -75,25 +72,39 @@ const Reviews = ({ restaurantId }: { restaurantId: number }) => {
       rating: '',
     },
   });
-
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    try {
-      const res = await api.post('/restaurants/:restaurantId/menus/reviews', {
-        orderId: values.product,
-        review: values.review,
-        rating: values.rating,
-        restaurantId: restaurantId,
-      });
-      console.log('success', res);
+  const addReview = useMutation({
+    mutationFn: (values: z.infer<typeof formSchema>) => api.post('/restaurants/:restaurantId/menus/reviews', {
+      orderId: values.product,
+      review: values.review,
+      rating: values.rating,
+      restaurantId: restaurantId,
+    }),
+    onSuccess: () => {
       setOpen(false);
-    } catch (error) {
-      const err = handleError(error);
-      console.log(err);
-      throw err;
-    }
+      toast.success('Review added successfully', {
+        duration: 5000,
+        description: 'Your review has been added successfully',
+      })
+      queryClient.invalidateQueries({
+        queryKey: ['reviews', restaurantId],
+      })
+    },
+    onError: (error) => {
+      console.log(error)
+      setOpen(false)
+      toast.error('Failed to add review', {
+        duration: 5000,
+        description: 'Please try again later',
+      })
+    },
+  })
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    addReview.mutate(values);
   }
-
-  if (data.length === 0) {
+  if (fetchReviews.isLoading) {
+    return <Skeleton className="w-full h-full" />
+  }
+  if (fetchReviews.data?.length === 0) {
     return (
       <div className="text-center p-8 bg-card rounded-lg shadow-lg">
         <MessageSquarePlus className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
@@ -154,7 +165,7 @@ const Reviews = ({ restaurantId }: { restaurantId: number }) => {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent className="bg-popover border-border">
-                      {data.map((order) => (
+                      {fetchReviews.data?.map((order) => (
                         <SelectItem
                           key={order.order_id}
                           value={String(order.order_id)}
@@ -204,8 +215,8 @@ const Reviews = ({ restaurantId }: { restaurantId: number }) => {
                                 <Star
                                   key={idx}
                                   className={`w-4 h-4 ${idx < num
-                                      ? 'text-yellow-400 fill-current'
-                                      : 'text-gray-300'
+                                    ? 'text-yellow-400 fill-current'
+                                    : 'text-gray-300'
                                     }`}
                                 />
                               ))}

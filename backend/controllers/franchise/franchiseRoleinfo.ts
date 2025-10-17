@@ -1,12 +1,25 @@
 import crypto from 'node:crypto';
 import type { Request, Response } from 'express';
 import expressAsyncHandler from 'express-async-handler';
-
+import { z } from 'zod';
+import { BetterError } from '../../middleware/errorHandler.js';
 import prisma from '../../prisma/client.js';
 
 const franchiseRoleinfo = expressAsyncHandler(
   async (req: Request, res: Response) => {
-    const receivedToken = String(req.body.token);
+    const schema = z.object({
+      token: z.string(),
+    });
+    const validation = schema.safeParse(req.body);
+    if (!validation.success) {
+      throw new BetterError(
+        'Invalid token',
+        400,
+        'INVALID_TOKEN',
+        'Token Error'
+      );
+    }
+    const receivedToken = validation.data.token;
     const token = crypto
       .createHash('sha256')
       .update(receivedToken)

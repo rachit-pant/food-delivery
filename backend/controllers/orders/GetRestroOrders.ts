@@ -2,12 +2,33 @@ import type { Request, Response } from 'express';
 import asyncHandler from 'express-async-handler';
 import { BetterError } from '../../middleware/errorHandler.js';
 import prisma from '../../prisma/client.js';
+import { z } from 'zod';
 
 const getRestroOrders = asyncHandler(async (req: Request, res: Response) => {
-  const restroId = Number(req.params.restaurantId);
-  const franchiseId = Number(req.query.franchiseId);
-  const page = Number(req.query.page) || 1;
-  const limit = Number(req.query.limit) || 10;
+  const schema = z.object({
+    restaurantId: z.coerce.number(),
+    franchiseId: z.coerce.number().optional(),
+    page: z.coerce.number().optional(),
+    limit: z.coerce.number().optional(),
+  });
+  const validation = schema.safeParse({
+    restaurantId: req.params.restaurantId,
+    franchiseId: req.query.franchiseId,
+    page: req.query.page,
+    limit: req.query.limit,
+  });
+  if (!validation.success) {
+    throw new BetterError(
+      'Invalid restaurant ID',
+      400,
+      'INVALID_RESTAURANT_ID',
+      'Query Error'
+    );
+  }
+  const restroId = validation.data.restaurantId;
+  const franchiseId = validation.data.franchiseId;
+  const page = validation.data.page || 1;
+  const limit = validation.data.limit || 10;
   const skip = (page - 1) * limit;
   if (franchiseId && franchiseId === 0) {
     throw new BetterError(

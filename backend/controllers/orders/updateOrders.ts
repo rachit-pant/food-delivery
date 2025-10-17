@@ -3,10 +3,23 @@ import asyncHandler from 'express-async-handler';
 import { BetterError } from '../../middleware/errorHandler.js';
 import prisma from '../../prisma/client.js';
 import myQueue from '../../Redis/queues/DeliveryQueue.js';
+import { z } from 'zod';
 
 export const updateOrders = asyncHandler(
   async (req: Request, res: Response) => {
-    const orderId = Number(req.params.orderId);
+    const schema = z.object({
+      orderId: z.coerce.number(),
+    });
+    const validation = schema.safeParse(req.params);
+    if (!validation.success) {
+      throw new BetterError(
+        'Invalid order ID',
+        400,
+        'INVALID_ORDER_ID',
+        'Query Error'
+      );
+    }
+    const orderId = validation.data.orderId;
     try {
       const order = await prisma.orders.update({
         where: {
@@ -38,7 +51,19 @@ export const updateOrders = asyncHandler(
 );
 export const updateOrdersToDelivered = asyncHandler(
   async (req: Request, res: Response) => {
-    const orderId = Number(req.params.orderId);
+    const schema = z.object({
+      orderId: z.coerce.number(),
+    });
+    const validation = schema.safeParse(req.params);
+    if (!validation.success) {
+      throw new BetterError(
+        'Invalid order ID',
+        400,
+        'INVALID_ORDER_ID',
+        'Query Error'
+      );
+    }
+    const orderId = validation.data.orderId;
     const userId = Number(req.user?.id);
     try {
       const order = await prisma.orders.update({

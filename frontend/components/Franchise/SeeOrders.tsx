@@ -278,16 +278,16 @@ export default function RestaurantOrders({
                                 {' '}
                                 × {item.quantity}
                               </span>
-                              <Button
-                                onClick={() => isPrepared(order.orderId)}
-                                className="ml-2"
-                              >
-                                Prepare
-                              </Button>
                             </p>
                           </div>
                         </div>
                       ))}
+                      <Button
+                        onClick={() => isPrepared(order.orderId)}
+                        className="ml-2"
+                      >
+                        Prepare
+                      </Button>
                     </div>
                   </div>
 

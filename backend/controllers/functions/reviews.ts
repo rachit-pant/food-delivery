@@ -1,12 +1,25 @@
 import type { Request, Response } from 'express';
 import expressAsyncHandler from 'express-async-handler';
 import { PrismaClient } from '../../generated/prisma/index.js';
-
+import { BetterError } from '../../middleware/errorHandler.js';
+import { z } from 'zod';
 const prisma = new PrismaClient();
 export const getItemsReviews = expressAsyncHandler(
   async (req: Request, res: Response) => {
     const Id = req.user?.id;
-    const resId = Number(req.params.restaurantId);
+    const schema = z.object({
+      restaurantId: z.coerce.number(),
+    });
+    const validation = schema.safeParse(req.params);
+    if (!validation.success) {
+      throw new BetterError(
+        'Restaurant ID is required',
+        400,
+        'RESTAURANT_ID_REQUIRED',
+        'Query Error'
+      );
+    }
+    const resId = validation.data.restaurantId;
     const getReview = await prisma.reviews.findMany({
       where: {
         restaurant_id: resId,
@@ -45,16 +58,31 @@ export const getItemsReviews = expressAsyncHandler(
 
 export const postItemReviews = expressAsyncHandler(
   async (req: Request, res: Response) => {
+    const schema = z.object({
+      orderId: z.coerce.number(),
+      restaurantId: z.coerce.number(),
+      review: z.string(),
+      rating: z.coerce.number(),
+    });
+    const validation = schema.safeParse(req.body);
+    if (!validation.success) {
+      throw new BetterError(
+        'Order ID and Restaurant ID are required',
+        400,
+        'ORDER_ID_AND_RESTAURANT_ID_REQUIRED',
+        'Query Error'
+      );
+    }
     const userId = Number(req.user?.id);
-    const { review, rating } = req.body;
-    const orderId = Number(req.body.orderId);
-    const restaurantId = Number(req.body.restaurantId);
+    const { review, rating } = validation.data;
+    const orderId = validation.data.orderId;
+    const restaurantId = validation.data.restaurantId;
 
     await prisma.reviews.create({
       data: {
         user_id: userId,
         order_id: orderId,
-        rating: Number(rating),
+        rating: rating,
         review: review,
         restaurant_id: restaurantId,
       },
@@ -65,7 +93,19 @@ export const postItemReviews = expressAsyncHandler(
 );
 export const showReviews = expressAsyncHandler(
   async (req: Request, res: Response) => {
-    const resId = Number(req.params.restaurantId);
+    const schema = z.object({
+      restaurantId: z.coerce.number(),
+    });
+    const validation = schema.safeParse(req.params);
+    if (!validation.success) {
+      throw new BetterError(
+        'Restaurant ID is required',
+        400,
+        'RESTAURANT_ID_REQUIRED',
+        'Query Error'
+      );
+    }
+    const resId = validation.data.restaurantId;
     const showReviews = await prisma.reviews.findMany({
       where: {
         restaurant_id: resId,

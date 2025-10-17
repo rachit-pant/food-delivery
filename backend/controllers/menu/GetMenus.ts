@@ -4,11 +4,25 @@ import _ from 'lodash';
 
 const { groupBy } = _;
 import { PrismaClient } from '../../generated/prisma/index.js';
+import { z } from 'zod';
+import { BetterError } from '../../middleware/errorHandler.js';
 
 const prisma = new PrismaClient();
 
 const GetMenus = asyncHandler(async (req: Request, res: Response) => {
-  const restaurant_id = Number(req.params.restaurantId);
+  const schema = z.object({
+    restaurantId: z.coerce.number(),
+  });
+  const validation = schema.safeParse(req.params);
+  if (!validation.success) {
+    throw new BetterError(
+      'Invalid restaurant ID',
+      400,
+      'INVALID_RESTAURANT_ID',
+      'Query Error'
+    );
+  }
+  const restaurant_id = validation.data.restaurantId;
   const GetMenus = await prisma.menus.findMany({
     where: {
       restaurant_id,
@@ -18,11 +32,7 @@ const GetMenus = asyncHandler(async (req: Request, res: Response) => {
       menu_variants: true,
     },
   });
-  if (!GetMenus) {
-    const error = new Error('no mennus found');
-    (error as any).statusCode = 400;
-    throw error;
-  }
+
   const groupedMenus = groupBy(
     GetMenus,
     (Menus) => Menus.menu_categories?.cat_name

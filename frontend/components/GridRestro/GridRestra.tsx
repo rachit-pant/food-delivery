@@ -1,13 +1,14 @@
 'use client';
 
 import { api } from '@/api/api';
-import { handleError } from '@/lib/handleError';
 import { useAppSelector } from '@/lib/hooks';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import CardRestra from './CardRestra';
+import { useQuery } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
-type restaurants = {
+type Restaurants = {
   id: number;
   user_id: number;
   name: string;
@@ -26,51 +27,58 @@ interface userAddress {
   lng: number;
 }
 const GridRestaurant = () => {
-  const [restaurants, setRestaurants] = useState<restaurants[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [userAddress, setUserAddress] = useState<userAddress>({
-    id: 0,
-    lat: 0,
-    lng: 0,
-  });
-
   const filter = useAppSelector((state) => state.filter.filterName);
   const country = useAppSelector((state) => state.country.countryName);
+  async function fetchRestaurants() {
+    const data = (
+      await api.get(`/restaurants`, {
+        params: {
+          filter,
+          country,
+        },
+      })
+    ).data;
+    return data;
+  }
+
+  async function fetchUserAddress() {
+    const data = (await api.get('/address/address/user')).data;
+    return data;
+  }
+
+  const restaurants = useQuery<Restaurants[]>({
+    queryKey: ['restaurants', filter, country],
+    queryFn: fetchRestaurants,
+    staleTime: 3 * 60 * 1000,
+  })
+
+  const address = useQuery<userAddress>({
+    queryKey: ['address', country],
+    queryFn: fetchUserAddress,
+    staleTime: 3 * 60 * 1000,
+    enabled: !!restaurants.data,
+  })
   useEffect(() => {
-    async function fetchData() {
-      try {
-        setLoading(true);
-        const data = (
-          await api.get(`/restaurants?filter=${filter}&country=${country}`)
-        ).data;
-        console.log('data', data);
-        setRestaurants(data);
-      } catch (error) {
-        const err = handleError(error);
-        console.log(err);
-        throw err;
-      } finally {
-        setLoading(false);
-      }
+    if (restaurants.isError) {
+      toast.error('Failed to fetch restaurants', {
+        duration: 5000,
+        description: (restaurants.error as Error)?.message
+      });
     }
-    fetchData();
-  }, [filter, country]);
+  }, [restaurants.isError, restaurants.error]);
 
   useEffect(() => {
-    async function fetchUserAddress() {
-      try {
-        const data = (await api.get('/address/address/user')).data;
-        setUserAddress(data);
-      } catch (error) {
-        const err = handleError(error);
-        console.log(err);
-        throw err;
-      }
+    if (address.isError) {
+      toast.error('No default address', {
+        duration: 5000,
+        description: (address.error as Error)?.message
+      });
     }
-    fetchUserAddress();
-  }, [country]);
+  }, [address.isError, address.error]);
 
-  function getDistance(lat1: number, lng1: number, lat2: number, lng2: number) {
+
+
+  const getDistance = useCallback((lat1: number, lng1: number, lat2: number, lng2: number) => {
     const R = 6371e3;
     const φ1 = (lat1 * Math.PI) / 180;
     const φ2 = (lat2 * Math.PI) / 180;
@@ -83,15 +91,15 @@ const GridRestaurant = () => {
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
     return R * c;
-  }
-  const distances = restaurants.map(
+  }, []);
+  const distances = restaurants.data?.map(
     (d) => {
-      if (userAddress?.lat && userAddress?.lng) {
-        return getDistance(userAddress.lat, userAddress.lng, d.lat, d.lng) / 1000;
+      if (address.isSuccess && address?.data?.lat && address?.data?.lng) {
+        return getDistance(address?.data?.lat, address?.data?.lng, d.lat, d.lng) / 1000;
       }
       return 20;
     }
-  );
+  ) ?? [];
 
   return (
     <div className="max-w-7xl mx-auto px-4 mt-10">
@@ -105,7 +113,8 @@ const GridRestaurant = () => {
         </p>
       </div>
 
-      {loading ? (
+
+      {restaurants.isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {Array.from({ length: 6 }).map((_, index) => (
             <div key={index} className="space-y-4">
@@ -118,26 +127,7 @@ const GridRestaurant = () => {
             </div>
           ))}
         </div>
-      ) : (
-        <div
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-          style={{ userSelect: 'none' }}
-        >
-          {restaurants.map((restaurant: restaurants, index) => (
-            <CardRestra
-              key={restaurant.id}
-              image={restaurant.imageurl}
-              name={restaurant.name}
-              rating={restaurant.rating}
-              id={restaurant.id}
-              distances={distances[index]}
-              is_open={restaurant.is_open}
-            />
-          ))}
-        </div>
-      )}
-
-      {!loading && restaurants.length === 0 && (
+      ) : restaurants.data?.length === 0 ? (
         <div className="text-center py-16">
           <div className="w-24 h-24 mx-auto mb-6 bg-muted rounded-full flex items-center justify-center">
             <span className="text-4xl">🍽️</span>
@@ -148,6 +138,23 @@ const GridRestaurant = () => {
           <p className="text-muted-foreground">
             Try adjusting your filters to see more options
           </p>
+        </div>
+      ) : (
+        <div
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          style={{ userSelect: 'none' }}
+        >
+          {restaurants.data?.map((restaurant: Restaurants, index) => (
+            <CardRestra
+              key={restaurant.id}
+              image={restaurant.imageurl}
+              name={restaurant.name}
+              rating={restaurant.rating}
+              id={restaurant.id}
+              distances={distances[index]}
+              is_open={restaurant.is_open}
+            />
+          ))}
         </div>
       )}
     </div>

@@ -1,12 +1,10 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { CheckCircle } from 'lucide-react';
+import { Button } from '../ui/button';
+import Link from 'next/link';
 const Success = () => {
-  useEffect(() => {
-    async function postOrders() {}
-    postOrders();
-  }, []);
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="text-center space-y-6">
@@ -20,6 +18,9 @@ const Success = () => {
           <p className="text-green-700 dark:text-green-300">
             Your order has been confirmed.
           </p>
+          <Button asChild>
+            <Link href="/user/orders">View Order</Link>
+          </Button>
         </div>
       </div>
     </div>

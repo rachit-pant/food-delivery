@@ -1,7 +1,8 @@
 import type { Request, Response } from 'express';
 import expressAsyncHandler from 'express-async-handler';
 import Stripe from 'stripe';
-
+import { z } from 'zod';
+import { BetterError } from '../../middleware/errorHandler.js';
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 import { PrismaClient } from '../../generated/prisma/index.js';
@@ -14,11 +15,22 @@ const createPaymentIntent = expressAsyncHandler(
     if (!userId) {
       throw new Error('No user ID found');
     }
-    const restaurant_id = req.body.restaurant_id;
-    const address_id = req.body.address_id;
+    const schema = z.object({
+      restaurant_id: z.coerce.number(),
+      address_id: z.coerce.number(),
+    });
+    const validation = schema.safeParse(req.body);
+    if (!validation.success) {
+      throw new BetterError(
+        'Restaurant ID and Address ID are required',
+        400,
+        'RESTAURANT_ID_AND_ADDRESS_ID_REQUIRED',
+        'Query Error'
+      );
+    }
+    const restaurant_id = validation.data.restaurant_id;
+    const address_id = validation.data.address_id;
     const subsId = await prisma.sub.findMany({
-      //for all plans
-
       where: {
         user_id: userId,
         isDefault: true,

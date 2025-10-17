@@ -9,6 +9,7 @@ interface JwtPayload {
 
 const roleRoutes = ['/merchant', '/subscription'];
 const staffRoutes = ['/staff'];
+const deliveryRoutes = ['/delivery'];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -80,5 +81,6 @@ export const config = {
     '/merchant/:path*',
     '/subscription/:path*',
     '/staff/:path*',
+    '/delivery/:path*',
   ],
 };

@@ -4,10 +4,17 @@ import asyncHandler from 'express-async-handler';
 import { BetterError } from '../../middleware/errorHandler.js';
 import prisma from '../../prisma/client.js';
 import { AccessToken, RefreshToken } from '../functions/jwt.js';
+import { z } from 'zod';
 
 export const regUser = asyncHandler(async (req: Request, res: Response) => {
-  const { full_name, email, phone_number, password } = req.body;
-  if (email === '' || password === '') {
+  const schema = z.object({
+    full_name: z.string(),
+    email: z.string(),
+    phone_number: z.string(),
+    password: z.string(),
+  });
+  const validation = schema.safeParse(req.body);
+  if (!validation.success) {
     throw new BetterError(
       'enter correct details',
       400,
@@ -15,6 +22,7 @@ export const regUser = asyncHandler(async (req: Request, res: Response) => {
       'User Error'
     );
   }
+  const { full_name, email, phone_number, password } = validation.data;
   let hash: string;
   try {
     hash = await bcrypt.hash(password, 10);
@@ -63,9 +71,12 @@ export const regUser = asyncHandler(async (req: Request, res: Response) => {
   }
 });
 export const login = asyncHandler(async (req: Request, res: Response) => {
-  const { email, password } = req.body;
-
-  if (!email || !password) {
+  const schema = z.object({
+    email: z.string(),
+    password: z.string(),
+  });
+  const validation = schema.safeParse(req.body);
+  if (!validation.success) {
     throw new BetterError(
       'Email and password are required',
       400,
@@ -73,6 +84,7 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
       'User Error'
     );
   }
+  const { email, password } = validation.data;
   let user: any;
   try {
     user = await prisma.users.findUnique({

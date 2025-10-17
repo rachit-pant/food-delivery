@@ -1,7 +1,8 @@
 import type { Request, Response } from 'express';
 import expressAsyncHandler from 'express-async-handler';
 import { PrismaClient } from '../../generated/prisma/index.js';
-
+import { z } from 'zod';
+import { BetterError } from '../../middleware/errorHandler.js';
 const prisma = new PrismaClient();
 
 export const AllCountryFetch = expressAsyncHandler(
@@ -12,15 +13,21 @@ export const AllCountryFetch = expressAsyncHandler(
 );
 export const AllStatesCountry = expressAsyncHandler(
   async (req: Request, res: Response) => {
-    const countryId = Number(req.params?.id);
-    if (!countryId) {
-      const error = new Error('no coutnry id');
-      (error as any).statusCode = 400;
-      throw error;
+    const schema = z.object({
+      id: z.number(),
+    });
+    const validation = schema.safeParse(req.params);
+    if (!validation.success) {
+      throw new BetterError(
+        'Invalid country id',
+        400,
+        'INVALID_COUNTRY_ID',
+        'Country Error'
+      );
     }
     const fetchedData = await prisma.states.findMany({
       where: {
-        country_id: countryId,
+        country_id: validation.data.id,
       },
     });
     res.status(200).json(fetchedData);
@@ -28,15 +35,21 @@ export const AllStatesCountry = expressAsyncHandler(
 );
 export const AllCityStates = expressAsyncHandler(
   async (req: Request, res: Response) => {
-    const stateId = Number(req.params?.stateId);
-    if (!stateId) {
-      const error = new Error('no state id');
-      (error as any).statusCode = 400;
-      throw error;
+    const schema = z.object({
+      stateId: z.number(),
+    });
+    const validation = schema.safeParse(req.params);
+    if (!validation.success) {
+      throw new BetterError(
+        'Invalid state id',
+        400,
+        'INVALID_STATE_ID',
+        'State Error'
+      );
     }
     const fetchedData = await prisma.cities.findMany({
       where: {
-        state_id: stateId,
+        state_id: validation.data.stateId,
       },
     });
     res.status(200).json(fetchedData);
