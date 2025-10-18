@@ -25,7 +25,9 @@ import getUserRole from '../controllers/franchise/getUserRole.js';
 import postFranchise from '../controllers/franchise/postFranchise.js';
 import updateRole from '../controllers/franchise/updateRole.js';
 import authorize from '../middleware/authorize.js';
-
+import { fileURLToPath } from 'node:url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const router = express.Router();
 type MulterCallback = (error: Error | null, value: string) => void;
 const storage = multer.diskStorage({

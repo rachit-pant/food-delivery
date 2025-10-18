@@ -14,7 +14,7 @@ export const AllCountryFetch = expressAsyncHandler(
 export const AllStatesCountry = expressAsyncHandler(
   async (req: Request, res: Response) => {
     const schema = z.object({
-      id: z.number(),
+      id: z.coerce.number(),
     });
     const validation = schema.safeParse(req.params);
     if (!validation.success) {
@@ -36,7 +36,7 @@ export const AllStatesCountry = expressAsyncHandler(
 export const AllCityStates = expressAsyncHandler(
   async (req: Request, res: Response) => {
     const schema = z.object({
-      stateId: z.number(),
+      stateId: z.coerce.number(),
     });
     const validation = schema.safeParse(req.params);
     if (!validation.success) {

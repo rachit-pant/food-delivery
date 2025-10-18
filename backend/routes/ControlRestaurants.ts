@@ -17,7 +17,9 @@ import UpdateRestro from '../controllers/restaurants/UpdateRestaurants.js';
 import AllowRoles from '../middleware/AllowRoles.js';
 import authorize from '../middleware/authorize.js';
 import OwnerAdminAcess from '../middleware/OwnerAdminAcess.js';
-
+import { fileURLToPath } from 'node:url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const router = express.Router();
 type MulterCallback = (error: Error | null, value: string) => void;
 

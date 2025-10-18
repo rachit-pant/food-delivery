@@ -13,7 +13,9 @@ import MenusAdd from '../controllers/menu/PostMenus.js';
 import authorize from '../middleware/authorize.js';
 import OwnerAdminAcess from '../middleware/OwnerAdminAcess.js';
 import staffIdentifier from '../middleware/StaffIdentifier.js';
-
+import { fileURLToPath } from 'node:url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const router = express.Router({ mergeParams: true });
 type MulterCallback = (error: Error | null, value: string) => void;
 const storage = multer.diskStorage({
