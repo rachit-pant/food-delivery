@@ -3,7 +3,6 @@ import expressAsyncHandler from 'express-async-handler';
 import Stripe from 'stripe';
 import { z } from 'zod';
 import { BetterError } from '../../middleware/errorHandler.js';
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 import { PrismaClient } from '../../generated/prisma/index.js';
 
@@ -11,6 +10,7 @@ const prisma = new PrismaClient();
 
 const createPaymentIntent = expressAsyncHandler(
   async (req: Request, res: Response) => {
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
     const userId = req.user?.id;
     if (!userId) {
       throw new Error('No user ID found');

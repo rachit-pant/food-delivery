@@ -5,7 +5,6 @@ import { Resend } from 'resend';
 import { BetterError } from '../../middleware/errorHandler.js';
 import prisma from '../../prisma/client.js';
 import { z } from 'zod';
-const resend = new Resend(process.env.RESEND_API_KEY);
 const FRONTEND_URL = 'http://localhost:3000';
 
 const addStaffInvites = expressAsyncHandler(
@@ -15,6 +14,7 @@ const addStaffInvites = expressAsyncHandler(
       franchiseId: z.coerce.number(),
       role: z.coerce.number(),
     });
+    const resend = new Resend(process.env.RESEND_API_KEY!);
     const validation = schema.safeParse(req.body);
     if (!validation.success) {
       throw new BetterError(

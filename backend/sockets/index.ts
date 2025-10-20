@@ -50,7 +50,7 @@ function socketLoader(io: Server) {
       if (socket.user?.id) {
         try {
           const orderData = await prisma.orders.findUnique({
-            where: { id: Number(orderId), user_id: socket.user.id },
+            where: { id: Number(orderId)},
             select: {
               restaurants: {
                 select: {
@@ -105,7 +105,7 @@ function socketLoader(io: Server) {
       if (socket.user?.id && socket.user?.role === 5) {
         try {
           const orderData = await prisma.orders.findUnique({
-            where: { id: Number(orderId), user_id: socket.user?.id },
+            where: { id: Number(orderId) },
             select: {
               restaurants: {
                 select: {

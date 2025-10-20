@@ -6,57 +6,57 @@ const TopBrands = () => {
     {
       id: 1,
       name: "McDonald's",
-      image: '/images/kanha',
+      image: '/images/kanha.jpg',
     },
     {
       id: 2,
       name: 'KFC',
-      image: '/images/kanha',
+      image: '/images/kanha.jpg',
     },
     {
       id: 3,
       name: "Domino's",
-      image: '/images/kanha',
+      image: '/images/kanha.jpg',
     },
     {
       id: 4,
       name: 'Subway',
-      image: '/images/kanha',
+      image: '/images/kanha.jpg',
     },
     {
       id: 5,
       name: 'Pizza Hut',
-      image: '/images/kanha',
+      image: '/images/kanha.jpg',
     },
     {
       id: 6,
       name: 'Starbucks',
-      image: '/images/kanha',
+      image: '/images/kanha.jpg',
     },
     {
       id: 7,
       name: 'Taco Bell',
-      image: '/images/kanha',
+      image: '/images/kanha.jpg',
     },
     {
       id: 8,
       name: 'Burger King',
-      image: '/images/kanha',
+      image: '/images/kanha.jpg',
     },
     {
       id: 10,
       name: "Dunkin'",
-      image: '/images/kanha',
+      image: '/images/kanha.jpg',
     },
     {
       id: 11,
       name: 'Baskin Robbins',
-      image: '/images/kanha',
+      image: '/images/kanha.jpg',
     },
     {
       id: 12,
       name: "Haldiram's",
-      image: '/images/kanha',
+      image: '/images/kanha.jpg',
     },
   ];
 

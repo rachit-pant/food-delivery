@@ -4,9 +4,9 @@ import Stripe from 'stripe';
 import { BetterError } from '../../middleware/errorHandler.js';
 import prisma from '../../prisma/client.js';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const BillingPortalSession = expressAsyncHandler(
   async (req: Request, res: Response) => {
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
     const userId = req.user?.id;
     const role = req.user?.role;
     if (!userId) {

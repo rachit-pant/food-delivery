@@ -7,6 +7,8 @@ import {
   ChartBarDecreasing,
   LayoutDashboard,
   BookText,
+  Badge,
+  Route,
 } from 'lucide-react';
 
 import {
@@ -57,7 +59,7 @@ export function AppSidebar() {
                 <SidebarMenuItem key="home">
                   <SidebarMenuButton asChild>
                     <Link href="/restaurant" >
-                      <Home />
+                      <Badge />
                       <span>Home</span>
                     </Link>
                   </SidebarMenuButton>
@@ -116,7 +118,7 @@ export function AppSidebar() {
                   <SidebarMenuItem key="merchantFranchise">
                     <SidebarMenuButton asChild>
                       <Link href="/merchant/franchise/manage">
-                        <BookText />
+                        <Route />
                         <span>Staff</span>
                       </Link>
                     </SidebarMenuButton>
@@ -126,7 +128,7 @@ export function AppSidebar() {
                   <SidebarMenuItem key="staffFranchise">
                     <SidebarMenuButton asChild>
                       <Link href="/staff">
-                        <BookText />
+                        <Route />
                         <span>Jobs</span>
                       </Link>
                     </SidebarMenuButton>

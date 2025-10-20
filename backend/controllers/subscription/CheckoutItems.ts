@@ -3,9 +3,10 @@ import expressAsyncHandler from 'express-async-handler';
 import Stripe from 'stripe';
 import { BetterError } from '../../middleware/errorHandler.js';
 import { z } from 'zod';
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
 const CheckoutItems = expressAsyncHandler(
   async (req: Request, res: Response) => {
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
     const schema = z.object({
       sessionId: z.string(),
     });

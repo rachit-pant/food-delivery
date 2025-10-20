@@ -70,6 +70,16 @@ const CountryPopup = ({ country, change }: CountryPopupProps) => {
       <Card className="w-full max-w-sm shadow-lg border-border">
         <ScrollArea className="max-h-64">
           <CardContent className="p-4 text-center">
+             <div
+          className="p-4 hover:cursor-pointer hover:bg-accent/10 transition-colors border-b border-border last:border-b-0 flex items-start gap-3 "
+          onClick={() => change('')}
+        >
+          <div className="flex-col ">
+            <p className="font-semibold text-lg text-card-foreground truncate">
+              Select Country
+            </p>
+          </div>
+        </div>
             <MapPin className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
             <p className="text-muted-foreground">No results found.</p>
           </CardContent>

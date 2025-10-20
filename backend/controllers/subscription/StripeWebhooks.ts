@@ -2,12 +2,11 @@ import type { Request, Response } from 'express';
 import asyncHandler from 'express-async-handler';
 import Stripe from 'stripe';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-
 import { BetterError } from '../../middleware/errorHandler.js';
 import prisma from '../../prisma/client.js';
 
 const StripeWebhooks = asyncHandler(async (req: Request, res: Response) => {
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
   const sig = req.headers['stripe-signature'];
   let event: Stripe.Event;
   console.log(sig);

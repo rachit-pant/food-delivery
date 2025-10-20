@@ -39,7 +39,7 @@ const HorizontalCarousel = ({ items }: { items: data[] }) => {
                   <div className="relative">
                     <div className="w-20 h-20 md:w-24 md:h-24 relative overflow-hidden rounded-full ring-4 ring-background shadow-lg group-hover:ring-primary/20 transition-all duration-300">
                       <Image
-                        src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${item.image}.avif`}
+                        src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${item.image}`}
                         alt={item.name}
                         fill
                         className="object-cover transition-transform duration-300 group-hover:scale-110"

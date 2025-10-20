@@ -3,7 +3,6 @@ import expressAsyncHandler from 'express-async-handler';
 import Stripe from 'stripe';
 import { BetterError } from '../../middleware/errorHandler.js';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const allowedPlans = [
   'price_1S2qniFuZCtCjNMxyYhqD9Fj',
   'price_1S2qp5FuZCtCjNMx2iiBNqT3',
@@ -20,6 +19,7 @@ const allowedPlans = [
 ];
 const PostSubscription = expressAsyncHandler(
   async (req: Request, res: Response) => {
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
     const { priceId } = req.body;
     console.log('priceId', priceId);
     const id = Number(req.user?.id);

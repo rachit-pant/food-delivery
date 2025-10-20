@@ -6,57 +6,57 @@ const PopularDishes = () => {
     {
       id: 1,
       name: 'Pizza',
-      image: '/images/pizza',
+      image: '/images/pizza.jpg',
     },
     {
       id: 2,
       name: 'Burger',
-      image: '/images/pizza',
+      image: '/images/pizza.jpg',
     },
     {
       id: 3,
       name: 'Paneer',
-      image: '/images/pizza',
+      image: '/images/pizza.jpg',
     },
     {
       id: 4,
       name: 'Biryani',
-      image: '/images/pizza',
+      image: '/images/pizza.jpg',
     },
     {
       id: 5,
       name: 'Masala',
-      image: '/images/pizza',
+      image: '/images/pizza.jpg',
     },
     {
       id: 6,
       name: 'Pasta',
-      image: '/images/pizza',
+      image: '/images/pizza.jpg',
     },
     {
       id: 7,
       name: 'Dal',
-      image: '/images/pizza',
+      image: '/images/pizza.jpg',
     },
     {
       id: 8,
       name: 'Noodles',
-      image: '/images/pizza',
+      image: '/images/pizza.jpg',
     },
     {
       id: 10,
       name: 'Shake',
-      image: '/images/pizza',
+      image: '/images/pizza.jpg',
     },
     {
       id: 11,
       name: 'Chocolate',
-      image: '/images/pizza',
+      image: '/images/pizza.jpg',
     },
     {
       id: 12,
       name: 'Ice Cream',
-      image: '/images/pizza',
+      image: '/images/pizza.jpg',
     },
   ];
 

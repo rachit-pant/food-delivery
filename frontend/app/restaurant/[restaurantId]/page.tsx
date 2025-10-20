@@ -122,9 +122,11 @@ const Menus = async ({
   const todayTimings = dataRestro.restaurant_timings.filter(
     (timing) => timing.week_day === todayWeekDay
   );
-
+  //custom for current remove customNow and use now
+const customNow = new Date();
+customNow.setHours(12, 0, 0, 0);
   const now = new Date();
-  const isOpen = isRestaurantOpen(todayTimings, now);
+  const isOpen = isRestaurantOpen(todayTimings, customNow);
 
   const Header = (
     <div className="">
@@ -168,7 +170,7 @@ const Menus = async ({
                   className="px-4 py-1.5 text-sm font-medium"
                 >
                   <Clock className="w-3 h-3 mr-1" />
-                  Open Now {formatTime(now)}
+                  Open Now {formatTime(customNow)}
                 </Badge>
               ) : (
                 <Badge

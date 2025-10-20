@@ -10,6 +10,9 @@ interface RestaurantTiming {
 	start_time: Date;
 	end_time: Date;
 }
+//custom for current remove customNow and use now
+const customNow = new Date();
+customNow.setHours(12, 0, 0, 0);
 function isRestaurantOpen(timings: RestaurantTiming[], now: Date): boolean {
 	if (!timings || timings.length === 0) return false;
 
@@ -58,7 +61,7 @@ export const GetRestro = asyncHandler(async (req: Request, res: Response) => {
 		const todayTimings = res.restaurant_timings.filter(
 			(t) => t.week_day === todayWeekDay,
 		);
-		const open = isRestaurantOpen(todayTimings, now);
+		const open = isRestaurantOpen(todayTimings, customNow);
 		return { ...res, is_open: open };
 	});
 
