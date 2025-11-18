@@ -185,7 +185,7 @@ const DeliveryAgent = ({ orderId }: { orderId: string }) => {
   }, [coordinates])
 
   return (
-    <div className="h-screen w-full flex flex-col bg-slate-900">
+    <div className="h-screen w-full flex flex-col bg-white-900">
       {orderDetails && (
         <div className="bg-gradient-to-r from-orange-500 to-orange-600 px-6 py-4 flex items-center justify-between">
           <div>
@@ -200,7 +200,7 @@ const DeliveryAgent = ({ orderId }: { orderId: string }) => {
       )}
 
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-4 gap-4 p-4 overflow-auto">
-        <div className="lg:col-span-2 relative rounded-lg overflow-hidden border border-slate-700 h-[300px] lg:h-auto">
+        <div className="lg:col-span-2 relative rounded-lg overflow-hidden border border-white-700 h-[300px] lg:h-auto">
           <LoadScript googleMapsApiKey={process.env.NEXT_PUBLIC_MAPS_PLACES_API_KEY! as string} libraries={["places"]}>
             <GoogleMap onLoad={onLoad} mapContainerStyle={containerStyle} center={center} zoom={14}>
               {coordinates && (
@@ -250,35 +250,35 @@ const DeliveryAgent = ({ orderId }: { orderId: string }) => {
           {orderDetails && (
             <>
               <div className="grid grid-cols-2 gap-3">
-                <div className="rounded-lg bg-slate-800 border border-slate-700 p-3">
-                  <p className="text-xs font-semibold text-slate-400 uppercase">Status</p>
+                <div className="rounded-lg bg-white border border-white-700 p-3">
+                  <p className="text-xs font-semibold text-white-400 uppercase">Status</p>
                   <p className="mt-2 text-sm font-bold text-orange-400">{orderDetails.status}</p>
                 </div>
-                <div className="rounded-lg bg-slate-800 border border-slate-700 p-3">
-                  <p className="text-xs font-semibold text-slate-400 uppercase">Payment</p>
+                <div className="rounded-lg bg-white border border-white-700 p-3">
+                  <p className="text-xs font-semibold text-white-400 uppercase">Payment</p>
                   <p className="mt-2 text-sm font-bold text-green-400">{orderDetails.payment_status}</p>
                 </div>
               </div>
 
-              <div className="rounded-lg bg-slate-800 border border-slate-700 p-4">
+              <div className="rounded-lg bg-white border border-white-700 p-4">
                 <h3 className="text-xs font-bold text-white uppercase mb-3">Breakdown</h3>
                 <div className="space-y-2 text-xs">
-                  <div className="flex justify-between text-slate-300">
+                  <div className="flex justify-between text-white-300">
                     <span>Subtotal:</span>
                     <span>₹{orderDetails.total_amount}</span>
                   </div>
-                  <div className="flex justify-between text-slate-300">
+                  <div className="flex justify-between text-white-300">
                     <span>Delivery:</span>
                     <span>₹{orderDetails.delivery_charges}</span>
                   </div>
-                  <div className="flex justify-between text-slate-300">
+                  <div className="flex justify-between text-white-300">
                     <span>Tax:</span>
                     <span>₹{orderDetails.tax_amount}</span>
                   </div>
                 </div>
               </div>
 
-              <div className="rounded-lg bg-slate-800 border border-slate-700 p-4">
+              <div className="rounded-lg bg-white border border-white-700 p-4">
                 <h3 className="text-xs font-bold text-white uppercase mb-3 flex items-center gap-2">
                   <ChefHat className="h-4 w-4 text-orange-500" />
                   Items ({orderDetails.order_items.length})
@@ -286,9 +286,9 @@ const DeliveryAgent = ({ orderId }: { orderId: string }) => {
                 <div className="space-y-2 max-h-32 overflow-y-auto">
                   {orderDetails.order_items.map((item) => (
                     <div key={item.id} className="flex justify-between items-center text-xs">
-                      <span className="text-slate-300 truncate">{item.product_name}</span>
+                      <span className="text-white-300 truncate">{item.product_name}</span>
                       <div className="flex items-center gap-2 ml-2">
-                        <span className="text-slate-400">×{item.quantity}</span>
+                        <span className="text-white-400">×{item.quantity}</span>
                         <span className="font-semibold text-orange-400">₹{item.total_amount}</span>
                       </div>
                     </div>
